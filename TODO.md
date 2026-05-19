@@ -13,11 +13,11 @@
 - [x] Add the derived NPZ inputs used by the paper figures to the standalone paper repository.
 - [x] Address the V6 CNR outlier by reporting median CNR and noting that V6 is a one-pixel compact high-contrast ROI.
 - [x] Compute split-half sign agreement for acquisitions 200-299 vs 300-399 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
+- [x] Replace the stale temporal-stability figure with the fine-elevation per-acquisition sidecar montage, labeled by acquisition counts.
+- [x] Add the temporal-stability sidecar path and default figure-generation parameters to the reproducibility manifest.
 
 ## Open
 
-- [ ] Regenerate or remove the stale temporal-stability figure. The default figure script currently skips it when the viewer NPZ is already averaged.
-- [ ] Fix temporal-stability panel labels if the figure is kept: labels should be buffer counts, not index ranges.
 - [ ] Add real `\\author{}` list, affiliations, acknowledgments, funding, and conflicts of interest.
 - [ ] Add a data availability statement for the raw H5 ultratraces; if raw data cannot be public, state the controlled-access / IRB limitation clearly.
 - [ ] Check the realtime/acquisition-level color Doppler path in `caterpillar/acquire/acquisition.py`; it may still pass empirical pulse PRF into Doppler estimators for compounded slow-time data.

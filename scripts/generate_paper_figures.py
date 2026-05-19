@@ -31,6 +31,11 @@ DEFAULT_REGIONS_PATH = DATA_DIR / "cnr_measurement_20260515_191622.regions.json"
 DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz"
 DEFAULT_ALL_PLANES_START = 2
 DEFAULT_ALL_PLANES_END = 7
+DEFAULT_TEMPORAL_PER_ACQ_DIR = Path(
+    "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/"
+    "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq"
+)
+DEFAULT_TEMPORAL_PLANE = 4
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
 )
@@ -304,7 +309,7 @@ def figure_three_panel(data: dict, output_dir: Path, acq_start: int = 0, acq_end
 
 
 def figure_temporal_stability(data: dict, output_dir: Path):
-    """DC maps at different averaging windows showing stability."""
+    """Legacy temporal-stability figure for per-acquisition stacked NPZs."""
     windows = [
         (0, 250, "250 buffers"),
         (150, 250, "Buffers 150–250"),
@@ -338,6 +343,78 @@ def figure_temporal_stability(data: dict, output_dir: Path):
     fig.savefig(output_dir / "fig_temporal_stability.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"  Saved temporal stability montage")
+
+
+def figure_temporal_stability_from_sidecar(
+    per_acq_dir: Path,
+    output_dir: Path,
+    plane: int = DEFAULT_TEMPORAL_PLANE,
+):
+    """Dower Coppler maps from per-acquisition sidecars with count-based labels."""
+    windows = [
+        (200, 399, "200 acquisitions"),
+        (250, 399, "150 acquisitions"),
+        (300, 399, "100 acquisitions"),
+        (350, 399, "50 acquisitions"),
+        (390, 399, "10 acquisitions"),
+        (399, 399, "1 acquisition"),
+    ]
+
+    def load_window(start: int, end: int) -> tuple[np.ndarray, dict]:
+        imgs = []
+        meta = {}
+        for acq in range(start, end + 1):
+            path = per_acq_dir / f"acq_{acq}.npz"
+            with np.load(path, allow_pickle=True) as z:
+                imgs.append(np.asarray(z["dower_coppler"][plane], dtype=np.float32))
+                if not meta:
+                    meta = {k: z[k] for k in ("x_mm", "y_mm", "z_mm") if k in z.files}
+        return np.median(np.stack(imgs, axis=0), axis=0), meta
+
+    images = []
+    meta = {}
+    for start, end, label in windows:
+        img, this_meta = load_window(start, end)
+        images.append((start, end, label, img))
+        if not meta:
+            meta = this_meta
+
+    data_for_extent = {k: np.asarray(v) for k, v in meta.items()}
+    extent = axis_extent_cm(data_for_extent, images[0][3].shape)
+    finite_abs = np.concatenate([np.abs(img[np.isfinite(img)]).ravel() for _, _, _, img in images])
+    common_lim = float(np.percentile(finite_abs, 99.0)) if finite_abs.size else 1.0
+    y_label = ""
+    if "y_mm" in meta:
+        y_mm = np.asarray(meta["y_mm"], dtype=float)
+        if plane < y_mm.size:
+            y_label = f" (y={y_mm[plane]:.2f} mm)"
+
+    fig, axes = plt.subplots(2, 3, figsize=(14, 7.3), constrained_layout=True)
+    axes = axes.ravel()
+    for ax, (start, end, label, img) in zip(axes, images):
+        ax.imshow(
+            img,
+            cmap="seismic",
+            vmin=-common_lim,
+            vmax=common_lim,
+            origin="lower",
+            aspect="equal",
+            extent=extent,
+        )
+        ax.set_title(f"{label}\nacqs {start}-{end}", fontsize=10, fontweight="bold")
+        ax.set_xlabel("Lateral (cm)", fontsize=8)
+        ax.set_ylabel("Depth (cm)", fontsize=8)
+        ax.tick_params(labelsize=7)
+
+    fig.suptitle(
+        f"Dower Coppler temporal stability, fine-elevation plane {plane}{y_label}",
+        fontsize=12,
+        fontweight="bold",
+    )
+    fig.savefig(output_dir / "fig_temporal_stability.pdf", dpi=300, bbox_inches="tight")
+    fig.savefig(output_dir / "fig_temporal_stability.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved temporal stability montage from {per_acq_dir}")
 
 
 # ── Figure: All elevation planes ──────────────────────────────────────
@@ -768,6 +845,8 @@ def main():
     parser.add_argument("--all-planes-data", type=Path, default=DEFAULT_ALL_PLANES_PATH)
     parser.add_argument("--all-planes-start", type=int, default=DEFAULT_ALL_PLANES_START)
     parser.add_argument("--all-planes-end", type=int, default=DEFAULT_ALL_PLANES_END)
+    parser.add_argument("--temporal-per-acq-dir", type=Path, default=DEFAULT_TEMPORAL_PER_ACQ_DIR)
+    parser.add_argument("--temporal-plane", type=int, default=DEFAULT_TEMPORAL_PLANE)
     parser.add_argument("--external-recording-data", type=Path, default=DEFAULT_EXTERNAL_RECORDING_PATH)
     parser.add_argument(
         "--external-recording-plane",
@@ -800,10 +879,16 @@ def main():
 
     print("\nGenerating figures:")
     figure_three_panel(per_acq, args.output_dir)
-    if np.asarray(per_acq["dower_coppler"]).ndim == 4:
+    if args.temporal_per_acq_dir.exists():
+        figure_temporal_stability_from_sidecar(
+            args.temporal_per_acq_dir,
+            args.output_dir,
+            plane=args.temporal_plane,
+        )
+    elif np.asarray(per_acq["dower_coppler"]).ndim == 4:
         figure_temporal_stability(per_acq, args.output_dir)
     else:
-        print("  Skipping temporal stability montage for already-averaged viewer dataset")
+        print("  Skipping temporal stability montage: no per-acq sidecar and viewer dataset is already averaged")
 
     figure_cnr_comparison(per_acq, args.output_dir, args.regions, acq_start=0, acq_end=480)
     figure_three_panel_with_rois(per_acq, args.output_dir, args.regions, acq_start=0, acq_end=480)

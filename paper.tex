@@ -657,23 +657,25 @@ used for the CNR analysis, the sign was identical between halves for
 all 130 vessel-ROI pixels.
 
 \Cref{fig:stability} demonstrates the temporal stability of the Dower
-Coppler map by varying the number of Doppler buffers averaged.
+Coppler map by varying the number of acquisitions included in the
+median image.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{fig_temporal_stability.png}
-  \caption{Dower Coppler maps computed from different numbers of Doppler
-    buffers (same color scale throughout).  The vessel pattern and flow
-    direction assignment are stable from 250 buffers down to 5~buffers.
-    At a single buffer, the major vessels remain identifiable but
-    background noise increases.}
+  \caption{Dower Coppler maps computed from different numbers of
+    acquisitions on the fine-elevation plane at $y=-0.44$~mm.  All
+    panels use one shared symmetric color scale.  The vessel pattern
+    and flow direction assignment remain stable from 200 acquisitions
+    down to 10 acquisitions.  At a single acquisition, the major
+    vessels remain identifiable but background noise increases.}
   \label{fig:stability}
 \end{figure*}
 
-The vessel pattern and flow direction assignments are stable from 250
-buffers down to as few as 5~buffers.  At a single buffer, the major
-vessels remain identifiable but background noise increases
-substantially.
+The vessel pattern and flow direction assignments are stable from 200
+acquisitions down to as few as 10 acquisitions.  At a single
+acquisition, the major vessels remain identifiable but background
+noise increases substantially.
 
 \Cref{fig:all_planes} shows the Dower Coppler map across elevation
 planes 2--7 from a finer elevational rebeamforming run spanning
