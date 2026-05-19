@@ -539,9 +539,9 @@ def figure_cnr_comparison(
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 4.5), constrained_layout=True)
 
-    ax1.bar(x - bar_w, cnr_pd, bar_w, label="Power Doppler", color="#B45309", alpha=0.85)
-    ax1.bar(x, cnr_cd, bar_w, label="Color Doppler (Kasai)", color="#6366F1", alpha=0.85)
-    ax1.bar(x + bar_w, cnr_dc, bar_w, label="Dower Coppler", color="#DC2626", alpha=0.85)
+    cnr_bar_w = 0.32
+    ax1.bar(x - cnr_bar_w / 2, cnr_pd, cnr_bar_w, label="Power Doppler", color="#B45309", alpha=0.85)
+    ax1.bar(x + cnr_bar_w / 2, cnr_dc, cnr_bar_w, label="Dower Coppler", color="#DC2626", alpha=0.85)
     ax1.set_xlabel("Vessel ROI", fontsize=10)
     ax1.set_ylabel("CNR (dB)", fontsize=10)
     ax1.set_title("Contrast-to-Noise Ratio", fontsize=11, fontweight="bold")
@@ -701,37 +701,39 @@ def figure_velocity_vs_color(data: dict, output_dir: Path, plane: int = 0):
     loa_low = bias - 1.96 * sd
     loa_high = bias + 1.96 * sd
 
-    fig = plt.figure(figsize=(14, 4.2), constrained_layout=True)
-    gs = gridspec.GridSpec(1, 3, figure=fig, width_ratios=[1.0, 1.0, 1.25])
-    axes = [fig.add_subplot(gs[0, i]) for i in range(3)]
+    fig = plt.figure(figsize=(10.5, 7.0), constrained_layout=True)
+    gs = gridspec.GridSpec(2, 2, figure=fig, width_ratios=[1.0, 1.35])
+    ax_color = fig.add_subplot(gs[0, 0])
+    ax_phase = fig.add_subplot(gs[1, 0])
+    ax_ba = fig.add_subplot(gs[:, 1])
 
     imshow_kw = dict(origin="lower", aspect="equal", extent=extent, cmap="seismic", vmin=-lim, vmax=lim)
-    im0 = axes[0].imshow(color_mm_s, **imshow_kw)
-    axes[0].set_title("Kasai color Doppler", fontsize=11, fontweight="bold")
-    axes[1].imshow(phase_mm_s, **imshow_kw)
-    axes[1].set_title("Multi-lag phase velocity", fontsize=11, fontweight="bold")
-    for ax in axes[:2]:
+    im0 = ax_color.imshow(color_mm_s, **imshow_kw)
+    ax_color.set_title("Kasai color Doppler", fontsize=11, fontweight="bold")
+    ax_phase.imshow(phase_mm_s, **imshow_kw)
+    ax_phase.set_title("Multi-lag phase velocity", fontsize=11, fontweight="bold")
+    for ax in (ax_color, ax_phase):
         ax.set_xlabel("Lateral (cm)", fontsize=9)
         ax.set_ylabel("Depth (cm)", fontsize=9)
         ax.tick_params(labelsize=8)
-    cbar = fig.colorbar(im0, ax=axes[:2], shrink=0.85, pad=0.02)
+    cbar = fig.colorbar(im0, ax=[ax_color, ax_phase], shrink=0.9, pad=0.02)
     cbar.set_label("Velocity (mm/s)", fontsize=9)
 
-    axes[2].scatter(mean, diff, s=3, alpha=0.18, color="#2563eb", edgecolors="none")
-    axes[2].axhline(bias, color="#d97706", linestyle="--", linewidth=1.2, label=f"bias {bias:.2f}")
-    axes[2].axhline(loa_low, color="#dc2626", linestyle="--", linewidth=1.0, label="-1.96 SD")
-    axes[2].axhline(loa_high, color="#dc2626", linestyle="--", linewidth=1.0, label="+1.96 SD")
-    axes[2].set_title("Bland-Altman", fontsize=11, fontweight="bold")
-    axes[2].set_xlabel("Mean velocity (mm/s)", fontsize=9)
-    axes[2].set_ylabel("Multi-lag - Kasai (mm/s)", fontsize=9)
-    axes[2].tick_params(labelsize=8)
-    axes[2].grid(True, alpha=0.25, linewidth=0.5)
-    axes[2].legend(fontsize=7, loc="upper right", frameon=False)
-    axes[2].text(
+    ax_ba.scatter(mean, diff, s=3, alpha=0.18, color="#2563eb", edgecolors="none")
+    ax_ba.axhline(bias, color="#d97706", linestyle="--", linewidth=1.2, label=f"bias {bias:.2f}")
+    ax_ba.axhline(loa_low, color="#dc2626", linestyle="--", linewidth=1.0, label="-1.96 SD")
+    ax_ba.axhline(loa_high, color="#dc2626", linestyle="--", linewidth=1.0, label="+1.96 SD")
+    ax_ba.set_title("Bland-Altman", fontsize=11, fontweight="bold")
+    ax_ba.set_xlabel("Mean velocity (mm/s)", fontsize=9)
+    ax_ba.set_ylabel("Multi-lag - Kasai (mm/s)", fontsize=9)
+    ax_ba.tick_params(labelsize=8)
+    ax_ba.grid(True, alpha=0.25, linewidth=0.5)
+    ax_ba.legend(fontsize=7, loc="upper right", frameon=False)
+    ax_ba.text(
         0.03,
         0.03,
         f"n={mean.size:,}\nSD={sd:.2f} mm/s\nLoA [{loa_low:.1f}, {loa_high:.1f}]",
-        transform=axes[2].transAxes,
+        transform=ax_ba.transAxes,
         fontsize=8,
         va="bottom",
         bbox=dict(facecolor="white", edgecolor="none", alpha=0.75, pad=2),

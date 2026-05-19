@@ -526,8 +526,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "2c6a4d46e46b6e5d231d1953a1f5eb4757d6cc7a3e88934f7e9f4c46b31c3622",
-      "bytes": 38556
+      "sha256": "fb7a5b5718f65b8d692edfb8688f02af1fecb0fee4a41e55d4a62d03dc735ab7",
+      "bytes": 38561
     },
     {
       "file": "references.bib",
@@ -536,8 +536,8 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "e94dc413e82caa163be4b35d63613a3477dbda93bafa44bdbbefad0ad208cc49",
-      "bytes": 4077715
+      "sha256": "f874af547881edc6d1b56314ec95d07b963b27157ed81da04e920154c508bd2b",
+      "bytes": 4371727
     },
     {
       "file": "README.md",
@@ -561,8 +561,8 @@
     },
     {
       "file": "scripts/generate_paper_figures.py",
-      "sha256": "d587439ff4a465d91ac258b2869d0eb532b979956d277e83894bc748d9c7c905",
-      "bytes": 40771
+      "sha256": "24f90c7d35533923d89b9d2d9e3815d8ebf5e8790e1681e0f92105ffc23b1e29",
+      "bytes": 40789
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -596,7 +596,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.pdf",
-      "sha256": "f7e60cb00a5f802676d57d999d6b2e1ba4d09cd759b4f4f05821b416255df603",
+      "sha256": "80b86632ca8021b6ea4e1600467089346f2904ee101e9b8c2c5ebec622ab8c18",
       "bytes": 301755
     },
     {
@@ -606,17 +606,17 @@
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.pdf",
-      "sha256": "891d88b646ab190fddb14cafff97a49cbebc40f52bcb92fe9c8f7e237870e8be",
-      "bytes": 24486
+      "sha256": "c318fcc29a655cff977e6a74016aef54d236bd2670511a34eb15539fcbff2713",
+      "bytes": 23899
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.png",
-      "sha256": "30e67f27844e1afc8f32c4d9901549565ed5516d3e3883ac3b4b3a430e2c6391",
-      "bytes": 145459
+      "sha256": "977d55d425abbd0b193641b4d7003f7ec04713cea3aa93cda4b7d55cda73752f",
+      "bytes": 137605
     },
     {
       "file": "outputs/paper_figures/fig_dower_ablation.pdf",
-      "sha256": "4093afe06f108ce7c2270b342865026c692cf5db469c461dbbf2cd218867976d",
+      "sha256": "5291930ea3813d26e9ae75ae32f29c77059553a9573dd89db86247fbe00a721a",
       "bytes": 204974
     },
     {
@@ -626,7 +626,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_external_recording_may18.pdf",
-      "sha256": "dccd0ed2cf5516431f47c275e94c441ab58fd87a9527de8081592aa7cc5fa9e6",
+      "sha256": "4607e288d678f944fb2079547fcad3e1790304771aa74fe0e4e7129ed33ed4e6",
       "bytes": 86617
     },
     {
@@ -636,7 +636,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_temporal_stability.pdf",
-      "sha256": "34a286ecf38320e9d6a9092df76a9f9977c749cab3435fbc2048b59b9073d144",
+      "sha256": "f59b6e42e67deaa8d19262b1d81f9fd138e9597e677ff216ba5bef527550dc27",
       "bytes": 166345
     },
     {
@@ -646,7 +646,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_comparison.pdf",
-      "sha256": "869423fd453c831ba9231f0e8e93c1b28df77afebe48da4ae4656ae295ce594a",
+      "sha256": "020860db4795d4bf97fe79ca574ac54f930029e4422698a462c23f692e27a243",
       "bytes": 151448
     },
     {
@@ -656,7 +656,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_with_rois.pdf",
-      "sha256": "16ff8ca7457d77dca3817df6260e1498363d81f5ac0d9d1213c6b430a9f7d1f1",
+      "sha256": "fbb3461383a2c7df7cef4a64ef891f8406f209dd60dd859539d43f5c0c260887",
       "bytes": 154466
     },
     {
@@ -666,13 +666,13 @@
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.pdf",
-      "sha256": "9b0c4a84c4ac2c26954c951fe456966fc5bbcfb00fe0d1a72d9401cbf0bc4376",
-      "bytes": 1262120
+      "sha256": "22a5b7a7c428dbef4cc3101ecebad4bba092085a0f7bd912a0e77d6641082945",
+      "bytes": 1295890
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.png",
-      "sha256": "b594cf20e39b9f8838eabefb9f25869edfc8d5331b25a16eff030778cfbceef4",
-      "bytes": 1465055
+      "sha256": "e9a0ca7e44278c9082ed1586eaa25ff8e3739c0fd36d11e6e00c46573df2b0d9",
+      "bytes": 1754974
     },
     {
       "file": "outputs/paper_stats/split_half_sign_agreement.json",
