@@ -15,6 +15,7 @@
 - [x] Compute split-half sign agreement for acquisitions 200-299 vs 300-399 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
 - [x] Replace the stale temporal-stability figure with the fine-elevation per-acquisition sidecar montage, labeled by acquisition counts.
 - [x] Add the temporal-stability sidecar path and default figure-generation parameters to the reproducibility manifest.
+- [x] Confirm the paper figures use the manuscript formula `v_phi * G_R * R2`, not an older Huber/product TMAS variant.
 
 ## Open
 
@@ -23,7 +24,6 @@
 - [ ] Check the realtime/acquisition-level color Doppler path in `caterpillar/acquire/acquisition.py`; it may still pass empirical pulse PRF into Doppler estimators for compounded slow-time data.
 - [ ] Decide whether to redo the quantitative ROI/CNR analysis with ROIs selected from power Doppler/anatomy or by blinded selection, instead of Dower-selected ROIs.
 - [ ] Add a cleaner repeatability table/figure if desired: split-half sign agreement, signed gCNR, and background false-positive rate.
-- [ ] Confirm the paper figures use the manuscript formula `v_phi * G_R * R2`, not an older Huber/product TMAS variant.
 - [ ] Build a minimal arXiv source bundle containing only `paper.tex`, bibliography/bbl, and included figure files; exclude NPZs, logs, screenshots, audits, caches, and backup folders.
 
 ## Stronger-paper items beyond a basic arXiv preprint
