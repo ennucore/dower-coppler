@@ -13,6 +13,16 @@ latexmk -pdf -interaction=nonstopmode paper.tex
 
 The generated figures are written to `outputs/paper_figures/`. The current compiled manuscript is `paper.pdf`.
 
+The "different recording" figure is configurable without editing the paper:
+
+```bash
+python3 scripts/generate_paper_figures.py \
+  --external-recording-data data/bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz \
+  --external-recording-plane -1
+```
+
+`--external-recording-plane -1` selects the middle elevation plane.
+
 ## Provenance
 
 See `reproducibility/manifest.json` for hashes, source ultratrace paths, acquisition ranges, and notes for each NPZ input.

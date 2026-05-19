@@ -29,6 +29,9 @@ DATA_DIR = ROOT / "data"
 OUTPUT_DIR = ROOT / "outputs" / "paper_figures"
 DEFAULT_REGIONS_PATH = DATA_DIR / "cnr_measurement_20260515_191622.regions.json"
 DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_new_h5_recomputed_dower_acq200_399_mid8elev.npz"
+DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
+    "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
+)
 
 # Display parameters from the screenshots
 PLANE = 7       # main display plane (header image, temporal stability)
@@ -70,6 +73,22 @@ def metric_plane(data: dict, key: str, plane: int, acq_start: int = 0, acq_end: 
         return arr[plane]
     if arr.ndim == 2:
         return arr
+    raise ValueError(f"Unsupported shape for {key}: {arr.shape}")
+
+
+def selected_plane(data: dict, key: str, plane: int | None = None) -> tuple[np.ndarray, int]:
+    """Return a 2D plane from an already-aggregated or per-plane viewer metric."""
+    arr = np.asarray(data[key])
+    if arr.ndim == 4:
+        n_planes = arr.shape[1]
+        plane_idx = n_planes // 2 if plane is None or plane < 0 else min(int(plane), n_planes - 1)
+        return arr[0, plane_idx], plane_idx
+    if arr.ndim == 3:
+        n_planes = arr.shape[0]
+        plane_idx = n_planes // 2 if plane is None or plane < 0 else min(int(plane), n_planes - 1)
+        return arr[plane_idx], plane_idx
+    if arr.ndim == 2:
+        return arr, 0
     raise ValueError(f"Unsupported shape for {key}: {arr.shape}")
 
 
@@ -565,6 +584,52 @@ def figure_velocity_vs_color(data: dict, output_dir: Path, plane: int = 0):
     )
 
 
+# ── Figure: External recording check ──────────────────────────────────
+
+
+def figure_external_recording(data: dict, output_dir: Path, plane: int | None = None):
+    """Dower Coppler image from a separate recording, configurable by input file."""
+    dc_raw, plane_idx = selected_plane(data, "dower_coppler", plane)
+    dc_img, dc_vmin, dc_vmax = signed_image(dc_raw, DC_ABS_PERCENTILE)
+    extent = axis_extent_cm(data, dc_img.shape)
+
+    source_h5 = str(np.asarray(data.get("source_h5", "unknown")).item())
+    acq_count = int(np.asarray(data.get("acq_count", 0)).item()) if "acq_count" in data else 0
+    frame_rate = float(np.asarray(data.get("frame_rate_hz", np.nan)).item()) if "frame_rate_hz" in data else np.nan
+
+    fig, ax = plt.subplots(1, 1, figsize=(6.2, 4.2), constrained_layout=True)
+    im = ax.imshow(
+        dc_img,
+        cmap="seismic",
+        vmin=dc_vmin,
+        vmax=dc_vmax,
+        origin="lower",
+        aspect="equal",
+        extent=extent,
+    )
+    ax.set_title("Different recording: May 18, 2026, tx_el=0", fontsize=11, fontweight="bold")
+    ax.set_xlabel("Lateral (cm)", fontsize=9)
+    ax.set_ylabel("Depth (cm)", fontsize=9)
+    ax.tick_params(labelsize=8)
+    cbar = fig.colorbar(im, ax=ax, shrink=0.9, pad=0.02)
+    cbar.set_label("Dower Coppler (a.u.)", fontsize=9)
+    ax.text(
+        0.02,
+        0.02,
+        f"middle plane {plane_idx}; {acq_count} acquisitions; PRF {frame_rate:.1f} Hz",
+        transform=ax.transAxes,
+        fontsize=8,
+        va="bottom",
+        color="white",
+        bbox=dict(facecolor="black", edgecolor="none", alpha=0.65, pad=2),
+    )
+
+    fig.savefig(output_dir / "fig_external_recording_may18.pdf", dpi=300, bbox_inches="tight")
+    fig.savefig(output_dir / "fig_external_recording_may18.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved external recording figure from {source_h5} (plane {plane_idx})")
+
+
 # ── Main ──────────────────────────────────────────────────────────────
 
 
@@ -574,6 +639,13 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
     parser.add_argument("--regions", type=Path, default=DEFAULT_REGIONS_PATH)
     parser.add_argument("--all-planes-data", type=Path, default=DEFAULT_ALL_PLANES_PATH)
+    parser.add_argument("--external-recording-data", type=Path, default=DEFAULT_EXTERNAL_RECORDING_PATH)
+    parser.add_argument(
+        "--external-recording-plane",
+        type=int,
+        default=-1,
+        help="Elevation plane for the external-recording figure; -1 selects the middle plane.",
+    )
     args = parser.parse_args()
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -609,6 +681,19 @@ def main():
     figure_velocity_vs_color(per_acq, args.output_dir, plane=0)
 
     figure_all_planes(all_planes, args.output_dir)
+
+    if args.external_recording_data.exists():
+        print("Loading external recording dataset...")
+        external_recording = load_npz(args.external_recording_data)
+        print(f"  Path: {args.external_recording_data}")
+        print(f"  Shape: {external_recording['dower_coppler'].shape}")
+        figure_external_recording(
+            external_recording,
+            args.output_dir,
+            plane=None if args.external_recording_plane < 0 else args.external_recording_plane,
+        )
+    else:
+        print(f"  Skipping external recording figure: {args.external_recording_data} not found")
 
     print(f"\nAll figures saved to {args.output_dir}")
 

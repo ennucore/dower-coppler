@@ -643,6 +643,29 @@ vascular pattern is not confined to a single selected plane.
   \label{fig:all_planes}
 \end{figure*}
 
+\Cref{fig:external_recording} shows the same Dower Coppler processing
+on a separate recording, included as a qualitative check that the
+displayed vascular contrast is not unique to the September 21 dataset.
+The figure-generation script exposes the source NPZ path and elevation
+plane as command-line parameters so this example can be replaced
+without editing the paper.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.82\columnwidth]{fig_external_recording_may18.png}
+  \caption{Dower Coppler image from a different recording: May 18,
+    2026, BT24480388, transmit element 0.  The displayed image is the
+    middle plane from a 10-plane GPU/MACH beamformed H5 ultratrace
+    using row\_index=$-1$, $y=-3.5$ to $3.5$~mm, fine lateral/axial
+    coarseness 0.5/0.5, 20 acquisitions (0--19), median aggregation,
+    PRF 1476.3~Hz, $f_0=2.75$~MHz, $c=1600$~m/s, SVD cutoff 0.08,
+    and $K=5$.  The main September 21 dataset uses a separate Head
+    ultratrace, acquisitions 200--399 for the CNR/fine-grid analysis,
+    the middle eight elevation planes for the volume montage, PRF
+    1244.2~Hz, and the same $f_0$, $c$, SVD cutoff, and $K$.}
+  \label{fig:external_recording}
+\end{figure}
+
 
 % ========================================================================
 \section{Discussion}
