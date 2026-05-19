@@ -1,0 +1,674 @@
+diff --git a/paper/references.bib b/paper/references.bib
+index 5e42e8b..55471e6 100644
+--- a/paper/references.bib
++++ b/paper/references.bib
+@@ -9,6 +9,17 @@
+   doi = {10.1109/TMI.2017.2699672}
+ }
+ 
++@article{kasai1985autocorrelation,
++  title = {Real-Time Two-Dimensional Blood Flow Imaging Using an Autocorrelation Technique},
++  author = {Kasai, Chihiro and Namekawa, Kiyoshi and Koyano, Akira and Omoto, Ryosuke},
++  journal = {IEEE Transactions on Sonics and Ultrasonics},
++  volume = {32},
++  number = {3},
++  pages = {458--464},
++  year = {1985},
++  doi = {10.1109/T-SU.1985.31615}
++}
++
+ @article{shen2022tmas,
+   title = {Ultrasound Ultrafast Power Doppler Imaging with High Signal-to-Noise Ratio by Temporal Multiply-and-Sum (TMAS) Autocorrelation},
+   author = {Shen, Che-Chou and Guo, Feng-Ting},
+@@ -20,6 +31,114 @@
+   doi = {10.3390/s22218349}
+ }
+ 
++@article{demene2015svd,
++  title = {Spatiotemporal Clutter Filtering of Ultrafast Ultrasound Data Highly Increases Doppler and fUltrasound Sensitivity},
++  author = {Demen{\'e}, Charlie and Deffieux, Thomas and Pernot, Mathieu and Osmanski, Bruno-Felix and Biran, Val{\'e}rie and Gennisson, Jean-Luc and Sieu, Lim-Anna and Bergel, Antoine and Franqui, St{\'e}phanie and Correas, Jean-Michel and Cohen, Ivan and Baud, Olivier and Tanter, Mickael},
++  journal = {IEEE Transactions on Medical Imaging},
++  volume = {34},
++  number = {11},
++  pages = {2271--2285},
++  year = {2015},
++  doi = {10.1109/TMI.2015.2428634}
++}
++
++@article{rubin1994powerdoppler,
++  title = {Power Doppler US: A Potentially Useful Alternative to Mean Frequency-Based Color Doppler US},
++  author = {Rubin, Jonathan M. and Bude, Ronald O. and Carson, Paul L. and Bree, Ronald L. and Adler, Ronald S.},
++  journal = {Radiology},
++  volume = {190},
++  number = {3},
++  pages = {853--856},
++  year = {1994},
++  doi = {10.1148/radiology.190.3.8115639}
++}
++
++@article{torp1994autocorrelation,
++  title = {Autocorrelation Techniques in Color Flow Imaging: Signal Model and Statistical Properties of the Autocorrelation Estimates},
++  author = {Torp, Hans and Kristoffersen, Kjell and Angelsen, Bj{\o}rn A. J.},
++  journal = {IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control},
++  volume = {41},
++  number = {5},
++  pages = {604--612},
++  year = {1994},
++  doi = {10.1109/58.308498}
++}
++
++@article{loupas1995axial,
++  title = {An Axial Velocity Estimator for Ultrasound Blood Flow Imaging, Based on a Full Evaluation of the Doppler Equation by Means of a Two-Dimensional Autocorrelation Approach},
++  author = {Loupas, Thanasis and Powers, J. T. and Gill, Robert W.},
++  journal = {IEEE Transactions on Ultrasonics, Ferroelectrics, and Frequency Control},
++  volume = {42},
++  number = {4},
++  pages = {672--688},
++  year = {1995},
++  doi = {10.1109/58.393110}
++}
++
++@article{lei2012multilag,
++  title = {Multilag Correlation Estimators for Polarimetric Radar Measurements in the Presence of Noise},
++  author = {Lei, Lei and Zhang, Guifu and Doviak, Richard J. and Palmer, Robert and Cheong, Boon Leng and Xue, Ming and Cao, Qing and Li, Yan},
++  journal = {Journal of Atmospheric and Oceanic Technology},
++  volume = {29},
++  number = {6},
++  pages = {772--795},
++  year = {2012},
++  doi = {10.1175/JTECH-D-11-00010.1}
++}
++
++@article{warde2023gmle,
++  title = {Generalized Multi-Lag Estimators (GMLE) for Polarimetric Weather Radar Observations},
++  author = {Warde, David and Schvartzman, David and Curtis, Christopher D.},
++  journal = {IEEE Transactions on Geoscience and Remote Sensing},
++  volume = {61},
++  pages = {1--12},
++  year = {2023},
++  doi = {10.1109/TGRS.2023.3278489}
++}
++
++@article{imbault2017intraoperative,
++  title = {Intraoperative Functional Ultrasound Imaging of Human Brain Activity},
++  author = {Imbault, Marion and Chauvet, Dorian and Gennisson, Jean-Luc and Capelle, Laurent and Tanter, Mickael},
++  journal = {Scientific Reports},
++  volume = {7},
++  pages = {7304},
++  year = {2017},
++  doi = {10.1038/s41598-017-06474-8}
++}
++
++@article{rabut2024cranialwindow,
++  title = {Functional Ultrasound Imaging of Human Brain Activity Through an Acoustically Transparent Cranial Window},
++  author = {Rabut, Claire and Norman, Sumner L. and Griggs, Whitney S. and Russin, Jonathan J. and Jann, Kay and Christopoulos, Vasileios and Liu, Charles and Andersen, Richard A. and Shapiro, Mikhail G.},
++  journal = {Science Translational Medicine},
++  volume = {16},
++  number = {749},
++  pages = {eadj3143},
++  year = {2024},
++  doi = {10.1126/scitranslmed.adj3143}
++}
++
++@article{soloukey2025mobile,
++  title = {Mobile Human Brain Imaging Using Functional Ultrasound},
++  author = {Soloukey, Sadaf and Verhoef, Luuk and Mastik, Frits and Brown, Michael and Springeling, Geert and Generowicz, Bastian S. and Satoer, Djaina D. and Dirven, Clemens M. F. and Smits, Marion and Hunyadi, Borb{\'a}la and Koekkoek, Sebastiaan K. E. and Vincent, Arnaud J. P. and De Zeeuw, Chris I. and Kruizinga, Pieter},
++  journal = {Science Advances},
++  volume = {11},
++  number = {25},
++  pages = {eadu9133},
++  year = {2025},
++  doi = {10.1126/sciadv.adu9133}
++}
++
++@article{huber1964robust,
++  title = {Robust Estimation of a Location Parameter},
++  author = {Huber, Peter J.},
++  journal = {The Annals of Mathematical Statistics},
++  volume = {35},
++  number = {1},
++  pages = {73--101},
++  year = {1964},
++  doi = {10.1214/aoms/1177703732}
++}
++
+ @article{tretter1985phaseregression,
+   title = {Estimating the Frequency of a Noisy Sinusoid by Linear Regression},
+   author = {Tretter, Steven A.},
+diff --git a/scripts/beamform_sep21_full2d_fine_xz.py b/scripts/beamform_sep21_full2d_fine_xz.py
+index 178ef8e..3b2d444 100644
+--- a/scripts/beamform_sep21_full2d_fine_xz.py
++++ b/scripts/beamform_sep21_full2d_fine_xz.py
+@@ -136,6 +136,10 @@ def _acq_metrics(
+             weighted=True,
+             fit_intercept=False,
+         )
++        _, rk1 = _lag_autocorrelations(filt, max_lag=1)
++        color = torch.angle(rk1[0]) * (float(frame_rate) / (2.0 * np.pi)) * (
++            SOUND_SPEED / (2.0 * float(tx_freq))
++        )
+         signed_scale, huber_quality, geomean_r = _huber_lag_maps(filt)
+         velocity = slope * (float(frame_rate) / (2.0 * np.pi)) * (
+             SOUND_SPEED / (2.0 * float(tx_freq))
+@@ -154,6 +158,7 @@ def _acq_metrics(
+                 signed_scale * geomean_r,
+                 signed_scale * geomean_r * huber_quality,
+                 dower * huber_quality,
++                color,
+             )
+         )
+ 
+@@ -289,6 +294,7 @@ def main() -> int:
+         "signed_geomean_r",
+         "signed_geomean_r_huber_quality",
+         "dower_huber_quality",
++        "color_doppler",
+     ]
+ 
+     with h5py.File(args.h5, "r") as h5:
+@@ -383,7 +389,6 @@ def main() -> int:
+         raise RuntimeError("no acquisitions processed")
+     arrays = {name: (s / count).astype(np.float32) for name, s in zip(names, sums)}
+     arrays["power_doppler"] = np.abs(arrays["dower_coppler"]).astype(np.float32)
+-    arrays["color_doppler"] = arrays["phase_velocity"].astype(np.float32)
+     _write_output(
+         args.out,
+         arrays,
+diff --git a/scripts/beamform_sep21_full2d_fine_xz_nosdk.py b/scripts/beamform_sep21_full2d_fine_xz_nosdk.py
+index 09b7669..2e2e019 100644
+--- a/scripts/beamform_sep21_full2d_fine_xz_nosdk.py
++++ b/scripts/beamform_sep21_full2d_fine_xz_nosdk.py
+@@ -146,6 +146,10 @@ def _acq_metrics(
+             weighted=True,
+             fit_intercept=False,
+         )
++        _, rk1 = _lag_autocorrelations(filt, max_lag=1)
++        color = torch.angle(rk1[0]) * (float(frame_rate) / (2.0 * np.pi)) * (
++            SOUND_SPEED / (2.0 * float(tx_freq))
++        )
+         signed_scale, huber_quality, geomean_r, r1_to_r5_product = _huber_lag_maps(filt)
+         velocity = slope * (float(frame_rate) / (2.0 * np.pi)) * (
+             SOUND_SPEED / (2.0 * float(tx_freq))
+@@ -165,6 +169,7 @@ def _acq_metrics(
+                 signed_scale * geomean_r * huber_quality,
+                 dower * huber_quality,
+                 velocity * r1_to_r5_product * r2,
++                color,
+             )
+         )
+ 
+@@ -307,6 +312,7 @@ def main() -> int:
+         "signed_geomean_r_huber_quality",
+         "dower_huber_quality",
+         "phase_velocity_r1_to_r5_r2_fit_quality",
++        "color_doppler",
+     ]
+ 
+     with h5py.File(args.h5, "r") as h5:
+@@ -422,9 +428,6 @@ def main() -> int:
+                 per_acq_arrays["power_doppler"] = np.abs(
+                     per_acq_arrays["dower_coppler"]
+                 ).astype(np.float32)
+-                per_acq_arrays["color_doppler"] = per_acq_arrays[
+-                    "phase_velocity"
+-                ].astype(np.float32, copy=False)
+                 per_acq_tmp = per_acq_path.with_suffix(".partial.npz")
+                 # Per-acq sidecars are intentionally uncompressed because zip
+                 # compression is a CPU bottleneck during long beamforming runs.
+@@ -489,7 +492,6 @@ def main() -> int:
+         raise RuntimeError("no acquisitions processed")
+     mean_arrays = {name: (s / count).astype(np.float32) for name, s in zip(names, sums)}
+     mean_arrays["power_doppler"] = np.abs(mean_arrays["dower_coppler"]).astype(np.float32)
+-    mean_arrays["color_doppler"] = mean_arrays["phase_velocity"].astype(np.float32)
+     arrays = dict(mean_arrays)
+     saved_display_mode = (
+         "mean_across_acqs_with_per_acq_sidecar"
+diff --git a/scripts/doppler_cnr_viewer.py b/scripts/doppler_cnr_viewer.py
+index 6bd5da5..ffa338c 100644
+--- a/scripts/doppler_cnr_viewer.py
++++ b/scripts/doppler_cnr_viewer.py
+@@ -16,6 +16,9 @@ from PyQt5 import QtCore, QtWidgets
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+ DATA_DIR = ROOT / "results" / "doppler_cnr_gui"
++VELOCITY_ALPHA_METRIC = "Phase Velocity mm/s alpha R2xGeo"
++VELOCITY_ALPHA_R2_METRIC = "Phase Velocity mm/s alpha R2"
++BLAND_ALTMAN_METRIC = "Bland-Altman: phase velocity vs color"
+ 
+ 
+ def _cnr_denominator(signal: np.ndarray, background: np.ndarray, noise_mode: str) -> float:
+@@ -152,6 +155,8 @@ def signed_doppler_variant(metric: str) -> bool:
+         "Color Doppler",
+         "Dower Coppler",
+         "Phase Velocity",
++        VELOCITY_ALPHA_METRIC,
++        VELOCITY_ALPHA_R2_METRIC,
+         "Phase Velocity x R2",
+         "Phase Velocity x Geomean |Rk| x R2",
+         "Dower x PhaseR2",
+@@ -168,6 +173,14 @@ def signed_doppler_variant(metric: str) -> bool:
+     }
+ 
+ 
++def velocity_alpha_metric(metric: str) -> bool:
++    return metric in {VELOCITY_ALPHA_METRIC, VELOCITY_ALPHA_R2_METRIC}
++
++
++def bland_altman_metric(metric: str) -> bool:
++    return metric == BLAND_ALTMAN_METRIC
++
++
+ def raw_iq_trace_metric(metric: str) -> bool:
+     return metric.startswith("Raw IQ Middle Element Trace")
+ 
+@@ -211,6 +224,10 @@ def load_dataset(name: str, path: Path) -> Dataset:
+             arrays["Geomean |Rk|"] = ensure_planes(z["geomean_r"])
+             pv_geo_r2 = None
+             if "Phase Velocity" in arrays and "Phase Fit R2" in arrays:
++                arrays[VELOCITY_ALPHA_METRIC] = (arrays["Phase Velocity"] * 1000.0).astype(np.float32)
++                arrays[VELOCITY_ALPHA_R2_METRIC] = arrays[VELOCITY_ALPHA_METRIC]
++                if "Color Doppler" in arrays:
++                    arrays[BLAND_ALTMAN_METRIC] = arrays[VELOCITY_ALPHA_METRIC]
+                 pv_geo_r2 = (
+                     arrays["Phase Velocity"]
+                     * arrays["Geomean |Rk|"]
+@@ -520,6 +537,7 @@ class CnrViewer(QtWidgets.QMainWindow):
+         self.plot.addItem(self.image_item)
+         self.trace_item = self.plot.plot([], [], pen=pg.mkPen("#f59e0b", width=2))
+         self.trace_item.hide()
++        self.ba_items: list[pg.GraphicsObject] = []
+ 
+         self.compare_plot = pg.PlotWidget()
+         self.compare_plot.setAspectLocked(True)
+@@ -558,6 +576,21 @@ class CnrViewer(QtWidgets.QMainWindow):
+ 
+     def _load_available_datasets(self) -> list[Dataset]:
+         specs = [
++            (
++                "2026-05-18 BT24480388 tx_el -5 deg H5 row -1 fine x/z, y -6.5 to +0.5 mm, 10 elev, all 10 acqs",
++                DATA_DIR
++                / "bt24480388_2026-05-18_152812_txel-5_h5_row-1_fine_xz_y-6p5to0p5mm_10elev_all10.npz",
++            ),
++            (
++                "2026-05-18 BT24480388 tx_el 0 deg H5 row -1 fine x/z, y -3.5 to +3.5 mm, 10 elev, all 20 acqs",
++                DATA_DIR
++                / "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz",
++            ),
++            (
++                "2026-05-18 BT24480388 tx_el +5 deg H5 row -1 fine x/z, y -0.5 to +6.5 mm, 10 elev, all 9 acqs",
++                DATA_DIR
++                / "bt24480388_2026-05-18_152924_txel5_h5_row-1_fine_xz_y-0p5to6p5mm_10elev_all9.npz",
++            ),
+             (
+                 "2026-05-15 lev_may15_replication H5 row -1, all 47 acqs",
+                 DATA_DIR / "lev_may15_replication_h5_row-1_all47.npz",
+@@ -597,6 +630,19 @@ class CnrViewer(QtWidgets.QMainWindow):
+                 DATA_DIR
+                 / "lev_may15_replication_h5_fast8_fine_xz_savedgrid_y-3p5to3p5mm_18elev_mean_last24.npz",
+             ),
++            (
++                "2026-05-18 BT24480388 tx_el 0 deg H5 row -1 fine x/z, all 20 acqs",
++                DATA_DIR / "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_all20.npz",
++            ),
++            (
++                "2026-05-18 BT24480388 tx_el 0 deg H5 row -1 fine x/z, first 10 acqs",
++                DATA_DIR
++                / "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_first10.npz",
++            ),
++            (
++                "2026-05-18 BT24480388 tx_el 0 deg H5 row -1 fine x/z, last 10 acqs",
++                DATA_DIR / "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_last10.npz",
++            ),
+             (
+                 "2026-05-14 BT24480388 H5 row -1, 18:16:49, all 21 acqs",
+                 DATA_DIR / "bt24480388_2026-05-14_181649_h5_gpu_row-1_all21.npz",
+@@ -937,6 +983,16 @@ class CnrViewer(QtWidgets.QMainWindow):
+         self, dataset: Dataset, metric: str, plane: int
+     ) -> tuple[np.ndarray, str, tuple[float, float], str]:
+         raw = self._raw_metric_plane_for(dataset, metric, plane)
++        if velocity_alpha_metric(metric):
++            velocity = raw.astype(np.float32)
++            finite = velocity[np.isfinite(velocity)]
++            lim = float(np.percentile(np.abs(finite), float(self.cd_abs_percentile.value()))) if finite.size else 1.0
++            alpha_mode = "r2" if metric == VELOCITY_ALPHA_R2_METRIC else "r2_geomean"
++            rgba = self._signed_rgba_with_quality_alpha(dataset, plane, velocity, lim, alpha_mode=alpha_mode)
++            alpha_label = "R2" if alpha_mode == "r2" else "R2 x geomean"
++            return rgba, "rgba", (-lim, lim), f"multi-lag phase velocity [mm/s], alpha = normalized {alpha_label}"
++        if bland_altman_metric(metric):
++            return raw.astype(np.float32), "gray", (0.0, 1.0), "Bland-Altman: multi-lag phase velocity vs color Doppler [mm/s]"
+         if metric == "Power Doppler":
+             if self.pd_scale_combo.currentIndex() == 0:
+                 img = 10.0 * np.log10(np.maximum(raw, 1e-12))
+@@ -988,7 +1044,11 @@ class CnrViewer(QtWidgets.QMainWindow):
+         return img, "seismic", (-lim, lim), f"DC raw, symmetric p{pct:g}(abs)"
+ 
+     def _measurement_image_for_metric(self, metric: str) -> tuple[np.ndarray, str]:
++        if bland_altman_metric(metric):
++            return np.zeros_like(self.current_image, dtype=np.float32), metric
+         raw = self._raw_metric_plane_for(self.current_dataset, metric, self.current_plane)
++        if velocity_alpha_metric(metric):
++            return np.abs(raw).astype(np.float32), f"{metric} magnitude for CNR"
+         if metric == "Power Doppler":
+             return (10.0 * np.log10(np.maximum(raw, 1e-12))).astype(np.float32), "PD full-range dB"
+         if metric == "Raw Pre-BF IQ Magnitude":
+@@ -1000,6 +1060,35 @@ class CnrViewer(QtWidgets.QMainWindow):
+     def _signed_raw_image_for_metric(self, metric: str) -> np.ndarray:
+         return self._raw_metric_plane_for(self.current_dataset, metric, self.current_plane).astype(np.float32)
+ 
++    def _signed_rgba_with_quality_alpha(
++        self,
++        dataset: Dataset,
++        plane: int,
++        velocity_mm_s: np.ndarray,
++        lim: float,
++        alpha_mode: str = "r2_geomean",
++    ) -> np.ndarray:
++        norm = np.clip((velocity_mm_s.astype(np.float32) + lim) / max(2.0 * lim, 1e-12), 0.0, 1.0)
++        lut = self._lookup_table("seismic")
++        idx = np.clip((norm * (len(lut) - 1)).round().astype(np.int32), 0, len(lut) - 1)
++        rgb = lut[idx].astype(np.float32)
++
++        if "Phase Fit R2" in dataset.arrays:
++            r2 = self._raw_metric_plane_for(dataset, "Phase Fit R2", plane).astype(np.float32)
++            quality = np.clip(r2, 0.0, 1.0)
++            if alpha_mode == "r2_geomean" and "Geomean |Rk|" in dataset.arrays:
++                geo = self._raw_metric_plane_for(dataset, "Geomean |Rk|", plane).astype(np.float32)
++                quality = quality * np.maximum(geo, 0.0)
++            finite = quality[np.isfinite(quality) & (quality > 0)]
++            scale = float(np.percentile(finite, 99.0)) if finite.size else 1.0
++            alpha = np.clip(quality / max(scale, 1e-12), 0.0, 1.0)
++        else:
++            alpha = np.ones_like(velocity_mm_s, dtype=np.float32)
++
++        rgba = np.dstack([rgb, (255.0 * alpha).astype(np.float32)]).astype(np.ubyte)
++        rgba[~np.isfinite(velocity_mm_s)] = 0
++        return rgba
++
+     def _dataset_sample_count(self) -> int:
+         return self._dataset_sample_count_for(self.current_dataset)
+ 
+@@ -1172,9 +1261,20 @@ class CnrViewer(QtWidgets.QMainWindow):
+         self.plane_spin.setEnabled(self.current_dataset.n_planes > 1)
+         self.plane_spin.blockSignals(False)
+ 
++        self._clear_bland_altman_items()
+         self.display_image, cmap, levels, label = self._metric_image()
+-        self.current_image = self.display_image
+-        if raw_iq_trace_metric(self.current_metric):
++        if velocity_alpha_metric(self.current_metric) or bland_altman_metric(self.current_metric):
++            self.current_image = self._raw_metric_plane(self.current_metric).astype(np.float32)
++        else:
++            self.current_image = self.display_image
++        if bland_altman_metric(self.current_metric):
++            self.image_item.hide()
++            self.trace_item.show()
++            text = self._show_bland_altman_plot(self.current_dataset, self.current_plane)
++            self.plot.setAspectLocked(False)
++            self.hist.setEnabled(False)
++            label = text
++        elif raw_iq_trace_metric(self.current_metric):
+             trace = self.display_image.reshape(-1)
+             self.image_item.hide()
+             self.trace_item.setData(np.arange(trace.size, dtype=np.float32), trace)
+@@ -1187,13 +1287,20 @@ class CnrViewer(QtWidgets.QMainWindow):
+         else:
+             self.trace_item.hide()
+             self.image_item.show()
+-            self.hist.setEnabled(True)
+-            self.image_item.setImage(self.display_image.T, autoLevels=False)
++            if self.display_image.ndim == 3:
++                self.hist.setEnabled(False)
++                self.image_item.setImage(np.transpose(self.display_image, (1, 0, 2)), autoLevels=False)
++            else:
++                self.hist.setEnabled(True)
++                self.image_item.setImage(self.display_image.T, autoLevels=False)
++                self.image_item.setLevels(levels)
++                self._set_colormap(cmap)
++                self.hist.setLevels(*levels)
+             self.image_item.setRect(self._plot_rect())
+-            self.image_item.setLevels(levels)
+-            self._set_colormap(cmap)
+-            self.hist.setLevels(*levels)
+-        if self.current_metric == "Raw Pre-BF IQ Magnitude":
++        if bland_altman_metric(self.current_metric):
++            self.plot.setAspectLocked(False)
++            self.plot.setMouseEnabled(x=True, y=True)
++        elif self.current_metric == "Raw Pre-BF IQ Magnitude":
+             self.plot.setAspectLocked(False)
+             self.plot.setLabel("bottom", "element number")
+             self.plot.setLabel("left", "fast time sample")
+@@ -1222,11 +1329,129 @@ class CnrViewer(QtWidgets.QMainWindow):
+         self._redraw_selection_overlays()
+ 
+     def _set_colormap(self, cmap: str) -> None:
++        if cmap == "rgba":
++            return
+         if cmap in {"magma", "seismic"}:
+             self.hist.gradient.setColorMap(pg.colormap.getFromMatplotlib(cmap))
+         else:
+             self.hist.gradient.loadPreset(cmap)
+ 
++    def _clear_bland_altman_items(self) -> None:
++        for item in self.ba_items:
++            self.plot.removeItem(item)
++        self.ba_items.clear()
++
++    def _normal_color_doppler_mm_s(
++        self, dataset: Dataset, plane: int
++    ) -> tuple[np.ndarray | None, str | None]:
++        if "Color Doppler" not in dataset.arrays:
++            return None, "normal color Doppler unavailable: dataset has no Color Doppler array"
++        cd = self._raw_metric_plane_for(dataset, "Color Doppler", plane).astype(np.float32)
++        if "Phase Velocity" in dataset.arrays:
++            pv = self._raw_metric_plane_for(dataset, "Phase Velocity", plane).astype(np.float32)
++            if pv.shape == cd.shape:
++                finite = np.isfinite(pv) & np.isfinite(cd)
++                if finite.any():
++                    max_diff = float(np.nanmax(np.abs(pv[finite] - cd[finite])))
++                    scale = float(np.nanmax(np.abs(pv[finite])))
++                    tol = max(1e-8, 1e-5 * scale)
++                    if max_diff <= tol:
++                        return (
++                            None,
++                            "Bland-Altman unavailable for this dataset: stored color_doppler "
++                            "is identical to phase_velocity, so no independent normal color "
++                            "Doppler estimate was saved.",
++                        )
++        return cd * 1000.0, None
++
++    def _show_bland_altman_message(self, message: str) -> None:
++        self.trace_item.setData([], [])
++        text = pg.TextItem(message, color="#d4d4d4", anchor=(0.5, 0.5))
++        text.setPos(0.5, 0.5)
++        text.setZValue(10)
++        self.plot.addItem(text)
++        self.ba_items.append(text)
++        self.plot.setXRange(0.0, 1.0, padding=0.0)
++        self.plot.setYRange(0.0, 1.0, padding=0.0)
++        self.plot.disableAutoRange()
++
++    def _bland_altman_values(
++        self, dataset: Dataset, plane: int
++    ) -> tuple[np.ndarray, np.ndarray, str | None]:
++        pv = self._raw_metric_plane_for(dataset, VELOCITY_ALPHA_METRIC, plane).astype(np.float32)
++        cd, reason = self._normal_color_doppler_mm_s(dataset, plane)
++        if cd is None:
++            return np.array([], dtype=np.float32), np.array([], dtype=np.float32), reason
++        mask = np.isfinite(pv) & np.isfinite(cd)
++        if "Phase Fit R2" in dataset.arrays and "Geomean |Rk|" in dataset.arrays:
++            r2 = self._raw_metric_plane_for(dataset, "Phase Fit R2", plane).astype(np.float32)
++            geo = self._raw_metric_plane_for(dataset, "Geomean |Rk|", plane).astype(np.float32)
++            quality = np.clip(r2, 0.0, 1.0) * np.maximum(geo, 0.0)
++            mask &= np.isfinite(quality) & (quality > 0)
++        pv = pv[mask]
++        cd = cd[mask]
++        mean = (pv + cd) / 2.0
++        diff = pv - cd
++        return mean, diff, None
++
++    def _show_bland_altman_plot(self, dataset: Dataset, plane: int) -> str:
++        mean, diff, reason = self._bland_altman_values(dataset, plane)
++        if reason is not None:
++            self._show_bland_altman_message(reason)
++            return reason
++        if mean.size == 0:
++            self._show_bland_altman_message("Bland-Altman unavailable: no finite phase/color velocity pixels")
++            return "Bland-Altman unavailable: no finite phase/color velocity pixels"
++        max_points = 30000
++        if mean.size > max_points:
++            idx = np.linspace(0, mean.size - 1, max_points, dtype=np.int64)
++            plot_mean = mean[idx]
++            plot_diff = diff[idx]
++        else:
++            plot_mean = mean
++            plot_diff = diff
++        self.trace_item.setData(
++            plot_mean,
++            plot_diff,
++            pen=None,
++            symbol="o",
++            symbolSize=3,
++            symbolPen=None,
++            symbolBrush=pg.mkBrush(80, 160, 255, 70),
++        )
++        bias = float(np.nanmean(diff))
++        sd = float(np.nanstd(diff))
++        loa_low = bias - 1.96 * sd
++        loa_high = bias + 1.96 * sd
++        for y, color, label in [
++            (bias, "#f59e0b", "bias"),
++            (loa_low, "#ef4444", "-1.96 SD"),
++            (loa_high, "#ef4444", "+1.96 SD"),
++        ]:
++            line = pg.InfiniteLine(pos=y, angle=0, pen=pg.mkPen(color, width=1.5, style=QtCore.Qt.DashLine), label=label)
++            self.plot.addItem(line)
++            self.ba_items.append(line)
++        self.plot.setLabel("bottom", "mean velocity [mm/s]")
++        self.plot.setLabel("left", "phase velocity - color Doppler [mm/s]")
++        finite_mean = mean[np.isfinite(mean)]
++        finite_diff = diff[np.isfinite(diff)]
++        if finite_mean.size:
++            x0, x1 = np.percentile(finite_mean, [0.5, 99.5])
++            xpad = max(float(x1 - x0) * 0.08, 1e-6)
++            self.plot.setXRange(float(x0 - xpad), float(x1 + xpad), padding=0.0)
++        if finite_diff.size:
++            y0, y1 = np.percentile(finite_diff, [0.5, 99.5])
++            y0 = min(float(y0), loa_low)
++            y1 = max(float(y1), loa_high)
++            ypad = max(float(y1 - y0) * 0.12, 1e-6)
++            self.plot.setYRange(float(y0 - ypad), float(y1 + ypad), padding=0.0)
++        self.plot.disableAutoRange()
++        return (
++            f"Bland-Altman phase velocity vs color Doppler [mm/s]\n"
++            f"Pixels: {mean.size}; bias: {bias:.3g} mm/s; SD: {sd:.3g} mm/s; "
++            f"limits: [{loa_low:.3g}, {loa_high:.3g}] mm/s"
++        )
++
+     def _lookup_table(self, cmap: str) -> np.ndarray:
+         color_map = None
+         if cmap in {"magma", "seismic", "viridis", "gray"}:
+@@ -1249,6 +1474,11 @@ class CnrViewer(QtWidgets.QMainWindow):
+ 
+         self.compare_plot.show()
+         metric = self.current_metric
++        if bland_altman_metric(metric):
++            self.compare_image_item.hide()
++            self.compare_trace_item.hide()
++            self.compare_plot.setTitle("Bland-Altman comparison is shown in the main panel")
++            return
+         dataset = self.compare_dataset
+         if metric not in dataset.arrays:
+             self.compare_image_item.hide()
+@@ -1270,10 +1500,13 @@ class CnrViewer(QtWidgets.QMainWindow):
+         else:
+             self.compare_trace_item.hide()
+             self.compare_image_item.show()
+-            self.compare_image_item.setImage(img.T, autoLevels=False)
+-            self.compare_image_item.setRect(self._plot_rect_for(dataset, metric, img.shape))
+-            self.compare_image_item.setLevels(levels)
+-            self.compare_image_item.setLookupTable(self._lookup_table(cmap))
++            if img.ndim == 3:
++                self.compare_image_item.setImage(np.transpose(img, (1, 0, 2)), autoLevels=False)
++            else:
++                self.compare_image_item.setImage(img.T, autoLevels=False)
++                self.compare_image_item.setLevels(levels)
++                self.compare_image_item.setLookupTable(self._lookup_table(cmap))
++            self.compare_image_item.setRect(self._plot_rect_for(dataset, metric, img.shape[:2]))
+             if metric == "Raw Pre-BF IQ Magnitude":
+                 self.compare_plot.setAspectLocked(False)
+                 self.compare_plot.setLabel("bottom", "element number")
+@@ -1948,6 +2181,8 @@ class CnrViewer(QtWidgets.QMainWindow):
+             "Color Doppler": "CD",
+             "Dower Coppler": "DC",
+             "Phase Velocity": "PV",
++            VELOCITY_ALPHA_METRIC: "PVmmAlpha",
++            VELOCITY_ALPHA_R2_METRIC: "PVmmA-R2",
+             "Phase Velocity x R2": "PVxR2",
+             "Phase Velocity x Geomean |Rk| x R2": "PVGeoR2",
+             "Phase Fit R2": "R2",
+@@ -1965,7 +2200,11 @@ class CnrViewer(QtWidgets.QMainWindow):
+             "Sign-agree Dower": "AgreeDC",
+             "Agree Geomean": "AgreeGM",
+         }
+-        return [(labels.get(metric, metric[:6]), metric) for metric in self.current_dataset.arrays]
++        return [
++            (labels.get(metric, metric[:6]), metric)
++            for metric in self.current_dataset.arrays
++            if not bland_altman_metric(metric)
++        ]
+ 
+     def _selection_label(self, selection: dict) -> str:
+         lines = [f"#{selection['id']}"]
+@@ -2121,21 +2360,38 @@ class CnrViewer(QtWidgets.QMainWindow):
+         axes = np.atleast_1d(axes)
+         for ax, metric in zip(axes, metrics):
+             img, cmap, levels, label = self._image_for_metric(metric)
+-            xmin, xmax, zmax, zmin = self._extent_cm(img.shape)
+-            ax.imshow(
+-                img,
+-                cmap=cmap,
+-                vmin=levels[0],
+-                vmax=levels[1],
+-                origin="lower",
+-                aspect="auto",
+-                extent=[xmin, xmax, zmin, zmax],
+-            )
++            if bland_altman_metric(metric):
++                mean, diff, reason = self._bland_altman_values(self.current_dataset, self.current_plane)
++                if mean.size:
++                    ax.scatter(mean, diff, s=2, alpha=0.25)
++                    bias = float(np.nanmean(diff))
++                    sd = float(np.nanstd(diff))
++                    ax.axhline(bias, color="#f59e0b", linestyle="--", linewidth=1.0)
++                    ax.axhline(bias - 1.96 * sd, color="#ef4444", linestyle="--", linewidth=1.0)
++                    ax.axhline(bias + 1.96 * sd, color="#ef4444", linestyle="--", linewidth=1.0)
++                elif reason is not None:
++                    ax.text(0.5, 0.5, reason, transform=ax.transAxes, ha="center", va="center", wrap=True)
++                ax.set_xlabel("mean velocity [mm/s]")
++                ax.set_ylabel("phase velocity - color Doppler [mm/s]")
++            else:
++                xmin, xmax, zmax, zmin = self._extent_cm(img.shape[:2])
++                if img.ndim == 3:
++                    ax.imshow(img, origin="lower", aspect="auto", extent=[xmin, xmax, zmin, zmax])
++                else:
++                    ax.imshow(
++                        img,
++                        cmap=cmap,
++                        vmin=levels[0],
++                        vmax=levels[1],
++                        origin="lower",
++                        aspect="auto",
++                        extent=[xmin, xmax, zmin, zmax],
++                    )
++                ax.set_xlabel("x [cm]")
++                ax.set_ylabel("z [cm]")
++                for selection in selections:
++                    self._draw_selection_matplotlib(ax, selection)
+             ax.set_title(f"{metric}\n{label}")
+-            ax.set_xlabel("x [cm]")
+-            ax.set_ylabel("z [cm]")
+-            for selection in selections:
+-                self._draw_selection_matplotlib(ax, selection)
+         fig.suptitle(f"{self.current_dataset.name} | {self._window_label()} | plane {self.current_plane}")
+         fig.savefig(path)
+         plt.close(fig)
