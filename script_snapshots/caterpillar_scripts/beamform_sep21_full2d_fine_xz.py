@@ -44,7 +44,7 @@ DOPPLER_DEVICE = torch.device("cpu")
 SKIP_META_KEYS = set(_METADATA_ONLY_SKIP_KEYS) - {"iq_frames"}
 
 
-def _metadata(h5: h5py.File, start: int) -> tuple[float, float]:
+def _metadata(h5: h5py.File, start: int) -> tuple[float, float, float, int]:
     meta = h5[f"acquisitions/{start}/meta"]
     cfg_raw = meta["acquisition_config"][()]
     rt_raw = meta["runtime_metadata"][()]
@@ -54,11 +54,14 @@ def _metadata(h5: h5py.File, start: int) -> tuple[float, float]:
         rt_raw = rt_raw.decode()
     cfg = json.loads(cfg_raw)
     rt = json.loads(rt_raw)
-    frame_rate = float(
+    num_angles = max(1, int(cfg.get("num_angles", 1)))
+    pulse_prf = float(
         rt.get("empirical_pulse_repetition_rate_hz")
-        or (cfg["requested_prf_hz"] / cfg["num_angles"])
+        or cfg["requested_prf_hz"]
     )
-    return frame_rate, float(cfg["tx_freq_hz"])
+    # Slow-time samples are compounded frames, not individual transmit pulses.
+    frame_rate = pulse_prf / float(num_angles)
+    return frame_rate, float(cfg["tx_freq_hz"]), pulse_prf, num_angles
 
 
 def _load_acq_with_full_tx(
@@ -121,6 +124,8 @@ def _huber_lag_maps(sig: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torc
 def _acq_metrics(
     compound_np: np.ndarray,
     frame_rate: float,
+    pulse_prf: float,
+    num_angles: int,
     tx_freq: float,
 ) -> tuple[np.ndarray, ...]:
     with torch.no_grad():
@@ -197,6 +202,8 @@ def _write_output(
     y_indices: np.ndarray,
     y_range_mm: tuple[float, float, int] | None,
     frame_rate: float,
+    pulse_prf: float,
+    num_angles: int,
     tx_freq: float,
     h5: Path,
     start: int,
@@ -220,6 +227,10 @@ def _write_output(
             else np.asarray([], dtype=np.float32)
         ),
         frame_rate_hz=np.float32(frame_rate),
+        compound_frame_rate_hz=np.float32(frame_rate),
+        pulse_repetition_rate_hz=np.float32(pulse_prf),
+        num_compound_angles=np.int32(num_angles),
+        velocity_scale_corrected=np.asarray(True),
         tx_freq_hz=np.float32(tx_freq),
         sound_speed=np.float32(SOUND_SPEED),
         low_cutoff=np.float32(LOW_CUTOFF),
@@ -301,7 +312,7 @@ def main() -> int:
         requested_indices = list(range(args.start, args.stop + 1))
         if args.max_acqs is not None:
             requested_indices = requested_indices[: args.max_acqs]
-        frame_rate, tx_freq = _metadata(h5, args.start)
+        frame_rate, tx_freq, pulse_prf, num_angles = _metadata(h5, args.start)
         grid_params, x0, y0, z0 = _make_grid_params(
             h5,
             args.start,
@@ -337,6 +348,8 @@ def main() -> int:
                     "y_range_mm": list(y_range_mm) if y_range_mm is not None else None,
                     "y_mm": y_mm.tolist(),
                     "frame_rate_hz": frame_rate,
+                    "pulse_repetition_rate_hz": pulse_prf,
+                    "num_compound_angles": num_angles,
                     "tx_freq_hz": tx_freq,
                     "n_chunks": args.n_chunks,
                 },
@@ -398,6 +411,8 @@ def main() -> int:
         y_indices=y_indices,
         y_range_mm=y_range_mm,
         frame_rate=frame_rate,
+        pulse_prf=pulse_prf,
+        num_angles=num_angles,
         tx_freq=tx_freq,
         h5=args.h5,
         start=args.start,

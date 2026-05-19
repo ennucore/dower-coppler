@@ -94,8 +94,10 @@ to combine signed phase information with a power-like confidence image
 for low-SNR transcranial ultrafast data.
 
 Shen and Guo~\cite{shen2022tmas} introduced temporal
-multiply-and-sum (TMAS), showing that multiplicative combinations of
-slow-time information can improve power Doppler signal-to-noise ratio.
+multiply-and-sum (TMAS), the direct product-of-lag-magnitudes precursor
+to our coherence term, showing that multiplicative combinations of
+slow-time autocorrelations can improve power Doppler signal-to-noise
+ratio.
 Motivated by that idea, we use multi-lag autocorrelations to separate
 coherent flow from incoherent background.  Rather than multiplying all
 lag magnitudes directly, we use their geometric mean as a bounded
@@ -190,7 +192,8 @@ autocorrelation magnitudes across lags $k = 1, \ldots, K$ is
   M_{\text{TMAS}} = \prod_{k=1}^{K} |R_k|.
   \label{eq:tmas}
 \end{equation}
-This construction is motivated by TMAS~\cite{shen2022tmas}.
+This construction is motivated by the TMAS product of autocorrelation
+magnitudes~\cite{shen2022tmas}.
 Because $|R_k|$ decays with lag for uncorrelated noise but remains
 roughly constant for coherent flow, the product suppresses background
 more strongly than $|R_0|$ alone.  In the current Dower Coppler
@@ -260,14 +263,16 @@ converted to a beam-projected axial phase velocity:
 \begin{equation}
   v_\phi =
   \hat\omega_{\mathrm{WLS}}\,
-  \frac{\mathrm{PRF}}{2\pi}\,
+  \frac{f_{\mathrm{slow}}}{2\pi}\,
   \frac{c}{2 f_0},
   \label{eq:phase_velocity}
 \end{equation}
-where $\mathrm{PRF}$ is the empirical pulse-repetition frequency, $c$
+where $f_{\mathrm{slow}}$ is the cadence of the slow-time samples, $c$
 is the assumed speed of sound, and $f_0$ is the transmit center
-frequency.  This is the standard axial Doppler conversion; no
-beam-flow angle correction is applied.  The final image is
+frequency.  For compounded plane-wave data, $f_{\mathrm{slow}}$ is the
+transmit pulse repetition frequency divided by the number of
+transmissions per compounded frame.  This is the standard axial
+Doppler conversion; no beam-flow angle correction is applied.  The final image is
 \begin{equation}
   I_{\text{Dower}} = v_\phi \; G_R \; Q.
   \label{eq:dower}
@@ -616,8 +621,9 @@ and Doppler image.
   \centering
   \includegraphics[width=\textwidth]{fig_cnr_comparison.png}
   \caption{\textbf{Left}: CNR in dB across six vessel ROIs.  Dower
-    Coppler achieves 11.2--40.1~dB, exceeding both power Doppler and
-    Kasai color Doppler in all ROIs.
+    Coppler has median CNR 21.5~dB across the six selections
+    (range 11.2--40.1~dB), exceeding both power Doppler and Kasai
+    color Doppler in all ROIs.
     \textbf{Right}: generalized CNR (1~$-$~histogram overlap).  All
     methods show high gCNR for the selected vessel/background
     separation, with Dower Coppler and power Doppler close to~1.0
@@ -625,14 +631,25 @@ and Doppler image.
   \label{fig:cnr}
 \end{figure*}
 
-Dower Coppler achieves 11.2--40.1~dB CNR across the six largest
-inscribed circular vessel selections.  Power Doppler achieves
-9.9--19.3~dB and Kasai color Doppler achieves -32.7--3.9~dB when the
-signed Doppler maps are measured by magnitude, as in the viewer CNR
-calculation.  The gCNR
-metric confirms that the selected vessels are well separated from the
-shared background region for all three displays, with Dower Coppler
-and power Doppler at approximately 1.0 across all selections.
+Dower Coppler achieves median CNR 21.5~dB across the six largest
+inscribed circular vessel selections, with values ranging from
+11.2--40.1~dB.  Power Doppler has median CNR 14.7~dB
+(range 9.9--19.3~dB), and Kasai color Doppler has median CNR
+-7.1~dB (range -32.7--3.9~dB) when the signed Doppler maps are
+measured by magnitude, as in the viewer CNR calculation.  The upper
+end of the Dower Coppler range is driven by V6, a one-pixel inscribed
+circle on a compact high-contrast vessel; we therefore emphasize the
+median as the more representative summary statistic.  The gCNR metric
+confirms that the selected vessels are well separated from the shared
+background region for all three displays, with Dower Coppler and power
+Doppler at approximately 1.0 across all selections.
+
+As a repeatability check, we split the September 21 acquisitions into
+two non-overlapping halves (200--299 and 300--399), recomputed median
+Dower Coppler maps from the per-acquisition fine-elevation sidecar,
+and compared signs in the same circular vessel ROIs on the closest
+available elevation plane ($y=-0.44$~mm).  The Dower Coppler sign was
+identical between halves for all 130 vessel-ROI pixels.
 
 \Cref{fig:stability} demonstrates the temporal stability of the Dower
 Coppler map by varying the number of Doppler buffers averaged.
@@ -690,8 +707,9 @@ without editing the paper.
     and $K=5$.  The main September 21 dataset uses a separate Head
     ultratrace, acquisitions 200--399 for the CNR/fine-grid analysis,
     elevation planes 2--7 from the $y=-4$ to $4$~mm fine-elevation
-    run for the volume montage, PRF 1244.2~Hz, and the same $f_0$,
-    $c$, SVD cutoff, and $K$.}
+    run for the volume montage, pulse PRF 1244.2~Hz
+    (compounded-frame cadence 248.8~Hz), and the same $f_0$, $c$, SVD
+    cutoff, and $K$.}
   \label{fig:external_recording}
 \end{figure}
 
@@ -727,11 +745,12 @@ multiple lags rather than fitting a Doppler phase line
 \cite{lei2012multilag,warde2023gmle}.  Frequency estimation from phase
 regression is also classical~\cite{tretter1985phaseregression,fitz1994frequency}.
 Power Doppler is a close conceptual neighbor because it encodes flow
-strength rather than pure velocity~\cite{rubin1994powerdoppler}.  Shen
-and Guo's TMAS work is especially relevant because it uses products of
-temporal autocorrelation terms to improve ultrafast power Doppler
-SNR~\cite{shen2022tmas}; $G_R$ can be interpreted as a bounded
-geometric-mean version of this product-of-lag-magnitudes idea.
+strength rather than pure velocity~\cite{rubin1994powerdoppler}.  The
+TMAS work of Shen and Guo is especially relevant because it directly
+uses products of temporal autocorrelation magnitudes to improve
+ultrafast power Doppler SNR~\cite{shen2022tmas}; $G_R$ can be
+interpreted as a bounded geometric-mean version of this
+product-of-lag-magnitudes idea.
 Relative to these methods, the contribution here is the specific
 coherence-weighted signed index, and in particular the use of a
 per-pixel phase-linearity $R^2$ as a confidence gate.  This $R^2$ term
@@ -800,8 +819,10 @@ Transcranial \textit{in~vivo} imaging demonstrates that the method
 resolves opposing flow directions in adjacent cortical vessels---information
 that is lost in conventional power Doppler.
 
-Code and reproducible analysis scripts are available in the
-\href{https://github.com/alegria-neurotech/caterpillar}{project repository}.
+Code, reproducible analysis scripts, and the derived NPZ inputs used
+for the manuscript figures are available in the standalone paper
+repository:
+\href{https://github.com/ennucore/dower-coppler}{github.com/ennucore/dower-coppler}.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}

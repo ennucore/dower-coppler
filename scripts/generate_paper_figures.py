@@ -34,6 +34,7 @@ DEFAULT_ALL_PLANES_END = 7
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
 )
+NUM_COMPOUND_ANGLES_SEP21 = 5
 
 # Display parameters from the screenshots
 PLANE = 7       # main display plane (header image, temporal stability)
@@ -56,6 +57,7 @@ _X_CROP_END = int(round((X_RANGE_CM[1] - _FULL_X_MIN) / (_FULL_X_MAX - _FULL_X_M
 def load_npz(path: Path) -> dict:
     with np.load(path) as z:
         data = {k: z[k] for k in z.files}
+    data = apply_compound_frame_rate_correction(data, path)
     if {"phase_velocity", "geomean_r", "phase_r2"}.issubset(data):
         data["dower_coppler"] = (
             np.asarray(data["phase_velocity"], dtype=np.float32)
@@ -63,6 +65,49 @@ def load_npz(path: Path) -> dict:
             * np.asarray(data["phase_r2"], dtype=np.float32)
         ).astype(np.float32)
     return data
+
+
+def apply_compound_frame_rate_correction(data: dict, path: Path) -> dict:
+    """Correct legacy Sep 21 velocity fields from pulse PRF to compound cadence.
+
+    The Sep 21 H5 stores 700 slow-time loops, each containing five transmit
+    angles. Legacy NPZs used the empirical pulse repetition rate directly for
+    phase-to-velocity conversion; the Doppler cadence is pulse PRF / 5.
+    Corrected NPZs store velocity_scale_corrected=True or compound_frame_rate_hz.
+    """
+    is_sep21 = "head_2025-09-21" in path.name or "sep21_cached" in path.name
+    already_corrected = bool(np.asarray(data.get("velocity_scale_corrected", False)).item())
+    if not is_sep21 or already_corrected or "compound_frame_rate_hz" in data:
+        return data
+
+    out = dict(data)
+    scale = np.float32(1.0 / NUM_COMPOUND_ANGLES_SEP21)
+    for key in ("phase_velocity", "color_doppler", "phase_velocity_r2"):
+        if key in out:
+            out[key] = (np.asarray(out[key], dtype=np.float32) * scale).astype(np.float32)
+
+    if {"phase_velocity", "geomean_r", "phase_r2"}.issubset(out):
+        out["dower_coppler"] = (
+            np.asarray(out["phase_velocity"], dtype=np.float32)
+            * np.asarray(out["geomean_r"], dtype=np.float32)
+            * np.asarray(out["phase_r2"], dtype=np.float32)
+        ).astype(np.float32)
+    if {"phase_velocity", "geomean_r", "huber_quality"}.issubset(out):
+        out["dower_huber_quality"] = (
+            np.asarray(out["phase_velocity"], dtype=np.float32)
+            * np.asarray(out["geomean_r"], dtype=np.float32)
+            * np.asarray(out["huber_quality"], dtype=np.float32)
+        ).astype(np.float32)
+
+    if "frame_rate_hz" in out:
+        pulse_prf = np.float32(np.asarray(out["frame_rate_hz"]).item())
+        out["pulse_repetition_rate_hz"] = pulse_prf
+        out["compound_frame_rate_hz"] = np.float32(float(pulse_prf) * float(scale))
+        out["frame_rate_hz"] = out["compound_frame_rate_hz"]
+    out["num_compound_angles"] = np.int32(NUM_COMPOUND_ANGLES_SEP21)
+    out["velocity_scale_correction"] = scale
+    out["velocity_scale_corrected"] = np.bool_(True)
+    return out
 
 
 def metric_plane(data: dict, key: str, plane: int, acq_start: int = 0, acq_end: int | None = None) -> np.ndarray:

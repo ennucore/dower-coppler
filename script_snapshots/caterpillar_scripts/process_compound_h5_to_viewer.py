@@ -22,6 +22,12 @@ HUBER_DELTA = 0.7
 HUBER_ITERATIONS = 5
 
 
+def _slow_time_frame_rate(config, runtime) -> tuple[float, float, int]:
+    pulse_prf = float(getattr(runtime, "empirical_pulse_repetition_rate_hz", 0.0) or config.requested_prf_hz)
+    num_angles = max(1, int(getattr(config, "total_num_angles", config.num_angles) or 1))
+    return pulse_prf / float(num_angles), pulse_prf, num_angles
+
+
 def _lag_autocorrelations(sig: torch.Tensor, max_lag: int) -> tuple[list[int], torch.Tensor]:
     lags = list(range(1, min(max_lag, sig.shape[0] - 1) + 1))
     return lags, torch.stack([(sig[k:] * torch.conj(sig[:-k])).mean(dim=0) for k in lags], dim=0)
@@ -110,14 +116,15 @@ def _process_acq(h5_path: Path, acq_index: int, device: torch.device):
     if compound.ndim == 4 and compound.shape[1] == 1:
         compound = compound[:, 0]
     sig = torch.from_numpy(compound).to(device)
+    frame_rate, pulse_prf, num_angles = _slow_time_frame_rate(config, runtime)
     pd, filt = power_doppler(sig, low_cutoff=LOW_CUTOFF, high_cutoff=1.0, mean_subtract=True, skip_first_frames=SKIP_FIRST_FRAMES, method="fast", separate_3d_svd=False)
     fit_sig = filt[SKIP_FIRST_FRAMES:]
     _, rk = _lag_autocorrelations(fit_sig, MAX_LAG)
     r1 = rk[0]
-    color = torch.angle(r1) * runtime.empirical_pulse_repetition_rate_hz / (2.0 * np.pi)
+    color = torch.angle(r1) * frame_rate / (2.0 * np.pi)
     color = color * config.speed_of_sound / (2.0 * config.tx_freq_hz)
     slope, r2, huber_slope, huber_quality, geomean_r = _phase_fit(fit_sig)
-    phase_velocity = slope * runtime.empirical_pulse_repetition_rate_hz / (2.0 * np.pi)
+    phase_velocity = slope * frame_rate / (2.0 * np.pi)
     phase_velocity = phase_velocity * config.speed_of_sound / (2.0 * config.tx_freq_hz)
     signed_scale = (slope / np.pi).clamp(-1.0, 1.0)
     signed_scale_huber = (huber_slope / np.pi).clamp(-1.0, 1.0)
@@ -149,7 +156,11 @@ def _process_acq(h5_path: Path, acq_index: int, device: torch.device):
     out_np = {k: v.detach().cpu().numpy().astype(np.float32) for k, v in out.items()}
     axes = _grid_axes_mm(grid)
     meta_out = {
-        "frame_rate_hz": float(runtime.empirical_pulse_repetition_rate_hz),
+        "frame_rate_hz": float(frame_rate),
+        "compound_frame_rate_hz": float(frame_rate),
+        "pulse_repetition_rate_hz": float(pulse_prf),
+        "num_compound_angles": int(num_angles),
+        "velocity_scale_corrected": True,
         "tx_freq_hz": float(config.tx_freq_hz),
         "sound_speed": float(config.speed_of_sound),
         "grid_shape": list(compound.shape[1:]),

@@ -27,6 +27,16 @@ python3 scripts/generate_paper_figures.py \
 
 See `reproducibility/manifest.json` for hashes, source ultratrace paths, acquisition ranges, and notes for each NPZ input.
 
+For the primary September 21 source ultratrace
+`/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5`,
+the HDF5 acquisition config stores `num_angles=5` and
+`num_loops=700`, with raw `iq_frames` shaped
+`(702, 5, 8, 134, 88)` for acquisition 200. The two extra loops are
+noise loops. The runtime metadata reports an empirical transmit pulse
+PRF of 1244.224 Hz for acquisition 200 and a mean of 1245.932 Hz over
+acquisitions 200-399, so the compounded slow-time cadence used for
+phase-to-velocity conversion is PRF / 5, approximately 249 Hz.
+
 Relevant source scripts from the caterpillar worktree are backed up under `script_snapshots/`, including:
 
 - `caterpillar_scripts/doppler_cnr_viewer.py`

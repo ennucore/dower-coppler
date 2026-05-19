@@ -1,0 +1,178 @@
+{
+  "source_per_acq_dir": "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq",
+  "split_a_acqs": [
+    200,
+    299
+  ],
+  "split_b_acqs": [
+    300,
+    399
+  ],
+  "split_a_count": 100,
+  "split_b_count": 100,
+  "roi_y_mm_reference": -0.6896551847457886,
+  "fine_elev_plane": 4,
+  "fine_elev_plane_y_mm": -0.4444444477558136,
+  "roi_region_export": "data/cnr_measurement_20260515_191622.regions.json",
+  "metrics": {
+    "dower_coppler": {
+      "per_roi": [
+        {
+          "roi": "V1",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": 6859276681216.0,
+          "split_b_mean": 3948321701888.0
+        },
+        {
+          "roi": "V2",
+          "pixels": 9,
+          "sign_agreement": 1.0,
+          "split_a_mean": 14882029174784.0,
+          "split_b_mean": 17313631830016.0
+        },
+        {
+          "roi": "V3",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": 256175620096.0,
+          "split_b_mean": 425940418560.0
+        },
+        {
+          "roi": "V4",
+          "pixels": 21,
+          "sign_agreement": 1.0,
+          "split_a_mean": -1455033679872.0,
+          "split_b_mean": -2422668525568.0
+        },
+        {
+          "roi": "V5",
+          "pixels": 97,
+          "sign_agreement": 1.0,
+          "split_a_mean": -70112583680.0,
+          "split_b_mean": -111704842240.0
+        },
+        {
+          "roi": "V6",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": -3811215465775104.0,
+          "split_b_mean": -6404533362098176.0
+        }
+      ],
+      "all_vessel_pixels": 130,
+      "vessel_sign_agreement": 1.0,
+      "active_vessel_pixels_thresholded_by_bg95": 130,
+      "active_vessel_sign_agreement": 1.0,
+      "background_abs95_threshold": 4977027072.0,
+      "background_active_pixels": 42,
+      "background_active_sign_agreement": 0.9523809523809523
+    },
+    "phase_velocity": {
+      "per_roi": [
+        {
+          "roi": "V1",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": 0.018033821135759354,
+          "split_b_mean": 0.01899057999253273
+        },
+        {
+          "roi": "V2",
+          "pixels": 9,
+          "sign_agreement": 1.0,
+          "split_a_mean": 0.026522431522607803,
+          "split_b_mean": 0.025724219158291817
+        },
+        {
+          "roi": "V3",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": 0.023988621309399605,
+          "split_b_mean": 0.025682298466563225
+        },
+        {
+          "roi": "V4",
+          "pixels": 21,
+          "sign_agreement": 1.0,
+          "split_a_mean": -0.028775237500667572,
+          "split_b_mean": -0.03166850283741951
+        },
+        {
+          "roi": "V5",
+          "pixels": 97,
+          "sign_agreement": 1.0,
+          "split_a_mean": -0.026551706716418266,
+          "split_b_mean": -0.02491745352745056
+        },
+        {
+          "roi": "V6",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": -0.01879376545548439,
+          "split_b_mean": -0.01919592171907425
+        }
+      ],
+      "all_vessel_pixels": 130,
+      "vessel_sign_agreement": 1.0,
+      "active_vessel_pixels_thresholded_by_bg95": 2,
+      "active_vessel_sign_agreement": 1.0,
+      "background_abs95_threshold": 0.03390022739768028,
+      "background_active_pixels": 42,
+      "background_active_sign_agreement": 1.0
+    },
+    "color_doppler": {
+      "per_roi": [
+        {
+          "roi": "V1",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": 0.018033821135759354,
+          "split_b_mean": 0.01899057999253273
+        },
+        {
+          "roi": "V2",
+          "pixels": 9,
+          "sign_agreement": 1.0,
+          "split_a_mean": 0.026522431522607803,
+          "split_b_mean": 0.025724219158291817
+        },
+        {
+          "roi": "V3",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": 0.023988621309399605,
+          "split_b_mean": 0.025682298466563225
+        },
+        {
+          "roi": "V4",
+          "pixels": 21,
+          "sign_agreement": 1.0,
+          "split_a_mean": -0.028775237500667572,
+          "split_b_mean": -0.03166850283741951
+        },
+        {
+          "roi": "V5",
+          "pixels": 97,
+          "sign_agreement": 1.0,
+          "split_a_mean": -0.026551706716418266,
+          "split_b_mean": -0.02491745352745056
+        },
+        {
+          "roi": "V6",
+          "pixels": 1,
+          "sign_agreement": 1.0,
+          "split_a_mean": -0.01879376545548439,
+          "split_b_mean": -0.01919592171907425
+        }
+      ],
+      "all_vessel_pixels": 130,
+      "vessel_sign_agreement": 1.0,
+      "active_vessel_pixels_thresholded_by_bg95": 2,
+      "active_vessel_sign_agreement": 1.0,
+      "background_abs95_threshold": 0.03390022739768028,
+      "background_active_pixels": 42,
+      "background_active_sign_agreement": 1.0
+    }
+  }
+}

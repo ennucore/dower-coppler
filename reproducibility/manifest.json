@@ -20,12 +20,62 @@
       "file": "data/cnr_measurement_20260515_191622.regions.npz",
       "sha256": "7cf8254470988cd36140e20ce883bdde119fc440360682ecb911458a49be8767",
       "bytes": 4397,
-      "note": "Viewer-exported ROI masks paired with the JSON region export."
+      "note": "Viewer-exported ROI masks paired with the JSON region export.",
+      "array_shapes": {
+        "selection_00_signal_mask": [
+          116,
+          294
+        ],
+        "selection_00_background_mask": [
+          116,
+          294
+        ],
+        "selection_01_signal_mask": [
+          116,
+          294
+        ],
+        "selection_01_background_mask": [
+          116,
+          294
+        ],
+        "selection_02_signal_mask": [
+          116,
+          294
+        ],
+        "selection_02_background_mask": [
+          116,
+          294
+        ],
+        "selection_03_signal_mask": [
+          116,
+          294
+        ],
+        "selection_03_background_mask": [
+          116,
+          294
+        ],
+        "selection_04_signal_mask": [
+          116,
+          294
+        ],
+        "selection_04_background_mask": [
+          116,
+          294
+        ],
+        "selection_05_signal_mask": [
+          116,
+          294
+        ],
+        "selection_05_background_mask": [
+          116,
+          294
+        ]
+      }
     },
     {
       "file": "data/head_2025-09-21_fine_xz_yidx14_15_acq200_399.npz",
-      "sha256": "6ed7e948aa504b0500ca29160e98792261817ff3432fa6bc11bdc3b255711f6c",
-      "bytes": 3350493,
+      "sha256": "a300fdbba300263665f6dc1dba72ac397aa18e476133b4838478f148eefffdc1",
+      "bytes": 3336608,
       "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
       "first_acq": 200,
       "last_acq": 399,
@@ -33,7 +83,7 @@
         14,
         15
       ],
-      "frame_rate_hz": 1244.223876953125,
+      "frame_rate_hz": 248.8447723388672,
       "tx_freq_hz": 2750000.0,
       "sound_speed": 1600.0,
       "low_cutoff": 0.07999999821186066,
@@ -41,16 +91,6 @@
       "note": "Fine x/z rebeamform of Sep 2025 ultratrace, original y indices 14 and 15, acquisitions 200-399.",
       "stored_note": "Fine x/z rebeamform of Sep 2025 ultratrace, only original y indices 14 and 15 (middle-8 local indices 3 and 4).",
       "array_shapes": {
-        "power_doppler": [
-          2,
-          116,
-          294
-        ],
-        "color_doppler": [
-          2,
-          116,
-          294
-        ],
         "dower_coppler": [
           2,
           116,
@@ -61,7 +101,7 @@
           116,
           294
         ],
-        "geomean_r": [
+        "phase_velocity_r2": [
           2,
           116,
           294
@@ -70,13 +110,69 @@
           2,
           116,
           294
+        ],
+        "signed_scale": [
+          2,
+          116,
+          294
+        ],
+        "huber_quality": [
+          2,
+          116,
+          294
+        ],
+        "geomean_r": [
+          2,
+          116,
+          294
+        ],
+        "signed_scale_huber_quality": [
+          2,
+          116,
+          294
+        ],
+        "signed_geomean_r": [
+          2,
+          116,
+          294
+        ],
+        "signed_geomean_r_huber_quality": [
+          2,
+          116,
+          294
+        ],
+        "dower_huber_quality": [
+          2,
+          116,
+          294
+        ],
+        "power_doppler": [
+          2,
+          116,
+          294
+        ],
+        "color_doppler": [
+          2,
+          116,
+          294
+        ],
+        "color_doppler_copied_phase_velocity": [
+          2,
+          116,
+          294
         ]
-      }
+      },
+      "pulse_repetition_rate_hz": 1244.223876953125,
+      "compound_frame_rate_hz": 248.8447723388672,
+      "num_compound_angles": 5,
+      "velocity_scale_corrected": true,
+      "velocity_scale_correction": 0.20000000298023224,
+      "timing_note": "Sep 21 H5 acq config stores num_angles=5; Doppler slow-time samples are compounded frames, so velocity conversion uses empirical pulse PRF / 5."
     },
     {
       "file": "data/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
-      "sha256": "0511a7d49cacf41694a15a737b2900281c7b8f64fbbda9c57bfbb1dd1c6ae1b8",
-      "bytes": 15386302,
+      "sha256": "dece06fcac558774be7eb1be4b20f459a1df2934a9495f379d2d50b3aa9d780c",
+      "bytes": 15313226,
       "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
       "first_acq": 200,
       "last_acq": 400,
@@ -98,7 +194,7 @@
         4.0,
         10.0
       ],
-      "frame_rate_hz": 1244.223876953125,
+      "frame_rate_hz": 248.8447723388672,
       "tx_freq_hz": 2750000.0,
       "sound_speed": 1600.0,
       "low_cutoff": 0.07999999821186066,
@@ -114,16 +210,6 @@
       "note": "Fine x/z and finer elevational Sep 2025 rebeamform spanning y=-4 to 4 mm with 10 elevation planes; paper montage uses planes 2-7 inclusive.",
       "stored_note": "Fine x/z Sep 2025 rebeamform using recovered full 2D TX delay sidecar with optional TX-row wavefront-fit downsampling.",
       "array_shapes": {
-        "power_doppler": [
-          10,
-          116,
-          294
-        ],
-        "color_doppler": [
-          10,
-          116,
-          294
-        ],
         "dower_coppler": [
           10,
           116,
@@ -134,7 +220,7 @@
           116,
           294
         ],
-        "geomean_r": [
+        "phase_velocity_r2": [
           10,
           116,
           294
@@ -143,17 +229,68 @@
           10,
           116,
           294
+        ],
+        "signed_scale": [
+          10,
+          116,
+          294
+        ],
+        "huber_quality": [
+          10,
+          116,
+          294
+        ],
+        "geomean_r": [
+          10,
+          116,
+          294
+        ],
+        "signed_scale_huber_quality": [
+          10,
+          116,
+          294
+        ],
+        "signed_geomean_r": [
+          10,
+          116,
+          294
+        ],
+        "signed_geomean_r_huber_quality": [
+          10,
+          116,
+          294
+        ],
+        "dower_huber_quality": [
+          10,
+          116,
+          294
+        ],
+        "power_doppler": [
+          10,
+          116,
+          294
+        ],
+        "color_doppler": [
+          10,
+          116,
+          294
         ]
-      }
+      },
+      "pulse_repetition_rate_hz": 1244.223876953125,
+      "compound_frame_rate_hz": 248.8447723388672,
+      "num_compound_angles": 5,
+      "velocity_scale_corrected": true,
+      "velocity_scale_correction": 0.20000000298023224,
+      "timing_note": "Sep 21 H5 acq config stores num_angles=5; Doppler slow-time samples are compounded frames, so velocity conversion uses empirical pulse PRF / 5."
     },
     {
       "file": "data/sep21_cached_compound_lag1_color_y14_15_acq200_399.npz",
-      "sha256": "0e81ef091b83f51979ac7efb02bfb4b4d86308519e4350cf87b967563f33fe6d",
-      "bytes": 62844,
+      "sha256": "91ea41bbaf36fc60f6c22f84d1b52e6217da3c5951e7f5eb28f748f3da6a2c84",
+      "bytes": 64244,
       "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
       "first_acq": 200,
       "last_acq": 399,
-      "frame_rate_hz": 1244.223876953125,
+      "frame_rate_hz": 248.8447723388672,
       "tx_freq_hz": 2750000.0,
       "note": "Lag-1 Kasai color from cached beamformed compound_image, y indices 14-15, acquisitions 200-399.",
       "stored_note": "Lag-1 Kasai color from cached beamformed compound_image, y idx 14-15, acqs 200-399",
@@ -163,7 +300,13 @@
           58,
           147
         ]
-      }
+      },
+      "pulse_repetition_rate_hz": 1244.223876953125,
+      "compound_frame_rate_hz": 248.8447723388672,
+      "num_compound_angles": 5,
+      "velocity_scale_corrected": true,
+      "velocity_scale_correction": 0.20000000298023224,
+      "timing_note": "Sep 21 H5 acq config stores num_angles=5; Doppler slow-time samples are compounded frames, so velocity conversion uses empirical pulse PRF / 5."
     },
     {
       "file": "data/bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz",
@@ -237,13 +380,103 @@
           144,
           266
         ],
-        "geomean_r": [
+        "v_phi": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "phase_velocity_geomean_r": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "v_phi_G_R": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "phase_velocity_r2": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "v_phi_R2": [
           1,
           10,
           144,
           266
         ],
         "phase_r2": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "R2": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "signed_scale": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "huber_quality": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "geomean_r": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "G_R": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "v_phi_G_R_R2": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "signed_scale_huber_quality": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "signed_geomean_r": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "signed_geomean_r_huber_quality": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "dower_huber_quality": [
+          1,
+          10,
+          144,
+          266
+        ],
+        "phase_velocity_r1_to_r5_r2_fit_quality": [
           1,
           10,
           144,
@@ -259,8 +492,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "5a22f7efd8d994994dbaef1d603514ce8d5d87ce84c9e9c11aaa20b0511b02e9",
-      "bytes": 36699
+      "sha256": "85b105c2969dbed61c30955ce608dbe74112e2666b247a166086825bc3addca9",
+      "bytes": 37881
     },
     {
       "file": "references.bib",
@@ -269,13 +502,18 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "a825651943cc0f3924c84d8e1832fe5cf1c7a9bc7815363f57e9abbfa7cd24f2",
-      "bytes": 3995034
+      "sha256": "8e31e352498ae1c8aaae105c83396c4477d341e7a34e32a66ae7c85706022618",
+      "bytes": 4020688
     },
     {
       "file": "README.md",
-      "sha256": "00add53324bf455137a7229bf76a578fea8e32e2fdb740dc405aa8af84277c5d",
-      "bytes": 1776
+      "sha256": "f603ab2720f030380380e70dccda36a68f271a87a8c8046b238648505a8d534c",
+      "bytes": 2347
+    },
+    {
+      "file": "TODO.md",
+      "sha256": "517bcce5b028d2ce43e38be4dcd969d244c4cc7de1698e57d839d5d4eed6427a",
+      "bytes": 3156
     },
     {
       "file": "Makefile",
@@ -289,8 +527,8 @@
     },
     {
       "file": "scripts/generate_paper_figures.py",
-      "sha256": "5af534097cd882f6776aaa921c48e4bcdf1c23c57d3b81603aac831748a59111",
-      "bytes": 34170
+      "sha256": "9b3d2f1b0b9063a331291481752e02c9ba64800e3698afd4da9f6f963b0251a5",
+      "bytes": 36393
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -309,22 +547,22 @@
     },
     {
       "file": "data/head_2025-09-21_fine_xz_yidx14_15_acq200_399.npz",
-      "sha256": "6ed7e948aa504b0500ca29160e98792261817ff3432fa6bc11bdc3b255711f6c",
-      "bytes": 3350493
+      "sha256": "a300fdbba300263665f6dc1dba72ac397aa18e476133b4838478f148eefffdc1",
+      "bytes": 3336608
     },
     {
       "file": "data/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
-      "sha256": "0511a7d49cacf41694a15a737b2900281c7b8f64fbbda9c57bfbb1dd1c6ae1b8",
-      "bytes": 15386302
+      "sha256": "dece06fcac558774be7eb1be4b20f459a1df2934a9495f379d2d50b3aa9d780c",
+      "bytes": 15313226
     },
     {
       "file": "data/sep21_cached_compound_lag1_color_y14_15_acq200_399.npz",
-      "sha256": "0e81ef091b83f51979ac7efb02bfb4b4d86308519e4350cf87b967563f33fe6d",
-      "bytes": 62844
+      "sha256": "91ea41bbaf36fc60f6c22f84d1b52e6217da3c5951e7f5eb28f748f3da6a2c84",
+      "bytes": 64244
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.pdf",
-      "sha256": "c4b3d887916a9331feb5e201aaa2fd8d24686b890f40e8a26872eebb7fd48533",
+      "sha256": "c90bfe21063f3509e0cdf86baf2591420d9277be5910f5de17083cd8c5330498",
       "bytes": 301755
     },
     {
@@ -334,8 +572,8 @@
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.pdf",
-      "sha256": "bf1ca1ecdf5bf7e54afda342ee660a43b508596cb356181be9b84d2e1290c5da",
-      "bytes": 22271
+      "sha256": "8c06562f58a506fc99e061e9fc622c8462ec60c9f8fdb68f60722eb76ab1243f",
+      "bytes": 22282
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.png",
@@ -344,17 +582,17 @@
     },
     {
       "file": "outputs/paper_figures/fig_dower_ablation.pdf",
-      "sha256": "7db73033025e67b9752db77058914ea0f3537aac7a3e1b443ecc9e3ab1369464",
-      "bytes": 205788
+      "sha256": "4b5250c6281b17d96d4fa37d36a640da03785c9be6681580a73408377b1cf7d0",
+      "bytes": 204974
     },
     {
       "file": "outputs/paper_figures/fig_dower_ablation.png",
-      "sha256": "3b6139fdb5cebe9e97b3de1bf3c81d4ece88ed105f7e6f440a6942d7aebecd9e",
-      "bytes": 472610
+      "sha256": "da08c6b675f5d0a2b99bc1628a5bc02356c86d55e7b74f832cb4486c1566d067",
+      "bytes": 470001
     },
     {
       "file": "outputs/paper_figures/fig_external_recording_may18.pdf",
-      "sha256": "3a5baf0b72a3fc5dbf924f988401f89ebeb27277a44a7975e8b0add1a47998c7",
+      "sha256": "36795cd900c75fe1f740f92951e07e6b478b0857aad18aea7cd7b51fa8c01085",
       "bytes": 86617
     },
     {
@@ -374,7 +612,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_comparison.pdf",
-      "sha256": "ce88a2346e2dc3e40ff7808de208f192cb363e4e4d48a0101e04392cafa82cc8",
+      "sha256": "99a7dd7aa0d008c53fbb4ec15fbcc47514b9c59e2abcb469bb4f9f230700fcad",
       "bytes": 151448
     },
     {
@@ -384,7 +622,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_with_rois.pdf",
-      "sha256": "75990059b8bdcc73493684337cbeb1715463b7979de90308ee65fcf11be8ab76",
+      "sha256": "799ffa715af9255d357b87210fc01697700e1cc3a9ca8eede301aa84bd53e0b0",
       "bytes": 154466
     },
     {
@@ -394,13 +632,18 @@
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.pdf",
-      "sha256": "713852a9e2483b833af6d38feab8af1d66ccbacb7a2ad678235ae01bf42c730b",
-      "bytes": 1246145
+      "sha256": "e0bab7e458585a3502eb1e219886b15446a5bd329df457e6f3bb59b82be8f53e",
+      "bytes": 1262120
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.png",
-      "sha256": "8607986fbfd685e4db0d1a91d583b390b8119c2e19325157f59468b940e8435e",
-      "bytes": 1456445
+      "sha256": "b594cf20e39b9f8838eabefb9f25869edfc8d5331b25a16eff030778cfbceef4",
+      "bytes": 1465055
+    },
+    {
+      "file": "outputs/paper_stats/split_half_sign_agreement.json",
+      "sha256": "bd51f49c464eff1f20c06f58b33d91de419fdf657d580bf98dd587513e55eeb2",
+      "bytes": 5062
     },
     {
       "file": "script_snapshots/caterpillar_imaging/doppler.py",
@@ -409,13 +652,13 @@
     },
     {
       "file": "script_snapshots/caterpillar_scripts/beamform_sep21_full2d_fine_xz.py",
-      "sha256": "7d7039b1f750246cbe716179ca1a54a4db65466ce45606302e79c152b74d0270",
-      "bytes": 14644
+      "sha256": "66a7db12599ed96b1b0e87c1490209696b8bdbeaaa1c378f29f7369e6b70023f",
+      "bytes": 15332
     },
     {
       "file": "script_snapshots/caterpillar_scripts/beamform_sep21_full2d_fine_xz_nosdk.py",
-      "sha256": "c4954954c4390eee42f4ae5bdc089e7604f8795c67fdb1a8c9f2b4ddf9d6abcd",
-      "bytes": 22645
+      "sha256": "7433e570232abd6c1a34ac3fed4b0b53de462c015b9169d95845cecda8526c08",
+      "bytes": 23333
     },
     {
       "file": "script_snapshots/caterpillar_scripts/compute_sep21_cached_lag1_color.py",
@@ -429,13 +672,42 @@
     },
     {
       "file": "script_snapshots/caterpillar_scripts/process_compound_h5_to_viewer.py",
-      "sha256": "afcf46b6b462cbe9428fe4176e65c8b6c933ff7993d0ffd220f33728a7273b85",
-      "bytes": 10173
+      "sha256": "c60ab001d21b76ed8102c3e04e216e9cba3d5504b2dfe7136e7fc1d8104bacbe",
+      "bytes": 10691
     },
     {
       "file": "script_snapshots/caterpillar_scripts/recompute_sep21_cached_compound_mid8.py",
       "sha256": "6a6ca7af067541b813926e1f77011ff0742989eff25eca72213c4cdfcf7f6a22",
       "bytes": 6263
     }
-  ]
+  ],
+  "timing_ground_truth": {
+    "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
+    "verified_on": "2026-05-19",
+    "acquisition_200": {
+      "num_angles": 5,
+      "num_loops": 700,
+      "num_noise_loops": 2,
+      "iq_frames_shape": [
+        702,
+        5,
+        8,
+        134,
+        88
+      ],
+      "empirical_pulse_repetition_rate_hz": 1244.2239192933298,
+      "compound_frame_rate_hz": 248.84478385866595
+    },
+    "acquisitions_200_399": {
+      "empirical_pulse_repetition_rate_hz_mean": 1245.932415960152,
+      "empirical_pulse_repetition_rate_hz_min": 1243.399734664941,
+      "empirical_pulse_repetition_rate_hz_max": 1248.6164501788535,
+      "compound_frame_rate_hz_mean": 249.18648319203038,
+      "compound_frame_rate_hz_min": 248.6799469329882,
+      "compound_frame_rate_hz_max": 249.7232900357707
+    },
+    "note": "The H5 PRF is a transmit pulse PRF. Sep 21 Doppler slow-time samples are five-angle compounded frames, so velocity conversion uses PRF / 5."
+  },
+  "split_half_sign_agreement": "outputs/paper_stats/split_half_sign_agreement.json",
+  "paper_repository": "https://github.com/ennucore/dower-coppler"
 }
