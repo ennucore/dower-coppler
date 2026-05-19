@@ -8,7 +8,9 @@
   "figure_generator": "scripts/generate_paper_figures.py",
   "figure_generator_defaults": {
     "regions": "data/cnr_measurement_20260515_191622.regions.json",
-    "all_planes_data": "data/head_2025-09-21_new_h5_recomputed_dower_acq200_399_mid8elev.npz",
+    "all_planes_data": "data/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
+    "all_planes_start": 2,
+    "all_planes_end": 7,
     "external_recording_data": "data/bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz",
     "external_recording_plane": "middle plane by default (-1)"
   },
@@ -72,58 +74,75 @@
       }
     },
     {
-      "file": "data/head_2025-09-21_new_h5_recomputed_dower_acq200_399_mid8elev.npz",
-      "sha256": "3bd5568439bb1924848ca5b7443df086f2766f280f436bb5a18e4862ece2066f",
-      "bytes": 3115353,
+      "file": "data/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
+      "sha256": "0511a7d49cacf41694a15a737b2900281c7b8f64fbbda9c57bfbb1dd1c6ae1b8",
+      "bytes": 15386302,
+      "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
       "first_acq": 200,
-      "last_acq": 399,
+      "last_acq": 400,
+      "acq_count": 201,
       "y_indices": [
-        11,
-        12,
-        13,
-        14,
-        15,
-        16,
-        17,
-        18
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "y_range_mm": [
+        -4.0,
+        4.0,
+        10.0
       ],
       "frame_rate_hz": 1244.223876953125,
       "tx_freq_hz": 2750000.0,
       "sound_speed": 1600.0,
       "low_cutoff": 0.07999999821186066,
       "max_lag": 5,
-      "note": "Recomputed from new beamformed H5 for the middle eight elevation planes, acquisitions 200-399.",
-      "stored_note": "Recomputed from new beamformed H5. color_doppler is phase fit velocity. phase_velocity_r2 is velocity multiplied by lag-phase linear-fit r2 quality. Huber quality is sum(|R_k| h_k) / sum(|R_k|) after robust lag-phase fitting.",
+      "tx_delay_mode": "recovered_full_2d_sidecar_fast8_wavefront_fit",
+      "tx_delays_npz": "/home/monster/caterpillar/results/doppler_cnr_gui/head_2025-09-21_recovered_full2d_tx_delays_sidecar.npz",
+      "tx_delay_downsample_rows": 8,
+      "tx_delay_downsample_method": "wavefront_fit",
+      "tx_delay_downsample_fit_points": 512,
+      "saved_display_mode": "mean_across_acqs_with_per_acq_sidecar",
+      "per_acq_dir": "/home/monster/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq",
+      "selection_window_acqs": 1,
+      "note": "Fine x/z and finer elevational Sep 2025 rebeamform spanning y=-4 to 4 mm with 10 elevation planes; paper montage uses planes 2-7 inclusive.",
+      "stored_note": "Fine x/z Sep 2025 rebeamform using recovered full 2D TX delay sidecar with optional TX-row wavefront-fit downsampling.",
       "array_shapes": {
         "power_doppler": [
-          8,
-          58,
-          147
+          10,
+          116,
+          294
         ],
         "color_doppler": [
-          8,
-          58,
-          147
+          10,
+          116,
+          294
         ],
         "dower_coppler": [
-          8,
-          58,
-          147
+          10,
+          116,
+          294
         ],
         "phase_velocity": [
-          8,
-          58,
-          147
+          10,
+          116,
+          294
         ],
         "geomean_r": [
-          8,
-          58,
-          147
+          10,
+          116,
+          294
         ],
         "phase_r2": [
-          8,
-          58,
-          147
+          10,
+          116,
+          294
         ]
       }
     },
@@ -181,7 +200,6 @@
       "z_coarseness": 0.5,
       "beamform_backend": "mach",
       "grid_source": "params",
-      "n_chunks": 384,
       "tx_delay_downsample_rows": 8,
       "tx_delay_downsample_method": "wavefront_fit",
       "tx_delay_downsample_fit_points": 512,
@@ -241,8 +259,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "fe69d4c34ec6be362f5a5f7cdd8cf5a6d1abfa35158b4304c523f5ca4e94b3a0",
-      "bytes": 36451
+      "sha256": "5a22f7efd8d994994dbaef1d603514ce8d5d87ce84c9e9c11aaa20b0511b02e9",
+      "bytes": 36699
     },
     {
       "file": "references.bib",
@@ -251,8 +269,8 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "1de3ce88216e7fa735d4f4d528257cbec4fe00c90f2aa1a4d93e17fd1d5817c3",
-      "bytes": 4550456
+      "sha256": "a825651943cc0f3924c84d8e1832fe5cf1c7a9bc7815363f57e9abbfa7cd24f2",
+      "bytes": 3995034
     },
     {
       "file": "README.md",
@@ -271,8 +289,8 @@
     },
     {
       "file": "scripts/generate_paper_figures.py",
-      "sha256": "ce7f4910cdc5f485d0303c54466b096594134d20165e4e64fdd6eeb7ee9bdd5c",
-      "bytes": 33114
+      "sha256": "5af534097cd882f6776aaa921c48e4bcdf1c23c57d3b81603aac831748a59111",
+      "bytes": 34170
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -295,9 +313,9 @@
       "bytes": 3350493
     },
     {
-      "file": "data/head_2025-09-21_new_h5_recomputed_dower_acq200_399_mid8elev.npz",
-      "sha256": "3bd5568439bb1924848ca5b7443df086f2766f280f436bb5a18e4862ece2066f",
-      "bytes": 3115353
+      "file": "data/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
+      "sha256": "0511a7d49cacf41694a15a737b2900281c7b8f64fbbda9c57bfbb1dd1c6ae1b8",
+      "bytes": 15386302
     },
     {
       "file": "data/sep21_cached_compound_lag1_color_y14_15_acq200_399.npz",
@@ -306,17 +324,17 @@
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.pdf",
-      "sha256": "50acf227eab4a0d3305a2279079fe1f8f88a3030d292bb3e525ffd8f44ab6584",
-      "bytes": 167324
+      "sha256": "c4b3d887916a9331feb5e201aaa2fd8d24686b890f40e8a26872eebb7fd48533",
+      "bytes": 301755
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.png",
-      "sha256": "678e4380a46e7d00c790ce0bc2e4b61d3423007a6b1791ed1c795a9907d76ca6",
-      "bytes": 1159040
+      "sha256": "bf97e536852cd839a45d1d869de8520f0f1c765b3100853065c0116f7958d4ca",
+      "bytes": 803429
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.pdf",
-      "sha256": "98b44b1ba701460b8761bb5875a92fd982dd9fbf5f54ae67d1bf1b49a782ea75",
+      "sha256": "bf1ca1ecdf5bf7e54afda342ee660a43b508596cb356181be9b84d2e1290c5da",
       "bytes": 22271
     },
     {
@@ -326,7 +344,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_dower_ablation.pdf",
-      "sha256": "2299c6519fdc2f6711c8bc8764f3fc5ff2d5d023367f458423ee2c886257cc10",
+      "sha256": "7db73033025e67b9752db77058914ea0f3537aac7a3e1b443ecc9e3ab1369464",
       "bytes": 205788
     },
     {
@@ -336,7 +354,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_external_recording_may18.pdf",
-      "sha256": "2c2421a093aa4a1ccfc2021389150616c9fa986f4017375a52701bb062fb652e",
+      "sha256": "3a5baf0b72a3fc5dbf924f988401f89ebeb27277a44a7975e8b0add1a47998c7",
       "bytes": 86617
     },
     {
@@ -356,7 +374,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_comparison.pdf",
-      "sha256": "96e6fb457d499469509403ed07bf9f9d3cd019d9664e80586f675a9018bdfb08",
+      "sha256": "ce88a2346e2dc3e40ff7808de208f192cb363e4e4d48a0101e04392cafa82cc8",
       "bytes": 151448
     },
     {
@@ -366,7 +384,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_with_rois.pdf",
-      "sha256": "1e106f2ec6fc6f5c574e10ae1b354c9e298e834b6d62f84401ae53c2b8056926",
+      "sha256": "75990059b8bdcc73493684337cbeb1715463b7979de90308ee65fcf11be8ab76",
       "bytes": 154466
     },
     {
@@ -376,7 +394,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.pdf",
-      "sha256": "f3d2b54fef4bf23f49086475a6545295d6dda9d901a51aa9ba99fbecff6f9f11",
+      "sha256": "713852a9e2483b833af6d38feab8af1d66ccbacb7a2ad678235ae01bf42c730b",
       "bytes": 1246145
     },
     {

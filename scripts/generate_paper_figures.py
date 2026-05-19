@@ -28,7 +28,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 OUTPUT_DIR = ROOT / "outputs" / "paper_figures"
 DEFAULT_REGIONS_PATH = DATA_DIR / "cnr_measurement_20260515_191622.regions.json"
-DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_new_h5_recomputed_dower_acq200_399_mid8elev.npz"
+DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz"
+DEFAULT_ALL_PLANES_START = 2
+DEFAULT_ALL_PLANES_END = 7
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
 )
@@ -296,30 +298,47 @@ def figure_temporal_stability(data: dict, output_dir: Path):
 # ── Figure: All elevation planes ──────────────────────────────────────
 
 
-def figure_all_planes(data: dict, output_dir: Path, acq_start: int = 0, acq_end: int = 480):
-    """Dower Coppler maps for all 10 elevation planes."""
+def figure_all_planes(
+    data: dict,
+    output_dir: Path,
+    acq_start: int = 0,
+    acq_end: int = 480,
+    plane_start: int = DEFAULT_ALL_PLANES_START,
+    plane_end: int = DEFAULT_ALL_PLANES_END,
+):
+    """Dower Coppler maps for a selected inclusive range of elevation planes."""
     arr = np.asarray(data["dower_coppler"])
     n_planes = arr.shape[1] if arr.ndim == 4 else arr.shape[0] if arr.ndim == 3 else 1
+    plane_start = max(0, min(int(plane_start), n_planes - 1))
+    plane_end = max(plane_start, min(int(plane_end), n_planes - 1))
+    planes = list(range(plane_start, plane_end + 1))
     ncols = 2
-    nrows = (n_planes + ncols - 1) // ncols
+    nrows = (len(planes) + ncols - 1) // ncols
 
     fig, axes = plt.subplots(nrows, ncols, figsize=(10, nrows * 2.0), constrained_layout=True)
     axes = axes.ravel()
 
-    for plane in range(n_planes):
-        dc_full = metric_plane(data, "dower_coppler", plane, acq_start, acq_end)
-        dc_img, dc_vmin, dc_vmax = signed_image(dc_full, 97.0)
+    plane_images = [metric_plane(data, "dower_coppler", plane, acq_start, acq_end) for plane in planes]
+    finite_abs = np.concatenate([np.abs(img[np.isfinite(img)]).ravel() for img in plane_images])
+    common_lim = float(np.percentile(finite_abs, 97.0)) if finite_abs.size else 1.0
+
+    for ax_idx, (plane, dc_full) in enumerate(zip(planes, plane_images)):
         extent = axis_extent_cm(data, dc_full.shape)
-        axes[plane].imshow(dc_full.astype(np.float32), origin="lower", aspect="equal",
-                           extent=extent,
-                           cmap="seismic", vmin=dc_vmin, vmax=dc_vmax)
-        axes[plane].set_title(f"Plane {plane}", fontsize=10, fontweight="bold")
-        axes[plane].set_xlabel("Lateral (cm)", fontsize=8)
-        axes[plane].set_ylabel("Depth (cm)", fontsize=8)
-        axes[plane].tick_params(labelsize=7)
+        title = f"Plane {plane}"
+        if "y_mm" in data:
+            y_mm = np.asarray(data["y_mm"], dtype=float)
+            if plane < y_mm.size:
+                title += f" ({y_mm[plane]:.1f} mm)"
+        axes[ax_idx].imshow(dc_full.astype(np.float32), origin="lower", aspect="equal",
+                            extent=extent,
+                            cmap="seismic", vmin=-common_lim, vmax=common_lim)
+        axes[ax_idx].set_title(title, fontsize=10, fontweight="bold")
+        axes[ax_idx].set_xlabel("Lateral (cm)", fontsize=8)
+        axes[ax_idx].set_ylabel("Depth (cm)", fontsize=8)
+        axes[ax_idx].tick_params(labelsize=7)
 
     # Hide any unused axes
-    for idx in range(n_planes, len(axes)):
+    for idx in range(len(planes), len(axes)):
         axes[idx].set_visible(False)
 
     fig.suptitle("Dower Coppler across elevation planes", fontsize=12, fontweight="bold")
@@ -702,6 +721,8 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
     parser.add_argument("--regions", type=Path, default=DEFAULT_REGIONS_PATH)
     parser.add_argument("--all-planes-data", type=Path, default=DEFAULT_ALL_PLANES_PATH)
+    parser.add_argument("--all-planes-start", type=int, default=DEFAULT_ALL_PLANES_START)
+    parser.add_argument("--all-planes-end", type=int, default=DEFAULT_ALL_PLANES_END)
     parser.add_argument("--external-recording-data", type=Path, default=DEFAULT_EXTERNAL_RECORDING_PATH)
     parser.add_argument(
         "--external-recording-plane",
@@ -744,7 +765,12 @@ def main():
     figure_dower_ablation(per_acq, args.output_dir)
     figure_velocity_vs_color(per_acq, args.output_dir, plane=0)
 
-    figure_all_planes(all_planes, args.output_dir)
+    figure_all_planes(
+        all_planes,
+        args.output_dir,
+        plane_start=args.all_planes_start,
+        plane_end=args.all_planes_end,
+    )
 
     if args.external_recording_data.exists():
         print("Loading external recording dataset...")

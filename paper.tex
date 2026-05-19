@@ -653,16 +653,19 @@ buffers down to as few as 5~buffers.  At a single buffer, the major
 vessels remain identifiable but background noise increases
 substantially.
 
-\Cref{fig:all_planes} shows the Dower Coppler map across the middle
-eight elevation planes from the recomputed H5 dataset, providing a qualitative check that the directional
+\Cref{fig:all_planes} shows the Dower Coppler map across elevation
+planes 2--7 from a finer elevational rebeamforming run spanning
+$y=-4$ to $4$~mm, providing a qualitative check that the directional
 vascular pattern is not confined to a single selected plane.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{fig_all_planes.png}
-  \caption{Dower Coppler maps across the middle eight elevation planes
-    from the recomputed H5 dataset using acquisitions 200--399 (same
-    color scale).  The directional vascular
+  \caption{Dower Coppler maps across elevation planes 2--7 from the
+    finer elevational rebeamforming run spanning $y=-4$ to $4$~mm with
+    10 elevation planes.  The panels use acquisitions 200--400 and one
+    shared symmetric color scale computed from the 97th percentile of
+    absolute Dower Coppler values across the displayed planes.  The directional vascular
     pattern appears across the imaging volume, with similar vessel
     segments visible in adjacent planes.}
   \label{fig:all_planes}
@@ -686,8 +689,9 @@ without editing the paper.
     PRF 1476.3~Hz, $f_0=2.75$~MHz, $c=1600$~m/s, SVD cutoff 0.08,
     and $K=5$.  The main September 21 dataset uses a separate Head
     ultratrace, acquisitions 200--399 for the CNR/fine-grid analysis,
-    the middle eight elevation planes for the volume montage, PRF
-    1244.2~Hz, and the same $f_0$, $c$, SVD cutoff, and $K$.}
+    elevation planes 2--7 from the $y=-4$ to $4$~mm fine-elevation
+    run for the volume montage, PRF 1244.2~Hz, and the same $f_0$,
+    $c$, SVD cutoff, and $K$.}
   \label{fig:external_recording}
 \end{figure}
 
