@@ -647,9 +647,14 @@ Doppler at approximately 1.0 across all selections.
 As a repeatability check, we split the September 21 acquisitions into
 two non-overlapping halves (200--299 and 300--399), recomputed median
 Dower Coppler maps from the per-acquisition fine-elevation sidecar,
-and compared signs in the same circular vessel ROIs on the closest
-available elevation plane ($y=-0.44$~mm).  The Dower Coppler sign was
-identical between halves for all 130 vessel-ROI pixels.
+and compared signs on the closest available elevation plane
+($y=-0.44$~mm).  Across the full plane, including low-amplitude
+background, the Dower Coppler sign agreed for 68.8\% of 31,810 finite
+nonzero pixels.  Restricting the comparison to the highest-magnitude
+pixels gave substantially higher agreement: 96.7\% for the top 10\%
+of pixels and 98.1\% for the top 5\%.  In the circular vessel ROIs
+used for the CNR analysis, the sign was identical between halves for
+all 130 vessel-ROI pixels.
 
 \Cref{fig:stability} demonstrates the temporal stability of the Dower
 Coppler map by varying the number of Doppler buffers averaged.

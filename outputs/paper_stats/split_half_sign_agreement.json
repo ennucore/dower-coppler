@@ -66,7 +66,23 @@
       "active_vessel_sign_agreement": 1.0,
       "background_abs95_threshold": 4977027072.0,
       "background_active_pixels": 42,
-      "background_active_sign_agreement": 0.9523809523809523
+      "background_active_sign_agreement": 0.9523809523809523,
+      "whole_plane_plane4": {
+        "all_finite_nonzero_pixels": 31810,
+        "all_finite_nonzero_sign_agreement": 0.6878025778057215,
+        "top_50pct_abs_pixels": 15905,
+        "top_50pct_abs_sign_agreement": 0.7792,
+        "top_25pct_abs_pixels": 7953,
+        "top_25pct_abs_sign_agreement": 0.8927,
+        "top_10pct_abs_pixels": 3181,
+        "top_10pct_abs_sign_agreement": 0.967,
+        "top_5pct_abs_pixels": 1591,
+        "top_5pct_abs_sign_agreement": 0.9805,
+        "top_3pct_abs_pixels": 955,
+        "top_3pct_abs_sign_agreement": 0.9853,
+        "top_1pct_abs_pixels": 319,
+        "top_1pct_abs_sign_agreement": 0.9937
+      }
     },
     "phase_velocity": {
       "per_roi": [

@@ -492,8 +492,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "85b105c2969dbed61c30955ce608dbe74112e2666b247a166086825bc3addca9",
-      "bytes": 37881
+      "sha256": "15688168248d1af4093906ad82e7610cc482a8d63ca0e72ecccfbf7320a6a212",
+      "bytes": 38182
     },
     {
       "file": "references.bib",
@@ -502,8 +502,8 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "8e31e352498ae1c8aaae105c83396c4477d341e7a34e32a66ae7c85706022618",
-      "bytes": 4020688
+      "sha256": "ef6357b3d8cc78efcc34a04817f053dc5010a67d369e56790f81bbfa7464accc",
+      "bytes": 4020890
     },
     {
       "file": "README.md",
@@ -642,8 +642,8 @@
     },
     {
       "file": "outputs/paper_stats/split_half_sign_agreement.json",
-      "sha256": "bd51f49c464eff1f20c06f58b33d91de419fdf657d580bf98dd587513e55eeb2",
-      "bytes": 5062
+      "sha256": "fe38aa806c792e5c72e1a05792b5fb6e510abe6b48c35ad6315b13e8e4752df2",
+      "bytes": 5717
     },
     {
       "file": "script_snapshots/caterpillar_imaging/doppler.py",
