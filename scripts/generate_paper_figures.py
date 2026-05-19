@@ -498,6 +498,8 @@ def figure_cnr_comparison(
     pd_meas = 10.0 * np.log10(np.maximum(pd_raw, 1e-12)).astype(np.float32)
     cd_meas = np.abs(cd_raw).astype(np.float32)
     dc_meas = np.abs(dc_raw).astype(np.float32)
+    cd_signed_meas = cd_raw.astype(np.float32)
+    dc_signed_meas = dc_raw.astype(np.float32)
 
     if pd_raw.shape != bg_mask.shape:
         raise ValueError(f"Region export shape {bg_mask.shape} does not match image shape {pd_raw.shape}")
@@ -509,6 +511,8 @@ def figure_cnr_comparison(
     gcnr_pd = []
     gcnr_cd = []
     gcnr_dc = []
+    signed_gcnr_cd = []
+    signed_gcnr_dc = []
     for idx, sig_mask in enumerate(signal_masks):
         this_bg_mask = bg_mask & ~sig_mask
 
@@ -519,6 +523,8 @@ def figure_cnr_comparison(
         gcnr_pd.append(compute_gcnr(pd_meas[sig_mask], pd_meas[this_bg_mask]))
         gcnr_cd.append(compute_gcnr(cd_meas[sig_mask], cd_meas[this_bg_mask]))
         gcnr_dc.append(compute_gcnr(dc_meas[sig_mask], dc_meas[this_bg_mask]))
+        signed_gcnr_cd.append(compute_gcnr(cd_signed_meas[sig_mask], cd_signed_meas[this_bg_mask]))
+        signed_gcnr_dc.append(compute_gcnr(dc_signed_meas[sig_mask], dc_signed_meas[this_bg_mask]))
 
         circle = region_info["inscribed_circles"][idx]
         print(
@@ -531,7 +537,7 @@ def figure_cnr_comparison(
     x = np.arange(len(signal_masks))
     bar_w = 0.25
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.5), constrained_layout=True)
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 4.5), constrained_layout=True)
 
     ax1.bar(x - bar_w, cnr_pd, bar_w, label="Power Doppler", color="#B45309", alpha=0.85)
     ax1.bar(x, cnr_cd, bar_w, label="Color Doppler (Kasai)", color="#6366F1", alpha=0.85)
@@ -549,11 +555,22 @@ def figure_cnr_comparison(
     ax2.bar(x + bar_w, gcnr_dc, bar_w, label="Dower Coppler", color="#DC2626", alpha=0.85)
     ax2.set_xlabel("Vessel ROI", fontsize=10)
     ax2.set_ylabel("gCNR", fontsize=10)
-    ax2.set_title("Generalized CNR", fontsize=11, fontweight="bold")
+    ax2.set_title("Magnitude gCNR", fontsize=11, fontweight="bold")
     ax2.set_xticks(x)
     ax2.set_xticklabels(roi_labels)
     ax2.legend(fontsize=8)
     ax2.set_ylim(0, 1.1)
+
+    signed_bar_w = 0.32
+    ax3.bar(x - signed_bar_w / 2, signed_gcnr_cd, signed_bar_w, label="Color Doppler (Kasai)", color="#6366F1", alpha=0.85)
+    ax3.bar(x + signed_bar_w / 2, signed_gcnr_dc, signed_bar_w, label="Dower Coppler", color="#DC2626", alpha=0.85)
+    ax3.set_xlabel("Vessel ROI", fontsize=10)
+    ax3.set_ylabel("signed gCNR", fontsize=10)
+    ax3.set_title("Directional gCNR", fontsize=11, fontweight="bold")
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(roi_labels)
+    ax3.legend(fontsize=8)
+    ax3.set_ylim(0, 1.1)
 
     fig.savefig(output_dir / "fig_cnr_comparison.pdf", dpi=300, bbox_inches="tight")
     fig.savefig(output_dir / "fig_cnr_comparison.png", dpi=300, bbox_inches="tight")
@@ -561,9 +578,13 @@ def figure_cnr_comparison(
 
     # Print CNR table
     print("  CNR (dB) by ROI:")
-    print(f"  {'ROI':>4s}  {'PD':>7s}  {'CD':>7s}  {'DC':>7s}  {'PD gCNR':>7s}  {'CD gCNR':>7s}  {'DC gCNR':>7s}")
+    print(f"  {'ROI':>4s}  {'PD':>7s}  {'CD':>7s}  {'DC':>7s}  {'PD gCNR':>7s}  {'CD gCNR':>7s}  {'DC gCNR':>7s}  {'CD sgCNR':>8s}  {'DC sgCNR':>8s}")
     for i, label in enumerate(roi_labels):
-        print(f"  {label:>4s}  {cnr_pd[i]:7.1f}  {cnr_cd[i]:7.1f}  {cnr_dc[i]:7.1f}  {gcnr_pd[i]:7.2f}  {gcnr_cd[i]:7.2f}  {gcnr_dc[i]:7.2f}")
+        print(
+            f"  {label:>4s}  {cnr_pd[i]:7.1f}  {cnr_cd[i]:7.1f}  {cnr_dc[i]:7.1f}  "
+            f"{gcnr_pd[i]:7.2f}  {gcnr_cd[i]:7.2f}  {gcnr_dc[i]:7.2f}  "
+            f"{signed_gcnr_cd[i]:8.2f}  {signed_gcnr_dc[i]:8.2f}"
+        )
     print(f"  Saved CNR comparison")
 
 

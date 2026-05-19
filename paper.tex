@@ -624,10 +624,12 @@ and Doppler image.
     Coppler has median CNR 21.5~dB across the six selections
     (range 11.2--40.1~dB), exceeding both power Doppler and Kasai
     color Doppler in all ROIs.
-    \textbf{Right}: generalized CNR (1~$-$~histogram overlap).  All
-    methods show high gCNR for the selected vessel/background
-    separation, with Dower Coppler and power Doppler close to~1.0
-    across all selections.}
+    \textbf{Middle}: magnitude generalized CNR
+    (1~$-$~histogram overlap) using power Doppler, $|$color
+    Doppler$|$, and $|$Dower Coppler$|$.
+    \textbf{Right}: directional gCNR computed on the signed color
+    Doppler and signed Dower Coppler values; power Doppler is omitted
+    because it has no direction sign.}
   \label{fig:cnr}
 \end{figure*}
 
@@ -641,8 +643,11 @@ end of the Dower Coppler range is driven by V6, a one-pixel inscribed
 circle on a compact high-contrast vessel; we therefore emphasize the
 median as the more representative summary statistic.  The gCNR metric
 confirms that the selected vessels are well separated from the shared
-background region for all three displays, with Dower Coppler and power
-Doppler at approximately 1.0 across all selections.
+background region for all three displays when measured by magnitude,
+with Dower Coppler and power Doppler at approximately 1.0 across all
+selections.  The directional gCNR comparison uses the signed maps
+directly and therefore compares only Kasai color Doppler and Dower
+Coppler.
 
 As a repeatability check, we split the September 21 acquisitions into
 two non-overlapping halves (200--299 and 300--399), recomputed median
