@@ -241,8 +241,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "73f37b2b9a4c2864e166bf140301e7594755737dea8ec4227a167e0b6c0b8282",
-      "bytes": 35218
+      "sha256": "fe69d4c34ec6be362f5a5f7cdd8cf5a6d1abfa35158b4304c523f5ca4e94b3a0",
+      "bytes": 36451
     },
     {
       "file": "references.bib",
@@ -251,8 +251,8 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "811de0f65574f1e2393feb3928772dd51bd23b05da1f2e0b4dfb05902b1fb682",
-      "bytes": 4183437
+      "sha256": "1de3ce88216e7fa735d4f4d528257cbec4fe00c90f2aa1a4d93e17fd1d5817c3",
+      "bytes": 4550456
     },
     {
       "file": "README.md",
@@ -271,8 +271,8 @@
     },
     {
       "file": "scripts/generate_paper_figures.py",
-      "sha256": "0132d010eea2921f30401d787494d1e02c08f4edeaeb9a6240d3f75bdb43906e",
-      "bytes": 30389
+      "sha256": "ce7f4910cdc5f485d0303c54466b096594134d20165e4e64fdd6eeb7ee9bdd5c",
+      "bytes": 33114
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -306,7 +306,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.pdf",
-      "sha256": "200e0e6f2a24ed0a6a5283f91bcf624fd1654c8df9c131594b0ad433bd1f2db8",
+      "sha256": "50acf227eab4a0d3305a2279079fe1f8f88a3030d292bb3e525ffd8f44ab6584",
       "bytes": 167324
     },
     {
@@ -316,7 +316,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.pdf",
-      "sha256": "d2fe04f6c22fb2c0ed3e4dab9b31d679517f32692db5c1971e078cf95cd851e4",
+      "sha256": "98b44b1ba701460b8761bb5875a92fd982dd9fbf5f54ae67d1bf1b49a782ea75",
       "bytes": 22271
     },
     {
@@ -325,8 +325,18 @@
       "bytes": 114334
     },
     {
+      "file": "outputs/paper_figures/fig_dower_ablation.pdf",
+      "sha256": "2299c6519fdc2f6711c8bc8764f3fc5ff2d5d023367f458423ee2c886257cc10",
+      "bytes": 205788
+    },
+    {
+      "file": "outputs/paper_figures/fig_dower_ablation.png",
+      "sha256": "3b6139fdb5cebe9e97b3de1bf3c81d4ece88ed105f7e6f440a6942d7aebecd9e",
+      "bytes": 472610
+    },
+    {
       "file": "outputs/paper_figures/fig_external_recording_may18.pdf",
-      "sha256": "ce4976345bee70b4ff148c6e8a8a52ddbb0bb4fc47845d6e6e1f329c790c3b9f",
+      "sha256": "2c2421a093aa4a1ccfc2021389150616c9fa986f4017375a52701bb062fb652e",
       "bytes": 86617
     },
     {
@@ -346,7 +356,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_comparison.pdf",
-      "sha256": "37ea09571792903d33693efef5ff3e4c9dc7790768d6a66229859cf073ec405f",
+      "sha256": "96e6fb457d499469509403ed07bf9f9d3cd019d9664e80586f675a9018bdfb08",
       "bytes": 151448
     },
     {
@@ -356,7 +366,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_with_rois.pdf",
-      "sha256": "65625f20fd0eab6f9ed57ac3c763612a5a9bbcc9801cab1fece94c26aceb8050",
+      "sha256": "1e106f2ec6fc6f5c574e10ae1b354c9e298e834b6d62f84401ae53c2b8056926",
       "bytes": 154466
     },
     {
@@ -366,7 +376,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.pdf",
-      "sha256": "e39dc6e0f3c91d5cac97062063984bc36d8e3a77ca0bee2e74d6b9a8a0739eb5",
+      "sha256": "f3d2b54fef4bf23f49086475a6545295d6dda9d901a51aa9ba99fbecff6f9f11",
       "bytes": 1246145
     },
     {

@@ -584,6 +584,69 @@ def figure_velocity_vs_color(data: dict, output_dir: Path, plane: int = 0):
     )
 
 
+# ── Figure: Dower Coppler ablation ────────────────────────────────────
+
+
+def figure_dower_ablation(data: dict, output_dir: Path, plane: int | None = None):
+    """Show the main Dower Coppler components on the same image plane."""
+    required = {"phase_velocity", "geomean_r", "phase_r2"}
+    if not required.issubset(data):
+        print("  Skipping Dower ablation figure: missing phase_velocity/geomean_r/phase_r2")
+        return
+
+    n_planes = np.asarray(data["phase_velocity"]).shape[-3] if np.asarray(data["phase_velocity"]).ndim >= 3 else 1
+    plane_idx = min(CNR_PLANE, n_planes - 1) if plane is None else min(int(plane), n_planes - 1)
+
+    v_phi = metric_plane(data, "phase_velocity", plane_idx)
+    g_r = metric_plane(data, "geomean_r", plane_idx)
+    r2 = metric_plane(data, "phase_r2", plane_idx)
+    v_phi_g_r = v_phi * g_r
+    if "phase_velocity_r2" in data:
+        v_phi_r2 = metric_plane(data, "phase_velocity_r2", plane_idx)
+    else:
+        v_phi_r2 = v_phi * r2
+
+    extent = axis_extent_cm(data, v_phi.shape)
+    panels = [
+        (r"$v_\phi$ alone", v_phi, "seismic", "signed"),
+        (r"$v_\phi \cdot G_R$", v_phi_g_r, "seismic", "signed"),
+        (r"$v_\phi \cdot R^2$", v_phi_r2, "seismic", "signed"),
+        (r"$G_R$ alone", g_r, "magma", "unsigned"),
+    ]
+
+    fig, axes = plt.subplots(2, 2, figsize=(10, 7), constrained_layout=True)
+    axes = axes.ravel()
+    for ax, (title, img, cmap, mode) in zip(axes, panels):
+        if mode == "signed":
+            img_plot, vmin, vmax = signed_image(img, DC_ABS_PERCENTILE)
+        else:
+            img_plot = img.astype(np.float32)
+            finite = img_plot[np.isfinite(img_plot)]
+            vmin = 0.0
+            vmax = float(np.percentile(finite, 99.0)) if finite.size else 1.0
+        im = ax.imshow(
+            img_plot,
+            origin="lower",
+            aspect="equal",
+            extent=extent,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+        )
+        ax.set_title(title, fontsize=12, fontweight="bold")
+        ax.set_xlabel("Lateral (cm)", fontsize=9)
+        ax.set_ylabel("Depth (cm)", fontsize=9)
+        ax.tick_params(labelsize=8)
+        cbar = fig.colorbar(im, ax=ax, shrink=0.86, pad=0.02)
+        cbar.ax.tick_params(labelsize=7)
+
+    fig.suptitle("Dower Coppler ablation components", fontsize=14, fontweight="bold")
+    fig.savefig(output_dir / "fig_dower_ablation.pdf", dpi=300, bbox_inches="tight")
+    fig.savefig(output_dir / "fig_dower_ablation.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved Dower ablation figure")
+
+
 # ── Figure: External recording check ──────────────────────────────────
 
 
@@ -678,6 +741,7 @@ def main():
 
     figure_cnr_comparison(per_acq, args.output_dir, args.regions, acq_start=0, acq_end=480)
     figure_three_panel_with_rois(per_acq, args.output_dir, args.regions, acq_start=0, acq_end=480)
+    figure_dower_ablation(per_acq, args.output_dir)
     figure_velocity_vs_color(per_acq, args.output_dir, plane=0)
 
     figure_all_planes(all_planes, args.output_dir)

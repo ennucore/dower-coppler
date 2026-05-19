@@ -545,6 +545,31 @@ direction from the multi-lag phase slope.  Adjacent cortical vessels with opposi
 directions---invisible in power Doppler---are clearly separated in the
 Dower Coppler image.
 
+\Cref{fig:dower_ablation} isolates the contribution of the main
+terms in the composite index.  The phase velocity $v_\phi$ alone
+contains the directional pattern but also substantial background
+phase noise.  Multiplication by the multi-lag coherence strength
+$G_R$ suppresses decorrelated background and emphasizes vessel-like
+structures.  Multiplication by $R^2$ preserves the signed velocity
+interpretation while down-weighting pixels whose lag phases are poorly
+explained by a single slope.  The $G_R$ panel shows that the magnitude
+term is power-Doppler-like and unsigned; direction enters through
+$v_\phi$.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig_dower_ablation.png}
+  \caption{Ablation of the Dower Coppler components on the same
+    transcranial image plane.  $v_\phi$ alone is the signed multi-lag
+    phase-velocity estimate.  $v_\phi G_R$ adds the geometric mean of
+    multi-lag autocorrelation magnitudes, suppressing incoherent
+    background.  $v_\phi R^2$ gates the signed velocity by the
+    phase-linearity fit quality.  $G_R$ alone is the unsigned
+    coherence-strength image.  The final Dower Coppler image uses
+    $v_\phi G_R R^2$.}
+  \label{fig:dower_ablation}
+\end{figure*}
+
 \Cref{fig:velocity_vs_color} separates the signed velocity estimate
 from the Dower Coppler amplitude weighting.  The multi-lag phase
 velocity preserves the dominant flow-direction pattern seen by the
