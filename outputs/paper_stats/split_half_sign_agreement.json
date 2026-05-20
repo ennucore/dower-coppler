@@ -1,15 +1,15 @@
 {
-  "source_per_acq_dir": "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq",
+  "source_per_acq_dir": "/home/monster/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479_per_acq",
   "split_a_acqs": [
-    200,
-    299
+    0,
+    239
   ],
   "split_b_acqs": [
-    300,
-    399
+    240,
+    479
   ],
-  "split_a_count": 100,
-  "split_b_count": 100,
+  "split_a_count": 240,
+  "split_b_count": 240,
   "roi_y_mm_reference": -0.4444444477558136,
   "fine_elev_plane": 4,
   "fine_elev_plane_y_mm": -0.4444444477558136,
@@ -108,73 +108,73 @@
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 1.4444142580032349,
-          "split_b_mean": 1.316043496131897
+          "split_a_mean": 10165368651776.0,
+          "split_b_mean": 3853888520192.0
         },
         {
           "roi": "V2",
           "pixels": 13,
           "finite_nonzero_pixels": 13,
           "sign_agreement": 1.0,
-          "split_a_mean": 2.591614007949829,
-          "split_b_mean": 2.5463979244232178
+          "split_a_mean": 9077512994816.0,
+          "split_b_mean": 14282470195200.0
         },
         {
           "roi": "V3",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 1.1955347061157227,
-          "split_b_mean": 1.1852134466171265
+          "split_a_mean": 233433563136.0,
+          "split_b_mean": 270504656896.0
         },
         {
           "roi": "V4",
           "pixels": 45,
           "finite_nonzero_pixels": 45,
           "sign_agreement": 1.0,
-          "split_a_mean": -1.636277437210083,
-          "split_b_mean": -1.896918773651123
+          "split_a_mean": -921976438784.0,
+          "split_b_mean": -2609018306560.0
         },
         {
           "roi": "V5",
           "pixels": 177,
-          "finite_nonzero_pixels": 175,
-          "sign_agreement": 0.9714285714285714,
-          "split_a_mean": -0.765018105506897,
-          "split_b_mean": -0.7760695815086365
+          "finite_nonzero_pixels": 177,
+          "sign_agreement": 0.9830508474576272,
+          "split_a_mean": -36906438656.0,
+          "split_b_mean": -87249223680.0
         },
         {
           "roi": "V6",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": -6.628314971923828,
-          "split_b_mean": -7.879195213317871
+          "split_a_mean": -522998066970624.0,
+          "split_b_mean": -5142859338481664.0
         }
       ],
       "all_vessel_pixels": 250,
-      "vessel_finite_nonzero_pixels": 248,
-      "vessel_sign_agreement": 0.9798387096774194,
-      "active_vessel_pixels_thresholded_by_bg95": 248,
-      "active_vessel_sign_agreement": 0.9798387096774194,
-      "background_abs95_threshold": 0.0,
-      "background_active_pixels": 1,
-      "background_active_sign_agreement": 1.0,
+      "vessel_finite_nonzero_pixels": 250,
+      "vessel_sign_agreement": 0.988,
+      "active_vessel_pixels_thresholded_by_bg95": 246,
+      "active_vessel_sign_agreement": 0.9878048780487805,
+      "background_abs95_threshold": 4468084044.799998,
+      "background_active_pixels": 79,
+      "background_active_sign_agreement": 0.5949367088607594,
       "whole_plane_plane4": {
-        "all_finite_nonzero_pixels": 13786,
-        "all_finite_nonzero_sign_agreement": 0.7663571739445815,
-        "top_50pct_abs_pixels": 6893,
-        "top_50pct_abs_sign_agreement": 0.8897432177571449,
-        "top_25pct_abs_pixels": 3447,
-        "top_25pct_abs_sign_agreement": 0.9559036843632144,
-        "top_10pct_abs_pixels": 1379,
-        "top_10pct_abs_sign_agreement": 0.977519941986947,
-        "top_5pct_abs_pixels": 690,
-        "top_5pct_abs_sign_agreement": 0.9840579710144928,
-        "top_3pct_abs_pixels": 414,
-        "top_3pct_abs_sign_agreement": 0.9879227053140096,
-        "top_1pct_abs_pixels": 138,
-        "top_1pct_abs_sign_agreement": 1.0
+        "all_finite_nonzero_pixels": 31810,
+        "all_finite_nonzero_sign_agreement": 0.7237346746306194,
+        "top_50pct_abs_pixels": 15905,
+        "top_50pct_abs_sign_agreement": 0.7465576862621817,
+        "top_25pct_abs_pixels": 7953,
+        "top_25pct_abs_sign_agreement": 0.8350308059851629,
+        "top_10pct_abs_pixels": 3181,
+        "top_10pct_abs_sign_agreement": 0.9220370952530651,
+        "top_5pct_abs_pixels": 1591,
+        "top_5pct_abs_sign_agreement": 0.9453174104336896,
+        "top_3pct_abs_pixels": 955,
+        "top_3pct_abs_sign_agreement": 0.9528795811518325,
+        "top_1pct_abs_pixels": 319,
+        "top_1pct_abs_sign_agreement": 0.9811912225705329
       }
     },
     "phase_velocity": {
@@ -184,58 +184,58 @@
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 0.003620301838964224,
-          "split_b_mean": 0.003561460878700018
+          "split_a_mean": 0.019276145845651627,
+          "split_b_mean": 0.01684017851948738
         },
         {
           "roi": "V2",
           "pixels": 13,
           "finite_nonzero_pixels": 13,
           "sign_agreement": 1.0,
-          "split_a_mean": 0.005242011975497007,
-          "split_b_mean": 0.005032260902225971
+          "split_a_mean": 0.027902083471417427,
+          "split_b_mean": 0.02480069175362587
         },
         {
           "roi": "V3",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 0.005441070534288883,
-          "split_b_mean": 0.005047895479947329
+          "split_a_mean": 0.027401011437177658,
+          "split_b_mean": 0.026018504053354263
         },
         {
           "roi": "V4",
           "pixels": 45,
           "finite_nonzero_pixels": 45,
           "sign_agreement": 1.0,
-          "split_a_mean": -0.005810468923300505,
-          "split_b_mean": -0.00609886460006237
+          "split_a_mean": -0.028192872181534767,
+          "split_b_mean": -0.02969883568584919
         },
         {
           "roi": "V5",
           "pixels": 177,
           "finite_nonzero_pixels": 177,
-          "sign_agreement": 0.9717514124293786,
-          "split_a_mean": -0.005182584282010794,
-          "split_b_mean": -0.004942585248500109
+          "sign_agreement": 0.9830508474576272,
+          "split_a_mean": -0.027164949104189873,
+          "split_b_mean": -0.024685600772500038
         },
         {
           "roi": "V6",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": -0.003793837036937475,
-          "split_b_mean": -0.0037666182033717632
+          "split_a_mean": -0.01828932762145996,
+          "split_b_mean": -0.018281716853380203
         }
       ],
       "all_vessel_pixels": 250,
       "vessel_finite_nonzero_pixels": 250,
-      "vessel_sign_agreement": 0.98,
-      "active_vessel_pixels_thresholded_by_bg95": 0,
-      "active_vessel_sign_agreement": NaN,
-      "background_abs95_threshold": 0.007226304151117802,
-      "background_active_pixels": 73,
-      "background_active_sign_agreement": 0.7671232876712328
+      "vessel_sign_agreement": 0.988,
+      "active_vessel_pixels_thresholded_by_bg95": 1,
+      "active_vessel_sign_agreement": 1.0,
+      "background_abs95_threshold": 0.03395983632653952,
+      "background_active_pixels": 80,
+      "background_active_sign_agreement": 0.625
     },
     "color_doppler": {
       "per_roi": [
@@ -244,58 +244,58 @@
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 0.003620301838964224,
-          "split_b_mean": 0.003561460878700018
+          "split_a_mean": 0.019276145845651627,
+          "split_b_mean": 0.01684017851948738
         },
         {
           "roi": "V2",
           "pixels": 13,
           "finite_nonzero_pixels": 13,
           "sign_agreement": 1.0,
-          "split_a_mean": 0.005242011975497007,
-          "split_b_mean": 0.005032260902225971
+          "split_a_mean": 0.027902083471417427,
+          "split_b_mean": 0.02480069175362587
         },
         {
           "roi": "V3",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 0.005441070534288883,
-          "split_b_mean": 0.005047895479947329
+          "split_a_mean": 0.027401011437177658,
+          "split_b_mean": 0.026018504053354263
         },
         {
           "roi": "V4",
           "pixels": 45,
           "finite_nonzero_pixels": 45,
           "sign_agreement": 1.0,
-          "split_a_mean": -0.005810468923300505,
-          "split_b_mean": -0.00609886460006237
+          "split_a_mean": -0.028192872181534767,
+          "split_b_mean": -0.02969883568584919
         },
         {
           "roi": "V5",
           "pixels": 177,
           "finite_nonzero_pixels": 177,
-          "sign_agreement": 0.9717514124293786,
-          "split_a_mean": -0.005182584282010794,
-          "split_b_mean": -0.004942585248500109
+          "sign_agreement": 0.9830508474576272,
+          "split_a_mean": -0.027164949104189873,
+          "split_b_mean": -0.024685600772500038
         },
         {
           "roi": "V6",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": -0.003793837036937475,
-          "split_b_mean": -0.0037666182033717632
+          "split_a_mean": -0.01828932762145996,
+          "split_b_mean": -0.018281716853380203
         }
       ],
       "all_vessel_pixels": 250,
       "vessel_finite_nonzero_pixels": 250,
-      "vessel_sign_agreement": 0.98,
-      "active_vessel_pixels_thresholded_by_bg95": 0,
-      "active_vessel_sign_agreement": NaN,
-      "background_abs95_threshold": 0.007226304151117802,
-      "background_active_pixels": 73,
-      "background_active_sign_agreement": 0.7671232876712328
+      "vessel_sign_agreement": 0.988,
+      "active_vessel_pixels_thresholded_by_bg95": 1,
+      "active_vessel_sign_agreement": 1.0,
+      "background_abs95_threshold": 0.03395983632653952,
+      "background_active_pixels": 80,
+      "background_active_sign_agreement": 0.625
     }
   }
 }

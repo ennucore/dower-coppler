@@ -390,10 +390,9 @@ raw IQ data but were not used for Doppler processing.  The transmit
 center frequency was \SI{2.75}{\mega\hertz} with three transmit cycles,
 and the receive data were sampled at \SI{4.17}{\mega\hertz} after
 decimation.  The HDF5 metadata report an empirical pulse-repetition
-rate of \SI{1245.9}{\hertz} over the acquisition subset used for the
-main figures; because each compounded frame used five transmit angles,
-the corresponding compounded-frame cadence was approximately
-\SI{249}{\hertz}.  The assumed sound speed was
+rate of \SI{1240.9}{\hertz} over the full ultratrace; because each
+compounded frame used five transmit angles, the corresponding
+compounded-frame cadence was approximately \SI{248.2}{\hertz}.  The assumed sound speed was
 \SI{1600}{\meter\per\second}.
 
 The original beamformed volume covered
@@ -403,9 +402,11 @@ The original beamformed volume covered
 $147 \times 30 \times 58$ lateral-elevation-depth grid.  The main
 paper figures were generated from a fine lateral/depth rebeamform of
 the two central elevation planes (original elevation indices 14 and
-15), using acquisitions 200--399.  This figure dataset used a
+15), using all 480 acquisitions.  This figure dataset used a
 $294 \times 2 \times 116$ lateral-elevation-depth grid over the same
-lateral and depth extent.  The temporal-stability analysis used
+lateral and depth extent.  The elevation-plane montage used a separate
+10-plane fine-elevation rebeamform spanning $y=-4$ to $4$~mm, also
+using all 480 acquisitions.  The temporal-stability analysis used
 precomputed per-buffer Doppler arrays and explicitly varied the number
 of buffers included in the median.
 
@@ -425,8 +426,8 @@ Acquisitions in ultratrace & 480 \\
 Frames per acquisition & 700 compounded slow-time frames \\
 Transmit angles & 5 azimuthal angles over $\pm 6^\circ$ \\
 Transmit frequency & \SI{2.75}{\mega\hertz}, 3 cycles \\
-Empirical pulse PRF & \SI{1245.9}{\hertz} (acq. 200--399 mean) \\
-Compounded-frame cadence & \SI{249}{\hertz} \\
+Empirical pulse PRF & \SI{1240.9}{\hertz} (full ultratrace) \\
+Compounded-frame cadence & \SI{248.2}{\hertz} \\
 Sampling rate & \SI{4.17}{\mega\hertz} after decimation \\
 Depth range & \SIrange{21.0}{37.896}{\milli\meter} \\
 Sound speed & \SI{1600}{\meter\per\second} \\
@@ -588,8 +589,8 @@ image.
   \centering
   \includegraphics[width=\textwidth]{fig_cnr_comparison.png}
   \caption{\textbf{Left}: CNR in dB across six vessel ROIs.  Dower
-    Coppler has median CNR 15.6~dB across the six selections
-    (range 8.1--19.0~dB), compared with 13.9~dB for power Doppler.
+    Coppler has median CNR 14.0~dB across the six selections
+    (range 8.8--21.8~dB), compared with 4.7~dB for power Doppler.
     Kasai color Doppler CNR is reported in the text but omitted from
     this panel.
     \textbf{Middle}: magnitude generalized CNR
@@ -601,10 +602,10 @@ image.
   \label{fig:cnr}
 \end{figure*}
 
-Dower Coppler achieves median CNR 15.6~dB across the six tolerant
-circular vessel selections, with values ranging from 8.1--19.0~dB.
-Power Doppler has median CNR 13.9~dB (range 7.4--18.7~dB), and Kasai
-color Doppler has median CNR -6.9~dB (range -16.8--2.1~dB) when the
+Dower Coppler achieves median CNR 14.0~dB across the six tolerant
+circular vessel selections, with values ranging from 8.8--21.8~dB.
+Power Doppler has median CNR 4.7~dB (range -8.0--7.7~dB), and Kasai
+color Doppler has median CNR 12.2~dB (range 7.8--14.1~dB) when the
 signed Doppler maps are measured by magnitude, as in the viewer CNR
 calculation.  The smallest tolerant circles contain five pixels, rather
 than the one-pixel ROIs produced by strict inscribed circles in thin
@@ -618,16 +619,16 @@ directly and therefore compares only Kasai color Doppler and Dower
 Coppler.
 
 As a repeatability check, we split the September 21 acquisitions into
-two non-overlapping halves (200--299 and 300--399), recomputed median
+two non-overlapping halves (0--239 and 240--479), recomputed median
 Dower Coppler maps from the per-acquisition fine-elevation sidecar,
 and compared signs on the closest available elevation plane
 ($y=-0.44$~mm).  Across the full plane, including low-amplitude
-background, the Dower Coppler sign agreed for 76.6\% of 13,786 finite
+background, the Dower Coppler sign agreed for 72.4\% of 31,810 finite
 nonzero pixels.  Restricting the comparison to the highest-magnitude
-pixels gave substantially higher agreement: 97.8\% for the top 10\%
-of pixels and 98.4\% for the top 5\%.  In the tolerant circular
+pixels gave substantially higher agreement: 92.2\% for the top 10\%
+of pixels and 94.5\% for the top 5\%.  In the tolerant circular
 vessel ROIs used for the CNR analysis, the sign agreed between halves
-for 98.0\% of finite nonzero pixels (248 pixels; 250 total ROI pixels).
+for 98.8\% of finite nonzero pixels (250 total ROI pixels).
 
 \Cref{fig:stability} demonstrates the temporal stability of the Dower
 Coppler map by varying the number of acquisitions included in the
@@ -639,17 +640,15 @@ median image.
   \caption{Dower Coppler maps computed from different numbers of
     acquisitions on the fine-elevation plane at $y=-0.44$~mm.  All
     panels use one shared symmetric color scale.  The vessel pattern
-    and flow direction assignment remain stable from 200 acquisitions
-    down to 10 acquisitions.  At a single acquisition, the major
-    vessels remain identifiable but background noise increases.  Images
-    are cropped to the lateral range $-1.5$ to $1.5$~cm.}
+    and flow direction assignment remain stable from the full
+    480-acquisition ultratrace down to 10 acquisitions.  Images are
+    cropped to the lateral range $-1.5$ to $1.5$~cm.}
   \label{fig:stability}
 \end{figure*}
 
-The vessel pattern and flow direction assignments are stable from 200
-acquisitions down to as few as 10 acquisitions.  At a single
-acquisition, the major vessels remain identifiable but background
-noise increases substantially.
+The vessel pattern and flow direction assignments are stable from the
+full 480-acquisition ultratrace down to as few as 10 acquisitions,
+with background noise increasing as fewer acquisitions are included.
 
 \Cref{fig:all_planes} shows the Dower Coppler map across elevation
 planes 2--7 from a finer elevational rebeamforming run spanning
@@ -661,7 +660,7 @@ vascular pattern is not confined to a single selected plane.
   \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{fig_all_planes.png}
   \caption{Dower Coppler maps across elevation planes 2--7 from the
     finer elevational rebeamforming run spanning $y=-4$ to $4$~mm with
-    10 elevation planes.  The panels use acquisitions 200--400 and one
+    10 elevation planes.  The panels use all 480 acquisitions and one
     shared symmetric color scale computed from the 97th percentile of
     absolute Dower Coppler values across the displayed planes.  Images
     are cropped to the lateral range $-1.5$ to $1.5$~cm.  The directional vascular
@@ -687,10 +686,10 @@ without editing the paper.
     coarseness 0.5/0.5, 20 acquisitions (0--19), median aggregation,
     PRF 1476.3~Hz, $f_0=2.75$~MHz, $c=1600$~m/s, SVD cutoff 0.08,
     and $K=5$.  The main September 21 dataset uses a separate Head
-    ultratrace, acquisitions 200--399 for the CNR/fine-grid analysis,
+    ultratrace, all 480 acquisitions for the CNR/fine-grid analysis,
     elevation planes 2--7 from the $y=-4$ to $4$~mm fine-elevation
-    run for the volume montage, pulse PRF 1244.2~Hz
-    (compounded-frame cadence 248.8~Hz), and the same $f_0$, $c$, SVD
+    run for the volume montage, pulse PRF 1240.9~Hz
+    (compounded-frame cadence 248.2~Hz), and the same $f_0$, $c$, SVD
     cutoff, and $K$.}
   \label{fig:external_recording}
 \end{figure}

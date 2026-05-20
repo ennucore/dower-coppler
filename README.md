@@ -35,7 +35,7 @@ sidecar, run:
 
 ```bash
 python3 scripts/generate_paper_figures.py --refresh-temporal-summary \
-  --temporal-per-acq-dir /Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq
+  --temporal-per-acq-dir /Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479_per_acq
 ```
 
 ## Provenance
@@ -48,9 +48,10 @@ the HDF5 acquisition config stores `num_angles=5` and
 `num_loops=700`, with raw `iq_frames` shaped
 `(702, 5, 8, 134, 88)` for acquisition 200. The two extra loops are
 noise loops. The runtime metadata reports an empirical transmit pulse
-PRF of 1244.224 Hz for acquisition 200 and a mean of 1245.932 Hz over
-acquisitions 200-399, so the compounded slow-time cadence used for
-phase-to-velocity conversion is PRF / 5, approximately 249 Hz.
+PRF of 1244.224 Hz for acquisition 200. The all-480 fine-grid paper
+outputs store an empirical full-ultratrace pulse PRF of 1240.909 Hz,
+so the compounded slow-time cadence used for phase-to-velocity
+conversion is PRF / 5, approximately 248.2 Hz.
 
 Relevant source scripts from the caterpillar worktree are backed up under `script_snapshots/`, including:
 

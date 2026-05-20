@@ -11,8 +11,9 @@
 - [x] Fix the elevation montage color-scale statement: the code now uses one shared symmetric 97th-percentile scale across displayed planes, and the caption says so.
 - [x] Point the manuscript code/reproducibility link to `https://github.com/ennucore/dower-coppler`.
 - [x] Add the derived NPZ inputs used by the paper figures to the standalone paper repository.
+- [x] Regenerate the September 21 paper figures from the full 480-acquisition ultratrace outputs.
 - [x] Address the V6/one-pixel CNR issue by replacing strict inscribed circles with tolerant circular ROIs and reporting medians.
-- [x] Compute split-half sign agreement for acquisitions 200-299 vs 300-399 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
+- [x] Compute split-half sign agreement for acquisitions 0-239 vs 240-479 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
 - [x] Replace the stale temporal-stability figure with the fine-elevation per-acquisition sidecar montage, labeled by acquisition counts.
 - [x] Add the temporal-stability sidecar path and default figure-generation parameters to the reproducibility manifest.
 - [x] Confirm the paper figures use the manuscript formula `v_phi * G_R * R2`, not an older Huber/product TMAS variant.
@@ -24,7 +25,6 @@
 
 ## Open
 
-- [ ] Fix the Figure 1 caption: it currently says "median of 480 Doppler buffers", but the plotted fine-grid dataset is acquisitions 200-399 only.
 - [ ] Correct the May 18 external-recording provenance. The source H5 is under `/mnt/pocampus/lev/may18_txel_sweep_minus5_0_plus5/`, not `/home/monster/caterpillar/data/`; also verify and correct the velocity cadence because that H5 has `num_angles=5` and the compounded cadence is PRF / 5.
 - [ ] Make figure-output reproducibility robust. Running `scripts/generate_paper_figures.py` rewrites PDF files with changed hashes even when content appears unchanged; either hash only deterministic artifacts or stop tracking regenerated PDFs for manifest checks.
 - [ ] Add real `\\author{}` list, affiliations, acknowledgments, funding, and conflicts of interest.

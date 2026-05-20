@@ -29,22 +29,23 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 OUTPUT_DIR = ROOT / "outputs" / "paper_figures"
 DEFAULT_REGIONS_PATH = DATA_DIR / "cnr_measurement_20260515_191622.regions.json"
-DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz"
+DEFAULT_MAIN_DATA_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_yidx14_15_acq000_479.npz"
+DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479.npz"
 DEFAULT_ALL_PLANES_START = 2
 DEFAULT_ALL_PLANES_END = 7
 DEFAULT_TEMPORAL_SUMMARY_PATH = DATA_DIR / "head_2025-09-21_temporal_windows_plane4.npz"
 DEFAULT_TEMPORAL_PER_ACQ_DIR = Path(
     "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/"
-    "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq"
+    "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479_per_acq"
 )
 DEFAULT_TEMPORAL_PLANE = 4
 TEMPORAL_WINDOWS = [
-    (200, 399, "200 acquisitions"),
-    (250, 399, "150 acquisitions"),
-    (300, 399, "100 acquisitions"),
-    (350, 399, "50 acquisitions"),
-    (390, 399, "10 acquisitions"),
-    (399, 399, "1 acquisition"),
+    (0, 479, "480 acquisitions"),
+    (120, 479, "360 acquisitions"),
+    (240, 479, "240 acquisitions"),
+    (360, 479, "120 acquisitions"),
+    (430, 479, "50 acquisitions"),
+    (470, 479, "10 acquisitions"),
 ]
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
@@ -1029,6 +1030,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate paper figures")
     parser.add_argument("--data-dir", type=Path, default=DATA_DIR)
     parser.add_argument("--output-dir", type=Path, default=OUTPUT_DIR)
+    parser.add_argument("--main-data", type=Path, default=DEFAULT_MAIN_DATA_PATH)
     parser.add_argument("--regions", type=Path, default=DEFAULT_REGIONS_PATH)
     parser.add_argument("--all-planes-data", type=Path, default=DEFAULT_ALL_PLANES_PATH)
     parser.add_argument("--all-planes-start", type=int, default=DEFAULT_ALL_PLANES_START)
@@ -1052,15 +1054,9 @@ def main():
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    if args.regions.exists():
-        region_info = json.loads(args.regions.read_text())
-        per_acq_path = Path(region_info["dataset_path"])
-        if not per_acq_path.is_absolute():
-            per_acq_path = ROOT / per_acq_path
-        if not per_acq_path.exists():
-            per_acq_path = args.data_dir / per_acq_path.name
-    else:
-        per_acq_path = args.data_dir / "head_2025-09-21_per_acq_doppler_full_post_cutoff.npz"
+    per_acq_path = args.main_data
+    if not per_acq_path.is_absolute():
+        per_acq_path = ROOT / per_acq_path
     print("Loading per-acq dataset...")
     per_acq = load_npz(per_acq_path)
     print(f"  Path: {per_acq_path}")
