@@ -11,20 +11,29 @@
 - [x] Fix the elevation montage color-scale statement: the code now uses one shared symmetric 97th-percentile scale across displayed planes, and the caption says so.
 - [x] Point the manuscript code/reproducibility link to `https://github.com/ennucore/dower-coppler`.
 - [x] Add the derived NPZ inputs used by the paper figures to the standalone paper repository.
-- [x] Address the V6 CNR outlier by reporting median CNR and noting that V6 is a one-pixel compact high-contrast ROI.
+- [x] Address the V6/one-pixel CNR issue by replacing strict inscribed circles with tolerant circular ROIs and reporting medians.
 - [x] Compute split-half sign agreement for acquisitions 200-299 vs 300-399 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
 - [x] Replace the stale temporal-stability figure with the fine-elevation per-acquisition sidecar montage, labeled by acquisition counts.
 - [x] Add the temporal-stability sidecar path and default figure-generation parameters to the reproducibility manifest.
 - [x] Confirm the paper figures use the manuscript formula `v_phi * G_R * R2`, not an older Huber/product TMAS variant.
+- [x] Replace strict fully-inscribed CNR circles with tolerant circular ROIs requiring at least 80% overlap with the exported vessel mask, eliminating one-pixel signal ROIs.
+- [x] Remove color Doppler from the Figure 5 left CNR bar chart while keeping color Doppler in the gCNR panels and text.
+- [x] Crop Figures 2, 6, and 7 to the lateral range -1.5 to 1.5 cm and resize the Figure 2 colorbars to the image panels.
+- [x] Make Table 2 simulation results reproducible from the standalone repo with `scripts/phase_ls_research_sweep.py`, `outputs/research_sweep/phase_ls_research_sweep.summary.json`, and generated `outputs/paper_stats/simulation_results_table.tex`.
+- [x] Make the temporal-stability figure reproducible from a fresh clone by adding `data/head_2025-09-21_temporal_windows_plane4.npz` and making `scripts/generate_paper_figures.py` prefer that compact source over the large external sidecar.
 
 ## Open
 
+- [ ] Fix the Figure 1 caption: it currently says "median of 480 Doppler buffers", but the plotted fine-grid dataset is acquisitions 200-399 only.
+- [ ] Correct the May 18 external-recording provenance. The source H5 is under `/mnt/pocampus/lev/may18_txel_sweep_minus5_0_plus5/`, not `/home/monster/caterpillar/data/`; also verify and correct the velocity cadence because that H5 has `num_angles=5` and the compounded cadence is PRF / 5.
+- [ ] Make figure-output reproducibility robust. Running `scripts/generate_paper_figures.py` rewrites PDF files with changed hashes even when content appears unchanged; either hash only deterministic artifacts or stop tracking regenerated PDFs for manifest checks.
 - [ ] Add real `\\author{}` list, affiliations, acknowledgments, funding, and conflicts of interest.
 - [ ] Add a data availability statement for the raw H5 ultratraces; if raw data cannot be public, state the controlled-access / IRB limitation clearly.
 - [ ] Check the realtime/acquisition-level color Doppler path in `caterpillar/acquire/acquisition.py`; it may still pass empirical pulse PRF into Doppler estimators for compounded slow-time data.
 - [ ] Decide whether to redo the quantitative ROI/CNR analysis with ROIs selected from power Doppler/anatomy or by blinded selection, instead of Dower-selected ROIs.
 - [ ] Add a cleaner repeatability table/figure if desired: split-half sign agreement, signed gCNR, and background false-positive rate.
 - [ ] Build a minimal arXiv source bundle containing only `paper.tex`, bibliography/bbl, and included figure files; exclude NPZs, logs, screenshots, audits, caches, and backup folders.
+- [ ] Clean repo state before publishing: remove or intentionally commit untracked exploratory outputs, simulation outputs, and generated artifacts.
 
 ## Stronger-paper items beyond a basic arXiv preprint
 

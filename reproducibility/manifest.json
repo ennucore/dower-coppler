@@ -6,6 +6,13 @@
     "/home/monster/caterpillar/data/ultratrace_BT24480388_monster_2026-05-18_15:26:05.h5"
   ],
   "figure_generator": "scripts/generate_paper_figures.py",
+  "simulation_generator": "scripts/phase_ls_research_sweep.py",
+  "simulation_outputs": [
+    "outputs/paper_stats/simulation_results_table.tex",
+    "outputs/research_sweep/phase_ls_research_sweep.summary.json",
+    "outputs/research_sweep/phase_ls_research_sweep.csv"
+  ],
+  "split_half_sign_agreement_generator": "scripts/compute_split_half_sign_agreement.py",
   "figure_generator_defaults": {
     "regions": "data/cnr_measurement_20260515_191622.regions.json",
     "all_planes_data": "data/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
@@ -46,9 +53,31 @@
         "last_acq": 399,
         "label": "1 acquisition"
       }
-    ]
+    ],
+    "cropped_lateral_figures": {
+      "fig_dower_ablation": [
+        -1.5,
+        1.5
+      ],
+      "fig_temporal_stability": [
+        -1.5,
+        1.5
+      ],
+      "fig_all_planes": [
+        -1.5,
+        1.5
+      ]
+    },
+    "temporal_summary_data": "data/head_2025-09-21_temporal_windows_plane4.npz"
   },
   "roi_export": "data/cnr_measurement_20260515_191622.regions.json",
+  "roi_circle_policy": {
+    "type": "largest tolerant circle centered inside exported signal mask",
+    "min_overlap": 0.8,
+    "max_radius_px": 16.0,
+    "radius_step_px": 0.25,
+    "shared_background": "first exported background rectangle is reused for every signal ROI"
+  },
   "npz_provenance": [
     {
       "file": "data/cnr_measurement_20260515_191622.regions.npz",
@@ -318,6 +347,74 @@
       "timing_note": "Sep 21 H5 acq config stores num_angles=5; Doppler slow-time samples are compounded frames, so velocity conversion uses empirical pulse PRF / 5."
     },
     {
+      "file": "data/head_2025-09-21_temporal_windows_plane4.npz",
+      "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
+      "source_per_acq_dir": "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq",
+      "plane": 4,
+      "windows": [
+        {
+          "first_acq": 200,
+          "last_acq": 399,
+          "label": "200 acquisitions"
+        },
+        {
+          "first_acq": 250,
+          "last_acq": 399,
+          "label": "150 acquisitions"
+        },
+        {
+          "first_acq": 300,
+          "last_acq": 399,
+          "label": "100 acquisitions"
+        },
+        {
+          "first_acq": 350,
+          "last_acq": 399,
+          "label": "50 acquisitions"
+        },
+        {
+          "first_acq": 390,
+          "last_acq": 399,
+          "label": "10 acquisitions"
+        },
+        {
+          "first_acq": 399,
+          "last_acq": 399,
+          "label": "1 acquisition"
+        }
+      ],
+      "note": "Compact median-window source for Figure 6 temporal-stability montage, generated from the full per-acquisition sidecar.",
+      "array_shapes": {
+        "images": [
+          6,
+          116,
+          294
+        ],
+        "window_start_acq": [
+          6
+        ],
+        "window_end_acq": [
+          6
+        ],
+        "window_label": [
+          6
+        ],
+        "plane": [],
+        "source_per_acq_dir": [],
+        "generated_by": [],
+        "note": [],
+        "x_mm": [
+          294
+        ],
+        "y_mm": [
+          10
+        ],
+        "z_mm": [
+          116
+        ]
+      }
+    },
+    {
       "file": "data/sep21_cached_compound_lag1_color_y14_15_acq200_399.npz",
       "sha256": "91ea41bbaf36fc60f6c22f84d1b52e6217da3c5951e7f5eb28f748f3da6a2c84",
       "bytes": 64244,
@@ -520,14 +617,16 @@
     }
   ],
   "rebuild_commands": [
+    "python3 scripts/phase_ls_research_sweep.py",
     "python3 scripts/generate_paper_figures.py",
+    "python3 scripts/compute_split_half_sign_agreement.py",
     "latexmk -pdf -interaction=nonstopmode paper.tex"
   ],
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "fb7a5b5718f65b8d692edfb8688f02af1fecb0fee4a41e55d4a62d03dc735ab7",
-      "bytes": 38561
+      "sha256": "b6a48a6f65fa325fea831d39fcb155effb588f65c998522bc932a6218a044079",
+      "bytes": 37832
     },
     {
       "file": "references.bib",
@@ -536,18 +635,18 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "f874af547881edc6d1b56314ec95d07b963b27157ed81da04e920154c508bd2b",
-      "bytes": 4371727
+      "sha256": "6920c0b06eeadf64bc8fb9f5598128090d548de71af3c8c5945b5fb8b9f9ddef",
+      "bytes": 4204171
     },
     {
       "file": "README.md",
-      "sha256": "f603ab2720f030380380e70dccda36a68f271a87a8c8046b238648505a8d534c",
-      "bytes": 2347
+      "sha256": "06060f6a3d14ed96e8026b9bf62eede02512336c3cd3d8d36bda9796d89de698",
+      "bytes": 3543
     },
     {
       "file": "TODO.md",
-      "sha256": "dbe6d812d629df628a799c2d19afc0650c9acacacd2c10c4c878ef8aae128563",
-      "bytes": 3149
+      "sha256": "fee926d6c5a141c77d9691693c6e03e15a0e99eff93e3660e083f032a053c3cf",
+      "bytes": 4919
     },
     {
       "file": "Makefile",
@@ -561,8 +660,13 @@
     },
     {
       "file": "scripts/generate_paper_figures.py",
-      "sha256": "24f90c7d35533923d89b9d2d9e3815d8ebf5e8790e1681e0f92105ffc23b1e29",
-      "bytes": 40789
+      "sha256": "2d554f5dc7ad6a16300f06d5f35a9fc6bac13c845927de60ceb3173e1621d598",
+      "bytes": 49015
+    },
+    {
+      "file": "scripts/compute_split_half_sign_agreement.py",
+      "sha256": "1c50dedba16008cf7be7004f4bbb12455d92e674ddbbe2526fa4562e791656f1",
+      "bytes": 7325
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -596,37 +700,37 @@
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.pdf",
-      "sha256": "80b86632ca8021b6ea4e1600467089346f2904ee101e9b8c2c5ebec622ab8c18",
-      "bytes": 301755
+      "sha256": "6059abd7d3bbcf300d8d980d113302849f796bbcdfb8cca112d99eba8baf4340",
+      "bytes": 193680
     },
     {
       "file": "outputs/paper_figures/fig_all_planes.png",
-      "sha256": "bf97e536852cd839a45d1d869de8520f0f1c765b3100853065c0116f7958d4ca",
-      "bytes": 803429
+      "sha256": "19d71c871cb52326786bf31ebe11b2e6a90659b3869808c93637721ce8fc501a",
+      "bytes": 494613
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.pdf",
-      "sha256": "c318fcc29a655cff977e6a74016aef54d236bd2670511a34eb15539fcbff2713",
-      "bytes": 23899
+      "sha256": "59a3a044f883186f70e9261ec1fe7384e808a66f924613f7cc73a0391f637f21",
+      "bytes": 24181
     },
     {
       "file": "outputs/paper_figures/fig_cnr_comparison.png",
-      "sha256": "977d55d425abbd0b193641b4d7003f7ec04713cea3aa93cda4b7d55cda73752f",
-      "bytes": 137605
+      "sha256": "7c808720dffb2879c89d5fce6341cd1a731a7f98551e697d69c5a7f066a3df19",
+      "bytes": 137262
     },
     {
       "file": "outputs/paper_figures/fig_dower_ablation.pdf",
-      "sha256": "5291930ea3813d26e9ae75ae32f29c77059553a9573dd89db86247fbe00a721a",
-      "bytes": 204974
+      "sha256": "d90733e09c4abb094dfd2e5e300fc175c24faf54ed77f2175a8282e55b1e0f18",
+      "bytes": 152061
     },
     {
       "file": "outputs/paper_figures/fig_dower_ablation.png",
-      "sha256": "da08c6b675f5d0a2b99bc1628a5bc02356c86d55e7b74f832cb4486c1566d067",
-      "bytes": 470001
+      "sha256": "e04f4e44ba7e692e8327ea1da5c2f4319a01e6377a7f02e0def5060509b5b2e0",
+      "bytes": 356984
     },
     {
       "file": "outputs/paper_figures/fig_external_recording_may18.pdf",
-      "sha256": "4607e288d678f944fb2079547fcad3e1790304771aa74fe0e4e7129ed33ed4e6",
+      "sha256": "7b9c5a9f18933ff0eb58d92edc936a99cebd0a51cca7ba3f1ccd81f9f9d77043",
       "bytes": 86617
     },
     {
@@ -636,17 +740,17 @@
     },
     {
       "file": "outputs/paper_figures/fig_temporal_stability.pdf",
-      "sha256": "f59b6e42e67deaa8d19262b1d81f9fd138e9597e677ff216ba5bef527550dc27",
-      "bytes": 166345
+      "sha256": "47dc8d8e019ce11c07de352f13e25ac0eba231c28d1ce2972311c2140575ced8",
+      "bytes": 211297
     },
     {
       "file": "outputs/paper_figures/fig_temporal_stability.png",
-      "sha256": "fb324db8f97140b5117b469a2a1b083cd76628ae107752213c5df6d36637d8fc",
-      "bytes": 268439
+      "sha256": "6dc68fd8b09ec7680336d6c5cb7c4a8be8c47380eb4126b6a620cbbce433e434",
+      "bytes": 431338
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_comparison.pdf",
-      "sha256": "020860db4795d4bf97fe79ca574ac54f930029e4422698a462c23f692e27a243",
+      "sha256": "73ef0119b422bb5435413b4c9aa4939f3411c6256bcb7f04f2b8324c923e24dd",
       "bytes": 151448
     },
     {
@@ -656,17 +760,17 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_with_rois.pdf",
-      "sha256": "fbb3461383a2c7df7cef4a64ef891f8406f209dd60dd859539d43f5c0c260887",
-      "bytes": 154466
+      "sha256": "d3a9a2f4b390bea46b50795cbc510cab25a7142cecf7b282520f52e755442ce2",
+      "bytes": 154491
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_with_rois.png",
-      "sha256": "1351a541ebade8ee3249e2aaeb7e6b74f81a5850e06ed8f3e4cadddb0bf46e09",
-      "bytes": 309323
+      "sha256": "e0543b7d580f240aef2745e2233661e1cee262154187b98ba955c8dc68a4cc9c",
+      "bytes": 314059
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.pdf",
-      "sha256": "22a5b7a7c428dbef4cc3101ecebad4bba092085a0f7bd912a0e77d6641082945",
+      "sha256": "14df004bf1d935b8f5981b180f364580ed6077b66c1c6c4e650d9f1596073491",
       "bytes": 1295890
     },
     {
@@ -676,8 +780,8 @@
     },
     {
       "file": "outputs/paper_stats/split_half_sign_agreement.json",
-      "sha256": "fe38aa806c792e5c72e1a05792b5fb6e510abe6b48c35ad6315b13e8e4752df2",
-      "bytes": 5717
+      "sha256": "1e99eb1fd3e685c94fec32bf418b9dcdc5eb94fc875e50ef603b33767034268b",
+      "bytes": 9165
     },
     {
       "file": "script_snapshots/caterpillar_imaging/doppler.py",
@@ -713,6 +817,36 @@
       "file": "script_snapshots/caterpillar_scripts/recompute_sep21_cached_compound_mid8.py",
       "sha256": "6a6ca7af067541b813926e1f77011ff0742989eff25eca72213c4cdfcf7f6a22",
       "bytes": 6263
+    },
+    {
+      "file": "scripts/phase_ls_research_sweep.py",
+      "sha256": "e3e88463593f51bc4273ef8688b85a510c36902d9332df1e50ce1d3029918aa0",
+      "bytes": 17259
+    },
+    {
+      "file": "scripts/synthetic_phase_ls.py",
+      "sha256": "bc5d23278e970f4bc24b582f4475391bb572e570e10d17d4605c247267a7436e",
+      "bytes": 509
+    },
+    {
+      "file": "outputs/paper_stats/simulation_results_table.tex",
+      "sha256": "6e18bd5151b46d01e10b2973d173fca074b1f6cca5db81bcf694e95c1d6930c0",
+      "bytes": 1822
+    },
+    {
+      "file": "outputs/research_sweep/phase_ls_research_sweep.summary.json",
+      "sha256": "02dc5b6779e8cacfa12753cb8f8b62902bf54f0164fcbf90cd243a2a2ff0bfd3",
+      "bytes": 10207
+    },
+    {
+      "file": "outputs/research_sweep/phase_ls_research_sweep.csv",
+      "sha256": "73218bd3c0d81ab002efce977262bd1e88ae903f009a41371b4baf755f01c59c",
+      "bytes": 83420
+    },
+    {
+      "file": "data/head_2025-09-21_temporal_windows_plane4.npz",
+      "sha256": "d21f79c711151d5722010e46fba5f423898a282cd9cebdbcd96eb7ef67e64446",
+      "bytes": 458128
     }
   ],
   "timing_ground_truth": {
@@ -750,6 +884,8 @@
     "source_h5": "/mnt/pocampus/lev/ultratrace_Head_monster_2025-09-21_21-32-01_y-20to20mm_30elev.h5",
     "contents": "Per-acquisition NPZ sidecar files acq_200.npz through acq_400.npz; each contains dower_coppler volumes on the fine y=-4..4 mm, 10-plane grid.",
     "paper_figure": "outputs/paper_figures/fig_temporal_stability.png",
-    "note": "The sidecar is too large to vendor in this paper repo; scripts/generate_paper_figures.py can reproduce the figure when this directory is present or supplied with --temporal-per-acq-dir."
-  }
+    "note": "The full per-acquisition sidecar is too large to vendor. The paper repo includes a compact temporal-window NPZ used by default for Figure 6; rerun the refresh command when the external sidecar should be re-reduced.",
+    "compact_summary": "data/head_2025-09-21_temporal_windows_plane4.npz"
+  },
+  "temporal_summary_refresh_command": "python3 scripts/generate_paper_figures.py --refresh-temporal-summary --temporal-per-acq-dir /Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq"
 }

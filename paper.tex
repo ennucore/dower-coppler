@@ -272,9 +272,12 @@ is the assumed speed of sound, and $f_0$ is the transmit center
 frequency.  For compounded plane-wave data, $f_{\mathrm{slow}}$ is the
 transmit pulse repetition frequency divided by the number of
 transmissions per compounded frame.  This is the standard axial
-Doppler conversion; no beam-flow angle correction is applied.  The final image is
+Doppler conversion; no beam-flow angle correction is applied.  The
+central composite index is
 \begin{equation}
-  I_{\text{Dower}} = v_\phi \; G_R \; Q.
+  \boxed{\displaystyle
+    I_{\mathrm{Dower}}(p) = v_\phi(p)\;G_R(p)\;Q(p)
+  }.
   \label{eq:dower}
 \end{equation}
 The result is positive for one axial flow direction and negative for
@@ -467,60 +470,18 @@ slow-time data are reduced to an image.  We computed:
 \Cref{tab:sim_results} summarizes the estimator performance across
 all five scenarios.
 
-\begin{table*}[t]
-\centering
-\caption{Estimator performance averaged over SNR and velocity
-  conditions.  Best values in each scenario are shown in
-  \textbf{bold}.}
-\label{tab:sim_results}
-\small
-\begin{tabular}{@{}llccc@{}}
-\toprule
-Scenario & Estimator & Med.\ abs.\ err. & RMSE & Sign err. \\
-         &           & (rad)             & (rad) & (\%) \\
-\midrule
-AWGN
-  & Kasai      & 0.235 & 0.401 & 8.2 \\
-  & WLS        & \textbf{0.095} & 0.257 & 6.8 \\
-  & Huber-WLS  & 0.096 & 0.259 & 6.8 \\
-  & Circ-WLS   & 0.101 & \textbf{0.253} & \textbf{6.5} \\
-\midrule
-Decorrelation
-  & Kasai      & 0.243 & 0.415 & 8.4 \\
-  & WLS        & \textbf{0.112} & 0.277 & 7.1 \\
-  & Huber-WLS  & \textbf{0.112} & 0.278 & 7.0 \\
-  & Circ-WLS   & 0.125 & \textbf{0.274} & \textbf{6.8} \\
-\midrule
-Lag outlier
-  & Kasai      & 0.241 & 0.401 & 8.6 \\
-  & WLS        & 0.094 & 0.276 & 6.5 \\
-  & Huber-WLS  & \textbf{0.092} & \textbf{0.267} & 6.6 \\
-  & Circ-WLS   & 0.105 & 0.271 & \textbf{6.4} \\
-\midrule
-Clutter leak
-  & Kasai      & 0.380 & 0.546 & 10.0 \\
-  & WLS        & 0.182 & 0.373 & 9.8 \\
-  & Huber-WLS  & 0.180 & 0.374 & 9.6 \\
-  & Circ-WLS   & \textbf{0.178} & \textbf{0.368} & \textbf{8.5} \\
-\midrule
-Two-component
-  & Kasai      & 0.338 & 0.518 & 10.7 \\
-  & WLS        & \textbf{0.128} & 0.315 & 9.0 \\
-  & Huber-WLS  & \textbf{0.128} & 0.316 & 8.9 \\
-  & Circ-WLS   & 0.133 & \textbf{0.308} & \textbf{8.3} \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\input{outputs/paper_stats/simulation_results_table.tex}
 
 Across all scenarios, WLS and Huber-WLS reduce the median absolute
 frequency error by approximately 2--3$\times$ relative to the Kasai
 estimator.  In the clean AWGN case, WLS and Huber-WLS are nearly
 identical, confirming that the robust reweighting does not degrade
 performance when no outliers are present.  Under the lag-outlier
-scenario, Huber-WLS achieves the lowest median error and RMSE, as the
-Huber weights suppress the corrupted lag.  The circular-sign-WLS
-hybrid consistently achieves the lowest sign error rate, particularly
-under clutter leakage and two-component flow.
+scenario, Huber-WLS achieves the lowest median error, while
+circular-sign-WLS gives the lowest RMSE and sign error in the displayed
+summary.  The circular-sign-WLS hybrid consistently achieves the
+lowest sign error rate, particularly under clutter leakage and
+two-component flow.
 
 \subsection{In Vivo Results}
 
@@ -571,7 +532,8 @@ $v_\phi$.
     background.  $v_\phi R^2$ gates the signed velocity by the
     phase-linearity fit quality.  $G_R$ alone is the unsigned
     coherence-strength image.  The final Dower Coppler image uses
-    $v_\phi G_R R^2$.}
+    $v_\phi G_R R^2$.  Images are cropped to the lateral range
+    $-1.5$ to $1.5$~cm.}
   \label{fig:dower_ablation}
 \end{figure*}
 
@@ -602,19 +564,23 @@ phase-slope fit disagree.
 \Cref{fig:cnr} quantifies this comparison using contrast-to-noise
 ratio (CNR) and generalized CNR (gCNR) across six vessel ROIs
 exported from the Doppler CNR viewer.  For each exported signal mask,
-we use the largest circular ROI fully contained inside that mask.  The
-same vessel-free background rectangle is used for every signal ROI so
-that the CNR values differ only because of the selected vessel pixels
-and Doppler image.
+we use the largest circular ROI whose center lies in the exported mask
+and whose pixels have at least 80\% overlap with that mask.  This
+avoids one-pixel ROIs for thin vessel masks while keeping the
+measurement localized to the selected vessel.  The same vessel-free
+background rectangle is used for every signal ROI so that the CNR
+values differ only because of the selected vessel pixels and Doppler
+image.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{fig_three_panel_with_rois.png}
   \caption{Regions used for the CNR and gCNR measurements in
-    \cref{fig:cnr}.  Cyan circles indicate the largest circular signal
-    ROIs fully contained inside the six exported vessel masks.  The
-    dashed green rectangle is the shared background ROI used for every
-    vessel and every Doppler display.}
+    \cref{fig:cnr}.  Cyan circles indicate the tolerant circular signal
+    ROIs used for measurement; each circle is centered inside the
+    exported vessel mask and has at least 80\% pixel overlap with that
+    mask.  The dashed green rectangle is the shared background ROI used
+    for every vessel and every Doppler display.}
   \label{fig:cnr_rois}
 \end{figure*}
 
@@ -622,8 +588,10 @@ and Doppler image.
   \centering
   \includegraphics[width=\textwidth]{fig_cnr_comparison.png}
   \caption{\textbf{Left}: CNR in dB across six vessel ROIs.  Dower
-    Coppler has median CNR 21.5~dB across the six selections
-    (range 11.2--40.1~dB), exceeding power Doppler in all ROIs.
+    Coppler has median CNR 15.6~dB across the six selections
+    (range 8.1--19.0~dB), compared with 13.9~dB for power Doppler.
+    Kasai color Doppler CNR is reported in the text but omitted from
+    this panel.
     \textbf{Middle}: magnitude generalized CNR
     (1~$-$~histogram overlap) using power Doppler, $|$color
     Doppler$|$, and $|$Dower Coppler$|$.
@@ -633,15 +601,15 @@ and Doppler image.
   \label{fig:cnr}
 \end{figure*}
 
-Dower Coppler achieves median CNR 21.5~dB across the six largest
-inscribed circular vessel selections, with values ranging from
-11.2--40.1~dB.  Power Doppler has median CNR 14.7~dB
-(range 9.9--19.3~dB), and Kasai color Doppler has median CNR
--7.1~dB (range -32.7--3.9~dB) when the signed Doppler maps are
-measured by magnitude, as in the viewer CNR calculation.  The upper
-end of the Dower Coppler range is driven by V6, a one-pixel inscribed
-circle on a compact high-contrast vessel; we therefore emphasize the
-median as the more representative summary statistic.  The gCNR metric
+Dower Coppler achieves median CNR 15.6~dB across the six tolerant
+circular vessel selections, with values ranging from 8.1--19.0~dB.
+Power Doppler has median CNR 13.9~dB (range 7.4--18.7~dB), and Kasai
+color Doppler has median CNR -6.9~dB (range -16.8--2.1~dB) when the
+signed Doppler maps are measured by magnitude, as in the viewer CNR
+calculation.  The smallest tolerant circles contain five pixels, rather
+than the one-pixel ROIs produced by strict inscribed circles in thin
+segmented masks; we emphasize the median as the more representative
+summary statistic.  The gCNR metric
 confirms that the selected vessels are well separated from the shared
 background region for all three displays when measured by magnitude,
 with Dower Coppler and power Doppler at approximately 1.0 across all
@@ -654,12 +622,12 @@ two non-overlapping halves (200--299 and 300--399), recomputed median
 Dower Coppler maps from the per-acquisition fine-elevation sidecar,
 and compared signs on the closest available elevation plane
 ($y=-0.44$~mm).  Across the full plane, including low-amplitude
-background, the Dower Coppler sign agreed for 68.8\% of 31,810 finite
+background, the Dower Coppler sign agreed for 76.6\% of 13,786 finite
 nonzero pixels.  Restricting the comparison to the highest-magnitude
-pixels gave substantially higher agreement: 96.7\% for the top 10\%
-of pixels and 98.1\% for the top 5\%.  In the circular vessel ROIs
-used for the CNR analysis, the sign was identical between halves for
-all 130 vessel-ROI pixels.
+pixels gave substantially higher agreement: 97.8\% for the top 10\%
+of pixels and 98.4\% for the top 5\%.  In the tolerant circular
+vessel ROIs used for the CNR analysis, the sign agreed between halves
+for 98.0\% of finite nonzero pixels (248 pixels; 250 total ROI pixels).
 
 \Cref{fig:stability} demonstrates the temporal stability of the Dower
 Coppler map by varying the number of acquisitions included in the
@@ -673,7 +641,8 @@ median image.
     panels use one shared symmetric color scale.  The vessel pattern
     and flow direction assignment remain stable from 200 acquisitions
     down to 10 acquisitions.  At a single acquisition, the major
-    vessels remain identifiable but background noise increases.}
+    vessels remain identifiable but background noise increases.  Images
+    are cropped to the lateral range $-1.5$ to $1.5$~cm.}
   \label{fig:stability}
 \end{figure*}
 
@@ -694,7 +663,8 @@ vascular pattern is not confined to a single selected plane.
     finer elevational rebeamforming run spanning $y=-4$ to $4$~mm with
     10 elevation planes.  The panels use acquisitions 200--400 and one
     shared symmetric color scale computed from the 97th percentile of
-    absolute Dower Coppler values across the displayed planes.  The directional vascular
+    absolute Dower Coppler values across the displayed planes.  Images
+    are cropped to the lateral range $-1.5$ to $1.5$~cm.  The directional vascular
     pattern appears across the imaging volume, with similar vessel
     segments visible in adjacent planes.}
   \label{fig:all_planes}

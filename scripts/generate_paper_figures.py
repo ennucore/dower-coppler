@@ -18,6 +18,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.patches import Ellipse, Rectangle
 import matplotlib.gridspec as gridspec
 import numpy as np
@@ -31,11 +32,20 @@ DEFAULT_REGIONS_PATH = DATA_DIR / "cnr_measurement_20260515_191622.regions.json"
 DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz"
 DEFAULT_ALL_PLANES_START = 2
 DEFAULT_ALL_PLANES_END = 7
+DEFAULT_TEMPORAL_SUMMARY_PATH = DATA_DIR / "head_2025-09-21_temporal_windows_plane4.npz"
 DEFAULT_TEMPORAL_PER_ACQ_DIR = Path(
     "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/"
     "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq"
 )
 DEFAULT_TEMPORAL_PLANE = 4
+TEMPORAL_WINDOWS = [
+    (200, 399, "200 acquisitions"),
+    (250, 399, "150 acquisitions"),
+    (300, 399, "100 acquisitions"),
+    (350, 399, "50 acquisitions"),
+    (390, 399, "10 acquisitions"),
+    (399, 399, "1 acquisition"),
+]
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
 )
@@ -48,6 +58,9 @@ PD_DB_LIMITS = (-100.0, 140.0)
 CD_ABS_PERCENTILE = 99.0
 DC_ABS_PERCENTILE = 99.0
 CNR_NOISE_MODE = "both"  # sqrt(var(signal) + var(background))
+ROI_CIRCLE_MIN_OVERLAP = 0.80
+ROI_CIRCLE_MAX_RADIUS_PX = 16.0
+ROI_CIRCLE_RADIUS_STEP_PX = 0.25
 
 # Physical coordinates for plane 2 (from grid.h5, in cm)
 X_RANGE_CM = (-1.5, 1.5)      # lateral (cropped to active region)
@@ -80,7 +93,14 @@ def apply_compound_frame_rate_correction(data: dict, path: Path) -> dict:
     phase-to-velocity conversion; the Doppler cadence is pulse PRF / 5.
     Corrected NPZs store velocity_scale_corrected=True or compound_frame_rate_hz.
     """
-    is_sep21 = "head_2025-09-21" in path.name or "sep21_cached" in path.name
+    source_h5 = ""
+    if "source_h5" in data:
+        source_h5 = str(np.asarray(data["source_h5"]).item())
+    is_sep21 = (
+        "head_2025-09-21" in path.name
+        or "sep21_cached" in path.name
+        or "2025-09-21" in source_h5
+    )
     already_corrected = bool(np.asarray(data.get("velocity_scale_corrected", False)).item())
     if not is_sep21 or already_corrected or "compound_frame_rate_hz" in data:
         return data
@@ -154,8 +174,29 @@ def axis_extent_cm(data: dict, shape: tuple[int, int]) -> list[float]:
     return EXTENT_CM
 
 
+def crop_lateral_cm(image: np.ndarray, data: dict, x_range: tuple[float, float] = X_RANGE_CM) -> tuple[np.ndarray, list[float]]:
+    """Crop a 2D image to the requested lateral range in centimeters."""
+    img = np.asarray(image)
+    extent = axis_extent_cm(data, img.shape)
+    if img.ndim != 2:
+        raise ValueError(f"Expected a 2D image, got shape {img.shape}")
+
+    if "x_mm" in data:
+        x_cm = np.asarray(data["x_mm"], dtype=float) / 10.0
+        if x_cm.size == img.shape[1]:
+            keep = (x_cm >= x_range[0]) & (x_cm <= x_range[1])
+            if np.any(keep):
+                return img[:, keep], [float(x_range[0]), float(x_range[1]), extent[2], extent[3]]
+
+    x_centers = np.linspace(extent[0], extent[1], img.shape[1])
+    keep = (x_centers >= x_range[0]) & (x_centers <= x_range[1])
+    if np.any(keep):
+        return img[:, keep], [float(x_range[0]), float(x_range[1]), extent[2], extent[3]]
+    return img, extent
+
+
 def load_region_export(path: Path) -> tuple[dict, list[np.ndarray], np.ndarray]:
-    """Load viewer-exported masks, replacing signal ROIs with inscribed circles."""
+    """Load viewer-exported masks, replacing signal ROIs with tolerant circles."""
     info = json.loads(path.read_text())
     shape = tuple(info["image_shape_rc"])
     signal_masks = []
@@ -165,13 +206,25 @@ def load_region_export(path: Path) -> tuple[dict, list[np.ndarray], np.ndarray]:
         pixels = np.asarray(selection["signal_pixels_rc"], dtype=int)
         if pixels.size:
             mask[pixels[:, 0], pixels[:, 1]] = True
-        circle_mask, center_row, center_col, radius = largest_inscribed_circle(mask)
+        strict_mask, _, _, strict_radius = largest_inscribed_circle(mask)
+        circle_mask, center_row, center_col, radius, overlap, inside_pixels = largest_tolerant_circle(
+            mask,
+            min_overlap=ROI_CIRCLE_MIN_OVERLAP,
+            max_radius=ROI_CIRCLE_MAX_RADIUS_PX,
+            radius_step=ROI_CIRCLE_RADIUS_STEP_PX,
+        )
         signal_masks.append(circle_mask)
         circle_records.append({
             "center_row": center_row,
             "center_col": center_col,
             "radius_px": radius,
+            "strict_radius_px": strict_radius,
+            "min_overlap": ROI_CIRCLE_MIN_OVERLAP,
+            "overlap_fraction": overlap,
+            "inside_original_pixels": inside_pixels,
+            "outside_original_pixels": int(circle_mask.sum()) - int(inside_pixels),
             "original_pixels": int(mask.sum()),
+            "strict_circle_pixels": int(strict_mask.sum()),
             "circle_pixels": int(circle_mask.sum()),
         })
 
@@ -201,6 +254,47 @@ def largest_inscribed_circle(mask: np.ndarray) -> tuple[np.ndarray, float, float
     yy, xx = np.ogrid[:mask.shape[0], :mask.shape[1]]
     circle = ((yy - float(row)) ** 2 + (xx - float(col)) ** 2 <= max(0.0, radius - 1e-6) ** 2)
     return circle & mask, float(row), float(col), radius
+
+
+def largest_tolerant_circle(
+    mask: np.ndarray,
+    min_overlap: float,
+    max_radius: float,
+    radius_step: float,
+) -> tuple[np.ndarray, float, float, float, float, int]:
+    """Largest circle whose center is in the ROI and whose pixels mostly overlap it."""
+    mask = np.asarray(mask, dtype=bool)
+    if not mask.any():
+        empty = np.zeros_like(mask, dtype=bool)
+        return empty, np.nan, np.nan, np.nan, np.nan, 0
+
+    yy, xx = np.ogrid[:mask.shape[0], :mask.shape[1]]
+    candidates = np.argwhere(mask)
+    best = None
+    radii = np.arange(1.0, max_radius + 0.5 * radius_step, radius_step)
+    for row, col in candidates:
+        row_f = float(row)
+        col_f = float(col)
+        dist2 = (yy - row_f) ** 2 + (xx - col_f) ** 2
+        for radius in radii:
+            circle = dist2 <= float(radius) ** 2
+            circle_pixels = int(circle.sum())
+            if circle_pixels == 0:
+                continue
+            inside_pixels = int((circle & mask).sum())
+            overlap = inside_pixels / float(circle_pixels)
+            if overlap < min_overlap:
+                continue
+            score = (circle_pixels, float(radius), overlap)
+            if best is None or score > best[0]:
+                best = (score, circle.copy(), row_f, col_f, float(radius), overlap, inside_pixels)
+
+    if best is None:
+        circle, row, col, radius = largest_inscribed_circle(mask)
+        return circle, row, col, radius, 1.0, int(circle.sum())
+
+    _, circle, row, col, radius, overlap, inside_pixels = best
+    return circle, row, col, radius, overlap, inside_pixels
 
 
 def pd_image(raw: np.ndarray) -> tuple[np.ndarray, float, float]:
@@ -322,15 +416,14 @@ def figure_temporal_stability(data: dict, output_dir: Path):
     fig, axes = plt.subplots(2, 3, figsize=(14, 8), constrained_layout=True)
     axes = axes.ravel()
 
-    # Common color scale from the 250-buffer average
-    dc_full = np.median(data["dower_coppler"][:250, PLANE], axis=0)
+    # Common color scale from the displayed crop of the 250-buffer average.
+    dc_full, extent = crop_lateral_cm(np.median(data["dower_coppler"][:250, PLANE], axis=0), data)
     _, common_vmin, common_vmax = signed_image(dc_full, 99.0)
 
-    imshow_kw = dict(origin="lower", aspect="equal",
-                     extent=[_FULL_X_MIN, _FULL_X_MAX, Z_RANGE_CM[0], Z_RANGE_CM[1]])
+    imshow_kw = dict(origin="lower", aspect="equal", extent=extent)
 
     for idx, (start, end, label) in enumerate(windows):
-        dc_raw = np.median(data["dower_coppler"][start:end, PLANE], axis=0)
+        dc_raw, _ = crop_lateral_cm(np.median(data["dower_coppler"][start:end, PLANE], axis=0), data)
         axes[idx].imshow(dc_raw.astype(np.float32), cmap="seismic",
                          vmin=common_vmin, vmax=common_vmax, **imshow_kw)
         axes[idx].set_title(label, fontsize=10, fontweight="bold")
@@ -345,42 +438,83 @@ def figure_temporal_stability(data: dict, output_dir: Path):
     print(f"  Saved temporal stability montage")
 
 
-def figure_temporal_stability_from_sidecar(
-    per_acq_dir: Path,
-    output_dir: Path,
-    plane: int = DEFAULT_TEMPORAL_PLANE,
-):
-    """Dower Coppler maps from per-acquisition sidecars with count-based labels."""
-    windows = [
-        (200, 399, "200 acquisitions"),
-        (250, 399, "150 acquisitions"),
-        (300, 399, "100 acquisitions"),
-        (350, 399, "50 acquisitions"),
-        (390, 399, "10 acquisitions"),
-        (399, 399, "1 acquisition"),
-    ]
-
-    def load_window(start: int, end: int) -> tuple[np.ndarray, dict]:
-        imgs = []
-        meta = {}
-        for acq in range(start, end + 1):
-            path = per_acq_dir / f"acq_{acq}.npz"
-            with np.load(path, allow_pickle=True) as z:
-                imgs.append(np.asarray(z["dower_coppler"][plane], dtype=np.float32))
-                if not meta:
-                    meta = {k: z[k] for k in ("x_mm", "y_mm", "z_mm") if k in z.files}
-        return np.median(np.stack(imgs, axis=0), axis=0), meta
-
-    images = []
+def temporal_windows_from_sidecar(per_acq_dir: Path, plane: int) -> tuple[list[tuple[int, int, str, np.ndarray]], dict]:
+    """Load the compact temporal-stability windows from per-acquisition sidecars."""
+    acq_start = min(start for start, _, _ in TEMPORAL_WINDOWS)
+    acq_end = max(end for _, end, _ in TEMPORAL_WINDOWS)
+    acq_images = []
+    acqs = []
     meta = {}
-    for start, end, label in windows:
-        img, this_meta = load_window(start, end)
-        images.append((start, end, label, img))
+    for acq in range(acq_start, acq_end + 1):
+        path = per_acq_dir / f"acq_{acq}.npz"
+        data = load_npz(path)
+        acq_images.append(np.asarray(data["dower_coppler"][plane], dtype=np.float32))
+        acqs.append(acq)
         if not meta:
-            meta = this_meta
+            meta = {k: data[k] for k in ("x_mm", "y_mm", "z_mm") if k in data}
 
+    acqs_arr = np.asarray(acqs)
+    stack = np.stack(acq_images, axis=0)
+    images = []
+    for start, end, label in TEMPORAL_WINDOWS:
+        keep = (acqs_arr >= start) & (acqs_arr <= end)
+        images.append((start, end, label, np.median(stack[keep], axis=0).astype(np.float32)))
+    return images, meta
+
+
+def save_temporal_summary(
+    path: Path,
+    images: list[tuple[int, int, str, np.ndarray]],
+    meta: dict,
+    plane: int,
+    source_per_acq_dir: Path,
+) -> None:
+    """Save the compact data needed to reproduce the temporal-stability figure."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "images": np.stack([img for _, _, _, img in images], axis=0).astype(np.float32),
+        "window_start_acq": np.asarray([start for start, _, _, _ in images], dtype=np.int32),
+        "window_end_acq": np.asarray([end for _, end, _, _ in images], dtype=np.int32),
+        "window_label": np.asarray([label for _, _, label, _ in images]),
+        "plane": np.asarray(plane, dtype=np.int32),
+        "source_per_acq_dir": np.asarray(str(source_per_acq_dir)),
+        "generated_by": np.asarray("scripts/generate_paper_figures.py --refresh-temporal-summary"),
+        "note": np.asarray("Median Dower Coppler maps for the temporal-stability windows used in Figure 6."),
+    }
+    for key in ("x_mm", "y_mm", "z_mm"):
+        if key in meta:
+            payload[key] = np.asarray(meta[key])
+    np.savez_compressed(path, **payload)
+    print(f"  Saved compact temporal summary to {path}")
+
+
+def load_temporal_summary(path: Path) -> tuple[list[tuple[int, int, str, np.ndarray]], dict, int]:
+    """Load compact temporal-stability data committed with the paper repo."""
+    with np.load(path) as z:
+        starts = np.asarray(z["window_start_acq"], dtype=int)
+        ends = np.asarray(z["window_end_acq"], dtype=int)
+        labels = [str(label) for label in np.asarray(z["window_label"])]
+        imgs = np.asarray(z["images"], dtype=np.float32)
+        plane = int(np.asarray(z["plane"]).item())
+        meta = {k: z[k] for k in ("x_mm", "y_mm", "z_mm") if k in z}
+    images = [(int(start), int(end), label, imgs[idx]) for idx, (start, end, label) in enumerate(zip(starts, ends, labels))]
+    return images, meta, plane
+
+
+def plot_temporal_stability_images(
+    images: list[tuple[int, int, str, np.ndarray]],
+    meta: dict,
+    output_dir: Path,
+    plane: int,
+    source_label: str,
+) -> None:
+    """Render temporal-stability images after they have been reduced to windows."""
     data_for_extent = {k: np.asarray(v) for k, v in meta.items()}
-    extent = axis_extent_cm(data_for_extent, images[0][3].shape)
+    cropped_images = []
+    for start, end, label, img in images:
+        cropped_img, extent = crop_lateral_cm(img, data_for_extent)
+        cropped_images.append((start, end, label, cropped_img))
+    images = cropped_images
     finite_abs = np.concatenate([np.abs(img[np.isfinite(img)]).ravel() for _, _, _, img in images])
     common_lim = float(np.percentile(finite_abs, 99.0)) if finite_abs.size else 1.0
     y_label = ""
@@ -414,7 +548,26 @@ def figure_temporal_stability_from_sidecar(
     fig.savefig(output_dir / "fig_temporal_stability.pdf", dpi=300, bbox_inches="tight")
     fig.savefig(output_dir / "fig_temporal_stability.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
-    print(f"  Saved temporal stability montage from {per_acq_dir}")
+    print(f"  Saved temporal stability montage from {source_label}")
+
+
+def figure_temporal_stability_from_sidecar(
+    per_acq_dir: Path,
+    output_dir: Path,
+    plane: int = DEFAULT_TEMPORAL_PLANE,
+    summary_path: Path | None = None,
+):
+    """Dower Coppler maps from per-acquisition sidecars with count-based labels."""
+    images, meta = temporal_windows_from_sidecar(per_acq_dir, plane)
+    if summary_path is not None:
+        save_temporal_summary(summary_path, images, meta, plane, per_acq_dir)
+    plot_temporal_stability_images(images, meta, output_dir, plane, str(per_acq_dir))
+
+
+def figure_temporal_stability_from_summary(summary_path: Path, output_dir: Path):
+    """Dower Coppler temporal-stability montage from the compact committed NPZ."""
+    images, meta, plane = load_temporal_summary(summary_path)
+    plot_temporal_stability_images(images, meta, output_dir, plane, str(summary_path))
 
 
 # ── Figure: All elevation planes ──────────────────────────────────────
@@ -440,12 +593,15 @@ def figure_all_planes(
     fig, axes = plt.subplots(nrows, ncols, figsize=(10, nrows * 2.0), constrained_layout=True)
     axes = axes.ravel()
 
-    plane_images = [metric_plane(data, "dower_coppler", plane, acq_start, acq_end) for plane in planes]
+    plane_images = []
+    extent = None
+    for plane in planes:
+        img, extent = crop_lateral_cm(metric_plane(data, "dower_coppler", plane, acq_start, acq_end), data)
+        plane_images.append(img)
     finite_abs = np.concatenate([np.abs(img[np.isfinite(img)]).ravel() for img in plane_images])
     common_lim = float(np.percentile(finite_abs, 97.0)) if finite_abs.size else 1.0
 
     for ax_idx, (plane, dc_full) in enumerate(zip(planes, plane_images)):
-        extent = axis_extent_cm(data, dc_full.shape)
         title = f"Plane {plane}"
         if "y_mm" in data:
             y_mm = np.asarray(data["y_mm"], dtype=float)
@@ -530,7 +686,9 @@ def figure_cnr_comparison(
         print(
             f"    {roi_labels[idx]}: center=({circle['center_col']:.0f},{circle['center_row']:.0f}), "
             f"radius={circle['radius_px']:.2f}px, signal_pixels={int(sig_mask.sum())}, "
-            f"original_pixels={circle['original_pixels']}, background_pixels={int(this_bg_mask.sum())}"
+            f"overlap={circle['overlap_fraction']:.2f}, inside={circle['inside_original_pixels']}, "
+            f"outside={circle['outside_original_pixels']}, original_pixels={circle['original_pixels']}, "
+            f"background_pixels={int(this_bg_mask.sum())}"
         )
 
     # Plot CNR bar chart
@@ -770,7 +928,11 @@ def figure_dower_ablation(data: dict, output_dir: Path, plane: int | None = None
     else:
         v_phi_r2 = v_phi * r2
 
-    extent = axis_extent_cm(data, v_phi.shape)
+    v_phi, extent = crop_lateral_cm(v_phi, data)
+    g_r, _ = crop_lateral_cm(g_r, data)
+    r2, _ = crop_lateral_cm(r2, data)
+    v_phi_g_r, _ = crop_lateral_cm(v_phi_g_r, data)
+    v_phi_r2, _ = crop_lateral_cm(v_phi_r2, data)
     panels = [
         (r"$v_\phi$ alone", v_phi, "seismic", "signed"),
         (r"$v_\phi \cdot G_R$", v_phi_g_r, "seismic", "signed"),
@@ -778,7 +940,7 @@ def figure_dower_ablation(data: dict, output_dir: Path, plane: int | None = None
         (r"$G_R$ alone", g_r, "magma", "unsigned"),
     ]
 
-    fig, axes = plt.subplots(2, 2, figsize=(10, 7), constrained_layout=True)
+    fig, axes = plt.subplots(2, 2, figsize=(10, 5.8), constrained_layout=False)
     axes = axes.ravel()
     for ax, (title, img, cmap, mode) in zip(axes, panels):
         if mode == "signed":
@@ -801,10 +963,13 @@ def figure_dower_ablation(data: dict, output_dir: Path, plane: int | None = None
         ax.set_xlabel("Lateral (cm)", fontsize=9)
         ax.set_ylabel("Depth (cm)", fontsize=9)
         ax.tick_params(labelsize=8)
-        cbar = fig.colorbar(im, ax=ax, shrink=0.86, pad=0.02)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="3%", pad=0.04)
+        cbar = fig.colorbar(im, cax=cax)
         cbar.ax.tick_params(labelsize=7)
 
     fig.suptitle("Dower Coppler ablation components", fontsize=14, fontweight="bold")
+    fig.subplots_adjust(left=0.07, right=0.94, bottom=0.10, top=0.86, wspace=0.32, hspace=0.55)
     fig.savefig(output_dir / "fig_dower_ablation.pdf", dpi=300, bbox_inches="tight")
     fig.savefig(output_dir / "fig_dower_ablation.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
@@ -868,8 +1033,14 @@ def main():
     parser.add_argument("--all-planes-data", type=Path, default=DEFAULT_ALL_PLANES_PATH)
     parser.add_argument("--all-planes-start", type=int, default=DEFAULT_ALL_PLANES_START)
     parser.add_argument("--all-planes-end", type=int, default=DEFAULT_ALL_PLANES_END)
+    parser.add_argument("--temporal-summary-data", type=Path, default=DEFAULT_TEMPORAL_SUMMARY_PATH)
     parser.add_argument("--temporal-per-acq-dir", type=Path, default=DEFAULT_TEMPORAL_PER_ACQ_DIR)
     parser.add_argument("--temporal-plane", type=int, default=DEFAULT_TEMPORAL_PLANE)
+    parser.add_argument(
+        "--refresh-temporal-summary",
+        action="store_true",
+        help="Recompute the compact temporal-stability NPZ from --temporal-per-acq-dir.",
+    )
     parser.add_argument("--external-recording-data", type=Path, default=DEFAULT_EXTERNAL_RECORDING_PATH)
     parser.add_argument(
         "--external-recording-plane",
@@ -902,7 +1073,18 @@ def main():
 
     print("\nGenerating figures:")
     figure_three_panel(per_acq, args.output_dir)
-    if args.temporal_per_acq_dir.exists():
+    if args.refresh_temporal_summary:
+        if not args.temporal_per_acq_dir.exists():
+            raise FileNotFoundError(f"Temporal sidecar not found: {args.temporal_per_acq_dir}")
+        figure_temporal_stability_from_sidecar(
+            args.temporal_per_acq_dir,
+            args.output_dir,
+            plane=args.temporal_plane,
+            summary_path=args.temporal_summary_data,
+        )
+    elif args.temporal_summary_data.exists():
+        figure_temporal_stability_from_summary(args.temporal_summary_data, args.output_dir)
+    elif args.temporal_per_acq_dir.exists():
         figure_temporal_stability_from_sidecar(
             args.temporal_per_acq_dir,
             args.output_dir,
