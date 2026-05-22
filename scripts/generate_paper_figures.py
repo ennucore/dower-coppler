@@ -18,6 +18,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.patches import Ellipse, Rectangle
 import matplotlib.gridspec as gridspec
@@ -34,6 +35,7 @@ DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4
 DEFAULT_ALL_PLANES_START = 2
 DEFAULT_ALL_PLANES_END = 7
 DEFAULT_TEMPORAL_SUMMARY_PATH = DATA_DIR / "head_2025-09-21_temporal_windows_plane4.npz"
+DEFAULT_SPLIT_HALF_PATH = DATA_DIR / "head_2025-09-21_split_half_plane4_all480.npz"
 DEFAULT_TEMPORAL_PER_ACQ_DIR = Path(
     "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/"
     "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479_per_acq"
@@ -50,14 +52,28 @@ TEMPORAL_WINDOWS = [
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
 )
-NUM_COMPOUND_ANGLES_SEP21 = 5
+LEGACY_COMPOUND_ANGLE_RULES = (
+    (
+        ("head_2025-09-21", "sep21_cached", "2025-09-21"),
+        5,
+        "Sep 21 H5 acq config stores num_angles=5",
+    ),
+    (
+        ("bt24480388_2026-05-18_152605", "ultratrace_BT24480388_monster_2026-05-18_15:26:05"),
+        5,
+        "May 18 H5 acq config stores num_angles=5",
+    ),
+)
 
 # Display parameters from the screenshots
 PLANE = 7       # main display plane (header image, temporal stability)
 CNR_PLANE = 2   # plane used for CNR/ROI analysis (vessel ROIs were tuned for this)
-PD_DB_LIMITS = (-100.0, 140.0)
+PD_DB_PERCENTILES = (1.0, 99.5)
 CD_ABS_PERCENTILE = 99.0
 DC_ABS_PERCENTILE = 99.0
+TEMPORAL_ABS_PERCENTILE = 97.0
+SPLIT_HALF_ABS_PERCENTILE = 97.0
+SPLIT_HALF_AGREEMENT_TOP_PCT = 10
 CNR_NOISE_MODE = "both"  # sqrt(var(signal) + var(background))
 ROI_CIRCLE_MIN_OVERLAP = 0.80
 ROI_CIRCLE_MAX_RADIUS_PX = 16.0
@@ -86,28 +102,64 @@ def load_npz(path: Path) -> dict:
     return data
 
 
-def apply_compound_frame_rate_correction(data: dict, path: Path) -> dict:
-    """Correct legacy Sep 21 velocity fields from pulse PRF to compound cadence.
+def validate_in_vivo_baselines(data: dict, path: Path) -> None:
+    """Reject stale placeholder baselines in the main in-vivo figure input.
 
-    The Sep 21 H5 stores 700 slow-time loops, each containing five transmit
-    angles. Legacy NPZs used the empirical pulse repetition rate directly for
-    phase-to-velocity conversion; the Doppler cadence is pulse PRF / 5.
-    Corrected NPZs store velocity_scale_corrected=True or compound_frame_rate_hz.
+    The paper compares Dower Coppler against standard SVD-filtered power
+    Doppler and an independent lag-1 Kasai color Doppler estimate. Older Sep21
+    caches stored power_doppler=abs(dower_coppler) and
+    color_doppler=phase_velocity as viewer placeholders; those are not valid
+    baselines for Figure 1, CNR/gCNR, or the Bland-Altman comparison.
     """
+    required = {"power_doppler", "dower_coppler", "color_doppler", "phase_velocity"}
+    missing = sorted(required - set(data))
+    if missing:
+        raise ValueError(f"{path} is missing required in-vivo baseline fields: {missing}")
+
+    power = np.asarray(data["power_doppler"])
+    dower_abs = np.abs(np.asarray(data["dower_coppler"]))
+    if power.shape == dower_abs.shape and np.array_equal(power, dower_abs):
+        raise ValueError(
+            f"{path} has stale power_doppler=abs(dower_coppler); regenerate it as "
+            "SVD-filtered power Doppler sum_t |S'_t|^2 before making paper figures."
+        )
+
+    color = np.asarray(data["color_doppler"])
+    phase = np.asarray(data["phase_velocity"])
+    if color.shape == phase.shape and np.array_equal(color, phase):
+        raise ValueError(
+            f"{path} has stale color_doppler=phase_velocity; regenerate it as an "
+            "independent lag-1 Kasai estimate angle(R_1) before making paper figures."
+        )
+
+
+def _legacy_compound_angle_rule(data: dict, path: Path) -> tuple[int, str] | None:
     source_h5 = ""
     if "source_h5" in data:
         source_h5 = str(np.asarray(data["source_h5"]).item())
-    is_sep21 = (
-        "head_2025-09-21" in path.name
-        or "sep21_cached" in path.name
-        or "2025-09-21" in source_h5
-    )
+    haystack = f"{path.name} {source_h5}"
+    for tokens, num_angles, note in LEGACY_COMPOUND_ANGLE_RULES:
+        if any(token in haystack for token in tokens):
+            return num_angles, note
+    return None
+
+
+def apply_compound_frame_rate_correction(data: dict, path: Path) -> dict:
+    """Correct legacy velocity fields from pulse PRF to compound cadence.
+
+    Legacy NPZs used the empirical transmit pulse repetition rate directly for
+    phase-to-velocity conversion. For five-angle plane-wave compounding, the
+    Doppler slow-time cadence is pulse PRF / 5.
+    Corrected NPZs store velocity_scale_corrected=True or compound_frame_rate_hz.
+    """
     already_corrected = bool(np.asarray(data.get("velocity_scale_corrected", False)).item())
-    if not is_sep21 or already_corrected or "compound_frame_rate_hz" in data:
+    rule = _legacy_compound_angle_rule(data, path)
+    if rule is None or already_corrected or "compound_frame_rate_hz" in data:
         return data
 
+    num_angles, timing_note = rule
     out = dict(data)
-    scale = np.float32(1.0 / NUM_COMPOUND_ANGLES_SEP21)
+    scale = np.float32(1.0 / float(num_angles))
     for key in ("phase_velocity", "color_doppler", "phase_velocity_r2"):
         if key in out:
             out[key] = (np.asarray(out[key], dtype=np.float32) * scale).astype(np.float32)
@@ -130,9 +182,12 @@ def apply_compound_frame_rate_correction(data: dict, path: Path) -> dict:
         out["pulse_repetition_rate_hz"] = pulse_prf
         out["compound_frame_rate_hz"] = np.float32(float(pulse_prf) * float(scale))
         out["frame_rate_hz"] = out["compound_frame_rate_hz"]
-    out["num_compound_angles"] = np.int32(NUM_COMPOUND_ANGLES_SEP21)
+    out["num_compound_angles"] = np.int32(num_angles)
     out["velocity_scale_correction"] = scale
     out["velocity_scale_corrected"] = np.bool_(True)
+    out["timing_note"] = np.asarray(
+        f"{timing_note}; Doppler slow-time samples are compounded frames, so velocity conversion uses pulse PRF / {num_angles}."
+    )
     return out
 
 
@@ -299,9 +354,14 @@ def largest_tolerant_circle(
 
 
 def pd_image(raw: np.ndarray) -> tuple[np.ndarray, float, float]:
-    """Power Doppler in dB with fixed viewer-matched display limits."""
+    """Power Doppler in dB with robust limits from positive-power pixels."""
     img = 10.0 * np.log10(np.maximum(raw, 1e-12))
-    return img.astype(np.float32), PD_DB_LIMITS[0], PD_DB_LIMITS[1]
+    finite_positive = img[np.isfinite(img) & (np.asarray(raw) > 0)]
+    if finite_positive.size:
+        vmin, vmax = np.percentile(finite_positive, PD_DB_PERCENTILES)
+        if float(vmax) > float(vmin):
+            return img.astype(np.float32), float(vmin), float(vmax)
+    return img.astype(np.float32), -100.0, 140.0
 
 
 def signed_image(raw: np.ndarray, percentile: float) -> tuple[np.ndarray, float, float]:
@@ -517,7 +577,7 @@ def plot_temporal_stability_images(
         cropped_images.append((start, end, label, cropped_img))
     images = cropped_images
     finite_abs = np.concatenate([np.abs(img[np.isfinite(img)]).ravel() for _, _, _, img in images])
-    common_lim = float(np.percentile(finite_abs, 99.0)) if finite_abs.size else 1.0
+    common_lim = float(np.percentile(finite_abs, TEMPORAL_ABS_PERCENTILE)) if finite_abs.size else 1.0
     y_label = ""
     if "y_mm" in meta:
         y_mm = np.asarray(meta["y_mm"], dtype=float)
@@ -569,6 +629,111 @@ def figure_temporal_stability_from_summary(summary_path: Path, output_dir: Path)
     """Dower Coppler temporal-stability montage from the compact committed NPZ."""
     images, meta, plane = load_temporal_summary(summary_path)
     plot_temporal_stability_images(images, meta, output_dir, plane, str(summary_path))
+
+
+def figure_split_half_consistency(split_path: Path, output_dir: Path) -> None:
+    """Compare Dower Coppler maps from the first and second acquisition halves."""
+    with np.load(split_path) as z:
+        split_a = np.asarray(z["dower_coppler_split_a"], dtype=np.float32)
+        split_b = np.asarray(z["dower_coppler_split_b"], dtype=np.float32)
+        split_a_acqs = tuple(int(v) for v in np.asarray(z["split_a_acqs"]))
+        split_b_acqs = tuple(int(v) for v in np.asarray(z["split_b_acqs"]))
+        plane = int(np.asarray(z["plane"]).item())
+        meta = {k: z[k] for k in ("x_mm", "y_mm", "z_mm") if k in z}
+
+    valid = np.isfinite(split_a) & np.isfinite(split_b) & (split_a != 0) & (split_b != 0)
+    absmax = np.maximum(np.abs(split_a), np.abs(split_b))
+    if valid.any():
+        threshold = float(np.percentile(absmax[valid], 100.0 - SPLIT_HALF_AGREEMENT_TOP_PCT))
+        top_mask = valid & (absmax >= threshold)
+        agree = np.sign(split_a) == np.sign(split_b)
+        top_agreement = float(np.mean(agree[top_mask])) if top_mask.any() else float("nan")
+        all_agreement = float(np.mean(agree[valid]))
+    else:
+        top_mask = np.zeros_like(valid)
+        agree = np.zeros_like(valid)
+        top_agreement = float("nan")
+        all_agreement = float("nan")
+
+    agreement_img = np.full(split_a.shape, np.nan, dtype=np.float32)
+    agreement_img[top_mask & ~agree] = 0.0
+    agreement_img[top_mask & agree] = 1.0
+
+    data_for_extent = {k: np.asarray(v) for k, v in meta.items()}
+    split_a_crop, extent = crop_lateral_cm(split_a, data_for_extent)
+    split_b_crop, _ = crop_lateral_cm(split_b, data_for_extent)
+    agreement_crop, _ = crop_lateral_cm(agreement_img, data_for_extent)
+    finite_abs = np.concatenate([
+        np.abs(split_a_crop[np.isfinite(split_a_crop)]).ravel(),
+        np.abs(split_b_crop[np.isfinite(split_b_crop)]).ravel(),
+    ])
+    lim = float(np.percentile(finite_abs, SPLIT_HALF_ABS_PERCENTILE)) if finite_abs.size else 1.0
+
+    y_label = ""
+    if "y_mm" in meta:
+        y_mm = np.asarray(meta["y_mm"], dtype=float)
+        if plane < y_mm.size:
+            y_label = f", y={y_mm[plane]:.2f} mm"
+
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.2), constrained_layout=True)
+    panels = [
+        (axes[0], split_a_crop, f"First half\nacqs {split_a_acqs[0]}-{split_a_acqs[1]}"),
+        (axes[1], split_b_crop, f"Second half\nacqs {split_b_acqs[0]}-{split_b_acqs[1]}"),
+    ]
+    for ax, img, title in panels:
+        im = ax.imshow(
+            img,
+            cmap="seismic",
+            vmin=-lim,
+            vmax=lim,
+            origin="lower",
+            aspect="equal",
+            extent=extent,
+        )
+        ax.set_title(title, fontsize=10, fontweight="bold")
+        ax.set_xlabel("Lateral (cm)", fontsize=8)
+        ax.set_ylabel("Depth (cm)", fontsize=8)
+        ax.tick_params(labelsize=7)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="3%", pad=0.04)
+        cbar = fig.colorbar(im, cax=cax)
+        cbar.ax.tick_params(labelsize=7)
+
+    cmap = ListedColormap(["#8b5cf6", "#16a34a"])
+    cmap.set_bad("#eeeeee")
+    axes[2].imshow(
+        agreement_crop,
+        cmap=cmap,
+        vmin=0.0,
+        vmax=1.0,
+        origin="lower",
+        aspect="equal",
+        extent=extent,
+    )
+    axes[2].set_title(
+        f"Sign agreement\n"
+        f"top {SPLIT_HALF_AGREEMENT_TOP_PCT}% |Dower|: {100.0 * top_agreement:.1f}%",
+        fontsize=10,
+        fontweight="bold",
+    )
+    axes[2].set_xlabel("Lateral (cm)", fontsize=8)
+    axes[2].set_ylabel("Depth (cm)", fontsize=8)
+    axes[2].tick_params(labelsize=7)
+    axes[2].text(
+        0.02,
+        0.02,
+        f"green=agree, purple=disagree\nall finite nonzero: {100.0 * all_agreement:.1f}%",
+        transform=axes[2].transAxes,
+        fontsize=7,
+        color="black",
+        bbox=dict(facecolor="white", alpha=0.75, edgecolor="none", pad=2),
+    )
+
+    fig.suptitle(f"Split-half Dower Coppler consistency, plane {plane}{y_label}", fontsize=12, fontweight="bold")
+    fig.savefig(output_dir / "fig_split_half_consistency.pdf", dpi=300, bbox_inches="tight")
+    fig.savefig(output_dir / "fig_split_half_consistency.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    print(f"  Saved split-half consistency figure from {split_path}")
 
 
 # ── Figure: All elevation planes ──────────────────────────────────────
@@ -744,6 +909,40 @@ def figure_cnr_comparison(
             f"{gcnr_pd[i]:7.2f}  {gcnr_cd[i]:7.2f}  {gcnr_dc[i]:7.2f}  "
             f"{signed_gcnr_cd[i]:8.2f}  {signed_gcnr_dc[i]:8.2f}"
         )
+    stats_dir = output_dir.parent / "paper_stats"
+    stats_dir.mkdir(parents=True, exist_ok=True)
+    cnr_payload = {
+        "source_regions": str(regions_path),
+        "plane": int(plane),
+        "roi_labels": roi_labels,
+        "metrics": {
+            "cnr_db": {
+                "power_doppler": [float(v) for v in cnr_pd],
+                "color_doppler_abs": [float(v) for v in cnr_cd],
+                "dower_coppler_abs": [float(v) for v in cnr_dc],
+            },
+            "gcnr": {
+                "power_doppler": [float(v) for v in gcnr_pd],
+                "color_doppler_abs": [float(v) for v in gcnr_cd],
+                "dower_coppler_abs": [float(v) for v in gcnr_dc],
+                "color_doppler_signed": [float(v) for v in signed_gcnr_cd],
+                "dower_coppler_signed": [float(v) for v in signed_gcnr_dc],
+            },
+        },
+        "summary": {
+            "median_cnr_db": {
+                "power_doppler": float(np.nanmedian(cnr_pd)),
+                "color_doppler_abs": float(np.nanmedian(cnr_cd)),
+                "dower_coppler_abs": float(np.nanmedian(cnr_dc)),
+            },
+            "range_cnr_db": {
+                "power_doppler": [float(np.nanmin(cnr_pd)), float(np.nanmax(cnr_pd))],
+                "color_doppler_abs": [float(np.nanmin(cnr_cd)), float(np.nanmax(cnr_cd))],
+                "dower_coppler_abs": [float(np.nanmin(cnr_dc)), float(np.nanmax(cnr_dc))],
+            },
+        },
+    }
+    (stats_dir / "cnr_gcnr_comparison.json").write_text(json.dumps(cnr_payload, indent=2) + "\n")
     print(f"  Saved CNR comparison")
 
 
@@ -928,24 +1127,34 @@ def figure_dower_ablation(data: dict, output_dir: Path, plane: int | None = None
         v_phi_r2 = metric_plane(data, "phase_velocity_r2", plane_idx)
     else:
         v_phi_r2 = v_phi * r2
+    if "dower_coppler" in data:
+        dower = metric_plane(data, "dower_coppler", plane_idx)
+    else:
+        dower = v_phi * g_r * r2
 
     v_phi, extent = crop_lateral_cm(v_phi, data)
     g_r, _ = crop_lateral_cm(g_r, data)
     r2, _ = crop_lateral_cm(r2, data)
     v_phi_g_r, _ = crop_lateral_cm(v_phi_g_r, data)
     v_phi_r2, _ = crop_lateral_cm(v_phi_r2, data)
+    dower, _ = crop_lateral_cm(dower, data)
     panels = [
         (r"$v_\phi$ alone", v_phi, "seismic", "signed"),
+        (r"$G_R$ alone", g_r, "magma", "unsigned"),
+        (r"$R^2$ alone", r2, "viridis", "unit"),
         (r"$v_\phi \cdot G_R$", v_phi_g_r, "seismic", "signed"),
         (r"$v_\phi \cdot R^2$", v_phi_r2, "seismic", "signed"),
-        (r"$G_R$ alone", g_r, "magma", "unsigned"),
+        (r"$v_\phi \cdot G_R \cdot R^2$", dower, "seismic", "signed"),
     ]
 
-    fig, axes = plt.subplots(2, 2, figsize=(10, 5.8), constrained_layout=False)
+    fig, axes = plt.subplots(2, 3, figsize=(13.2, 5.8), constrained_layout=False)
     axes = axes.ravel()
     for ax, (title, img, cmap, mode) in zip(axes, panels):
         if mode == "signed":
             img_plot, vmin, vmax = signed_image(img, DC_ABS_PERCENTILE)
+        elif mode == "unit":
+            img_plot = img.astype(np.float32)
+            vmin, vmax = 0.0, 1.0
         else:
             img_plot = img.astype(np.float32)
             finite = img_plot[np.isfinite(img_plot)]
@@ -970,7 +1179,7 @@ def figure_dower_ablation(data: dict, output_dir: Path, plane: int | None = None
         cbar.ax.tick_params(labelsize=7)
 
     fig.suptitle("Dower Coppler ablation components", fontsize=14, fontweight="bold")
-    fig.subplots_adjust(left=0.07, right=0.94, bottom=0.10, top=0.86, wspace=0.32, hspace=0.55)
+    fig.subplots_adjust(left=0.06, right=0.96, bottom=0.10, top=0.86, wspace=0.34, hspace=0.55)
     fig.savefig(output_dir / "fig_dower_ablation.pdf", dpi=300, bbox_inches="tight")
     fig.savefig(output_dir / "fig_dower_ablation.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
@@ -989,6 +1198,7 @@ def figure_external_recording(data: dict, output_dir: Path, plane: int | None = 
     source_h5 = str(np.asarray(data.get("source_h5", "unknown")).item())
     acq_count = int(np.asarray(data.get("acq_count", 0)).item()) if "acq_count" in data else 0
     frame_rate = float(np.asarray(data.get("frame_rate_hz", np.nan)).item()) if "frame_rate_hz" in data else np.nan
+    compound_rate = float(np.asarray(data.get("compound_frame_rate_hz", frame_rate)).item())
 
     fig, ax = plt.subplots(1, 1, figsize=(6.2, 4.2), constrained_layout=True)
     im = ax.imshow(
@@ -1009,7 +1219,7 @@ def figure_external_recording(data: dict, output_dir: Path, plane: int | None = 
     ax.text(
         0.02,
         0.02,
-        f"middle plane {plane_idx}; {acq_count} acquisitions; PRF {frame_rate:.1f} Hz",
+        f"middle plane {plane_idx}; {acq_count} acquisitions; cadence {compound_rate:.1f} Hz",
         transform=ax.transAxes,
         fontsize=8,
         va="bottom",
@@ -1036,6 +1246,7 @@ def main():
     parser.add_argument("--all-planes-start", type=int, default=DEFAULT_ALL_PLANES_START)
     parser.add_argument("--all-planes-end", type=int, default=DEFAULT_ALL_PLANES_END)
     parser.add_argument("--temporal-summary-data", type=Path, default=DEFAULT_TEMPORAL_SUMMARY_PATH)
+    parser.add_argument("--split-half-data", type=Path, default=DEFAULT_SPLIT_HALF_PATH)
     parser.add_argument("--temporal-per-acq-dir", type=Path, default=DEFAULT_TEMPORAL_PER_ACQ_DIR)
     parser.add_argument("--temporal-plane", type=int, default=DEFAULT_TEMPORAL_PLANE)
     parser.add_argument(
@@ -1061,6 +1272,7 @@ def main():
     per_acq = load_npz(per_acq_path)
     print(f"  Path: {per_acq_path}")
     print(f"  Shape: {per_acq['power_doppler'].shape}")
+    validate_in_vivo_baselines(per_acq, per_acq_path)
 
     print("Loading all-planes dataset...")
     all_planes = load_npz(args.all_planes_data)
@@ -1090,6 +1302,11 @@ def main():
         figure_temporal_stability(per_acq, args.output_dir)
     else:
         print("  Skipping temporal stability montage: no per-acq sidecar and viewer dataset is already averaged")
+
+    if args.split_half_data.exists():
+        figure_split_half_consistency(args.split_half_data, args.output_dir)
+    else:
+        print(f"  Skipping split-half consistency figure: {args.split_half_data} not found")
 
     figure_cnr_comparison(per_acq, args.output_dir, args.regions, acq_start=0, acq_end=480)
     figure_three_panel_with_rois(per_acq, args.output_dir, args.regions, acq_start=0, acq_end=480)

@@ -37,24 +37,28 @@
 \begin{abstract}
 Ultrafast power Doppler imaging is sensitive to weak flow but discards
 flow direction, while classic autocorrelation color Doppler estimates
-signed velocity from phase and is sensitive to noise.  We propose
-\textbf{Dower Coppler}, a composite signed Doppler index for
-SVD-filtered ultrafast compound data.  The method does not introduce a
-new Doppler estimator from first principles; instead, it combines known
-building blocks---complex autocorrelation, multi-lag phase regression,
-power-like magnitude weighting, and fit-quality gating---into a single
-scalar image.  For each pixel, we estimate the beam-projected phase
-velocity $v_\phi$ from a weighted multi-lag phase fit, then multiply it
-by the geometric mean of the lag-correlation magnitudes and by the
-weighted $R^2$ of the phase fit, yielding
-$v_\phi\,\mathrm{gmean}_k(|R_k|)\,R^2$.  In
-Monte~Carlo simulations across five noise and interference scenarios,
-the multi-lag phase estimator reduces median absolute frequency error
-by 2--3$\times$ relative to the Kasai estimator.  We demonstrate the method
-\textit{in~vivo} on transcranial functional ultrasound data acquired
+signed velocity from phase and is sensitive to noise.  These
+limitations are especially important for transcranial human imaging
+with a matrix-array probe, where the signal is acquired through the
+intact adult skull and reconstructed as a 3D volume rather than a
+single 2D acoustic window.  We propose \textbf{Dower Coppler}, a
+composite signed Doppler index for SVD-filtered ultrafast compound
+data.  The method does not introduce a new Doppler estimator from first
+principles; instead, it combines known building blocks---complex
+autocorrelation, multi-lag phase regression, power-like magnitude
+weighting, and fit-quality gating---into a single scalar image.  For
+each voxel, we estimate the beam-projected phase velocity $v_\phi$
+from a weighted multi-lag phase fit, then multiply it by the geometric
+mean of the lag-correlation magnitudes and by the weighted $R^2$ of
+the phase fit, yielding
+$v_\phi\,\mathrm{gmean}_k(|R_k|)\,R^2$.  In Monte~Carlo simulations
+across five noise and interference scenarios, the multi-lag phase
+estimator reduces median absolute frequency error by 2--3$\times$
+relative to the Kasai estimator.  We demonstrate the method
+\textit{in~vivo} on transcranial 3D functional ultrasound data acquired
 from human cortex through the intact skull, without a cranial window,
 where the Dower Coppler index reveals opposing flow directions in
-adjacent vessels that are invisible in conventional power Doppler.
+adjacent vessels across the reconstructed matrix-imaging volume.
 \end{abstract}
 
 \vspace{0.5em}
@@ -68,11 +72,18 @@ adjacent vessels that are invisible in conventional power Doppler.
 Ultrafast ultrasound imaging, in which the entire field of view is
 insonified by unfocused or plane-wave transmissions at kilohertz frame
 rates, has enabled a new class of hemodynamic imaging
-modalities~\cite{demene2015svd,tremblaydarveau2017coherencepd}.  Transcranial
-functional ultrasound (fUS) exploits this capability to image cerebral
-blood flow through the intact skull, but the transcranial setting
-imposes severe SNR constraints due to skull attenuation and
-aberration.  Spatiotemporal SVD clutter filtering is now a standard
+modalities~\cite{demene2015svd,tremblaydarveau2017coherencepd}.  With
+2D matrix-array reception, the same ultrafast strategy can be extended
+from a single image plane to volumetric fUS, producing lateral,
+elevational, and depth-resolved Doppler volumes.  Transcranial
+functional ultrasound (fUS) exploits ultrafast sensitivity to image
+cerebral blood flow through the intact skull, but the transcranial
+setting imposes severe SNR constraints due to skull attenuation and
+aberration.  The combination of intact-skull propagation and 3D matrix
+imaging is particularly demanding: each voxel must be reconstructed
+from an attenuated, aberrated aperture while preserving enough
+slow-time phase coherence for directional Doppler estimation.
+Spatiotemporal SVD clutter filtering is now a standard
 preprocessing step in ultrafast Doppler and fUS because it separates
 tissue and blood components using their different spatiotemporal
 coherence~\cite{demene2015svd}.  After clutter filtering, the most
@@ -132,20 +143,27 @@ fit-quality term.  The distinctive contribution is this specific
 scalar product, $v_\phi\,G_R\,R^2$, for SVD-filtered ultrafast compound
 data.
 
-The experimental setting is also relevant.  Prior human fUS studies
-have primarily used intraoperative imaging after skull opening
+The experimental setting is also relevant.  Human fUS studies have
+often used intraoperative imaging after skull opening
 \cite{imbault2017intraoperative} or imaging through acoustically
 transparent cranial implants/windows
-\cite{rabut2024cranialwindow,soloukey2025mobile}.  Here, the data are
-acquired transcranially through the intact adult skull.  This extreme
-low-SNR operating point motivates a conservative composite index that
-uses multi-lag evidence and explicit phase-fit quality rather than a
+\cite{rabut2024cranialwindow,soloukey2025mobile}.  More recently,
+contrast-free transcranial fUS through the intact adult skull has been
+demonstrated for cerebrovascular-reactivity measurements with power
+Doppler imaging~\cite{vienneau2026adultskull}.  Here, the data are
+also acquired transcranially through the intact adult skull, but with a
+matrix-array acquisition that preserves elevational information and
+with the goal of recovering signed flow-direction contrast in cortical
+vessels.  This combination of intact-skull propagation, 3D matrix
+imaging, and directional Doppler estimation creates an extreme low-SNR
+operating point and motivates a conservative composite index that uses
+multi-lag evidence and explicit phase-fit quality rather than a
 single-lag color Doppler estimate alone.
 
 We evaluate the index and its phase-velocity component in two settings: (1)~Monte Carlo simulations
 under additive white Gaussian noise, decorrelation, lag outliers,
 clutter leakage, and mixed-flow scenarios; and (2)~\textit{in~vivo}
-transcranial functional ultrasound imaging of human cortex.
+transcranial 3D functional ultrasound imaging of human cortex.
 \Cref{fig:invivo_comparison} previews the key result.
 
 
@@ -377,22 +395,26 @@ limits.
 
 \subsection{Data Acquisition}
 
-Transcranial functional ultrasound data were acquired from the
+Transcranial 3D functional ultrasound data were acquired from the
 temporal lobe of one healthy volunteer using a Butterfly iQ+
-point-of-care ultrasound probe operated with custom firmware.  The
+point-of-care matrix-array probe operated with custom firmware.  The
 probe was placed over the temporal acoustic window and the acquisition
 was performed through the intact skull, without craniotomy,
-cranioplasty, or another acoustic cranial window.  The source ultratrace
-contained 480 acquisitions.  Each acquisition contained 700 compounded
-slow-time frames formed from five azimuthal plane-wave transmissions
-spanning $\pm 6^\circ$; two additional noise loops were stored in the
-raw IQ data but were not used for Doppler processing.  The transmit
-center frequency was \SI{2.75}{\mega\hertz} with three transmit cycles,
-and the receive data were sampled at \SI{4.17}{\mega\hertz} after
-decimation.  The HDF5 metadata report an empirical pulse-repetition
-rate of \SI{1240.9}{\hertz} over the full ultratrace; because each
-compounded frame used five transmit angles, the corresponding
-compounded-frame cadence was approximately \SI{248.2}{\hertz}.  The assumed sound speed was
+cranioplasty, or another acoustic cranial window.  The matrix
+acquisition retained elevational aperture information, allowing the
+same ultratrace to be reconstructed as a lateral-elevation-depth
+Doppler volume rather than only a single 2D image plane.  The source
+ultratrace contained 480 acquisitions.  Each acquisition contained 700
+compounded slow-time frames formed from five azimuthal plane-wave
+transmissions spanning $\pm 6^\circ$; two additional noise loops were
+stored in the raw IQ data but were not used for Doppler processing.
+The transmit center frequency was \SI{2.75}{\mega\hertz} with three
+transmit cycles, and the receive data were sampled at
+\SI{4.17}{\mega\hertz} after decimation.  The HDF5 metadata report an
+empirical pulse-repetition rate of \SI{1240.9}{\hertz} over the full
+ultratrace; because each compounded frame used five transmit angles,
+the corresponding compounded-frame cadence was approximately
+\SI{248.2}{\hertz}.  The assumed sound speed was
 \SI{1600}{\meter\per\second}.
 
 The original beamformed volume covered
@@ -421,7 +443,7 @@ of buffers included in the median.
 Parameter & Value \\
 \midrule
 Target / window & Temporal lobe / temporal acoustic window \\
-Probe & Butterfly iQ+ with custom firmware \\
+Probe & Butterfly iQ+ matrix-array probe with custom firmware \\
 Acquisitions in ultratrace & 480 \\
 Frames per acquisition & 700 compounded slow-time frames \\
 Transmit angles & 5 azimuthal angles over $\pm 6^\circ$ \\
@@ -433,6 +455,7 @@ Depth range & \SIrange{21.0}{37.896}{\milli\meter} \\
 Sound speed & \SI{1600}{\meter\per\second} \\
 Original grid & $147 \times 30 \times 58$ (lat. $\times$ elev. $\times$ depth) \\
 Figure grid & $294 \times 2 \times 116$ (lat. $\times$ elev. $\times$ depth) \\
+Volume montage grid & $294 \times 10 \times 116$ (lat. $\times$ elev. $\times$ depth) \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -444,18 +467,23 @@ of the slow-time ensemble at each pixel, with low-rank tissue clutter
 components removed.  In the current processing, the compound data are
 mean-subtracted before SVD filtering; the lowest 8\% of singular modes
 are removed, the high cutoff is 1.0, the fast SVD implementation is
-used, and the first five filtered frames are omitted from Doppler
-summaries and phase fitting.  Beamforming used the MACH GPU
+used, and the first five filtered frames are omitted from the power
+Doppler baseline summary.  Beamforming used the MACH GPU
 delay-and-sum backend, channel mean subtraction, an $f$-number of 0.5,
-all enabled receive rows, and one-row compounding.  The source
-ultratrace was beamformed into 30 elevation planes with 20 processing
-chunks; the fine-grid figure dataset used the two central elevation
-planes at doubled lateral/depth sampling.  All Doppler estimators share
+all enabled receive rows, and one-row compounding.  The H5 acquisition
+metadata define a 30-plane elevation grid.  The main fine-grid figure
+dataset rebeamformed the two central elevation planes at doubled
+lateral/depth sampling with 24 processing chunks and fast
+wavefront-fit downsampling of recovered full-2D transmit delays; the
+elevation montage used a separate 10-plane rebeamform spanning
+$y=-4$ to $4$~mm.  All Doppler estimators share
 the same filtered ensemble; they differ only in how the filtered
 slow-time data are reduced to an image.  We computed:
 \begin{itemize}
-  \item Standard power Doppler ($|R_0|$).
-  \item Kasai color Doppler ($\angle R_1$).
+  \item Standard power Doppler: the zero-lag filtered slow-time power,
+    $P(p)=\sum_{t=6}^{T}|S'_t(p)|^2$.
+  \item Kasai color Doppler: lag-1 velocity from $\angle R_1$ using
+    the same axial Doppler conversion as in \cref{eq:phase_velocity}.
   \item Multi-lag phase velocity from weighted phase regression.
   \item Dower Coppler, $v_\phi\,G_R\,R^2$, at $K = 5$.
 \end{itemize}
@@ -489,14 +517,16 @@ two-component flow.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{fig_three_panel_comparison.png}
-  \caption{Transcranial cortex imaging (median of 480 Doppler buffers,
-    plane-wave compounding).  \textbf{Left}: power Doppler, displayed
-    from $-100$ to $140$~dB, shows vessel structure but no directional
-    information.  \textbf{Center}: Kasai color Doppler ($\angle R_1$)
-    reveals direction but is dominated by noise.  \textbf{Right}:
-    Dower Coppler ($v_\phi\,G_R\,R^2$, $K=5$) combines multi-lag
-    coherence weighting with directional information from the phase
-    slope and fit quality.
+  \caption{Intact-skull transcranial cortex imaging from a 3D
+    matrix-array acquisition (median of 480 Doppler buffers,
+    plane-wave compounding), shown on a central reconstructed elevation
+    plane.  \textbf{Left}: power Doppler, displayed with a robust
+    positive-pixel dB window, shows vessel structure but no directional information.
+    \textbf{Center}: Kasai color Doppler ($\angle R_1$) reveals
+    direction but is dominated by noise.  \textbf{Right}: Dower
+    Coppler ($v_\phi\,G_R\,R^2$, $K=5$) combines multi-lag coherence
+    weighting with directional information from the phase slope and fit
+    quality.
     Opposing flow directions in adjacent cortical vessels are clearly
     resolved.}
   \label{fig:invivo_comparison}
@@ -517,11 +547,11 @@ terms in the composite index.  The phase velocity $v_\phi$ alone
 contains the directional pattern but also substantial background
 phase noise.  Multiplication by the multi-lag coherence strength
 $G_R$ suppresses decorrelated background and emphasizes vessel-like
-structures.  Multiplication by $R^2$ preserves the signed velocity
+structures.  The $R^2$ panel shows the phase-linearity quality map,
+and multiplication by $R^2$ preserves the signed velocity
 interpretation while down-weighting pixels whose lag phases are poorly
-explained by a single slope.  The $G_R$ panel shows that the magnitude
-term is power-Doppler-like and unsigned; direction enters through
-$v_\phi$.
+explained by a single slope.  The $G_R$ and $R^2$ panels are unsigned;
+direction enters through $v_\phi$.
 
 \begin{figure*}[t]
   \centering
@@ -532,7 +562,8 @@ $v_\phi$.
     multi-lag autocorrelation magnitudes, suppressing incoherent
     background.  $v_\phi R^2$ gates the signed velocity by the
     phase-linearity fit quality.  $G_R$ alone is the unsigned
-    coherence-strength image.  The final Dower Coppler image uses
+    coherence-strength image, and $R^2$ alone is the unsigned
+    phase-linearity quality map.  The final Dower Coppler panel uses
     $v_\phi G_R R^2$.  Images are cropped to the lateral range
     $-1.5$ to $1.5$~cm.}
   \label{fig:dower_ablation}
@@ -589,8 +620,8 @@ image.
   \centering
   \includegraphics[width=\textwidth]{fig_cnr_comparison.png}
   \caption{\textbf{Left}: CNR in dB across six vessel ROIs.  Dower
-    Coppler has median CNR 14.0~dB across the six selections
-    (range 8.8--21.8~dB), compared with 4.7~dB for power Doppler.
+    Coppler has median CNR 13.4~dB across the six selections
+    (range 8.8--21.8~dB), compared with 12.4~dB for power Doppler.
     Kasai color Doppler CNR is reported in the text but omitted from
     this panel.
     \textbf{Middle}: magnitude generalized CNR
@@ -602,19 +633,23 @@ image.
   \label{fig:cnr}
 \end{figure*}
 
-Dower Coppler achieves median CNR 14.0~dB across the six tolerant
+Dower Coppler achieves median CNR 13.4~dB across the six tolerant
 circular vessel selections, with values ranging from 8.8--21.8~dB.
-Power Doppler has median CNR 4.7~dB (range -8.0--7.7~dB), and Kasai
-color Doppler has median CNR 12.2~dB (range 7.8--14.1~dB) when the
+Power Doppler has median CNR 12.4~dB (range -5.8--14.9~dB), and Kasai
+color Doppler has median CNR -8.7~dB (range -17.1--5.3~dB) when the
 signed Doppler maps are measured by magnitude, as in the viewer CNR
-calculation.  The smallest tolerant circles contain five pixels, rather
+calculation.  Thus the corrected standard power-Doppler baseline is
+competitive for unsigned vessel detection, while Dower Coppler retains
+directional sign and suppresses incoherent signed background.  The
+smallest tolerant circles contain five pixels, rather
 than the one-pixel ROIs produced by strict inscribed circles in thin
 segmented masks; we emphasize the median as the more representative
 summary statistic.  The gCNR metric
 confirms that the selected vessels are well separated from the shared
-background region for all three displays when measured by magnitude,
-with Dower Coppler and power Doppler at approximately 1.0 across all
-selections.  The directional gCNR comparison uses the signed maps
+background region when measured by magnitude, with Dower Coppler at
+approximately 1.0 across all selections and power Doppler at median
+1.0 despite one lower-contrast selection.  The directional gCNR
+comparison uses the signed maps
 directly and therefore compares only Kasai color Doppler and Dower
 Coppler.
 
@@ -630,6 +665,26 @@ of pixels and 94.5\% for the top 5\%.  In the tolerant circular
 vessel ROIs used for the CNR analysis, the sign agreed between halves
 for 98.8\% of finite nonzero pixels (250 total ROI pixels).
 
+\Cref{fig:split_half_consistency} shows the corresponding split-half
+Dower Coppler images.  The same vessel structures and dominant flow
+directions are recovered independently from the first and second halves
+of the ultratrace; disagreement is concentrated mainly in low-amplitude
+background and vessel-edge pixels.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig_split_half_consistency.png}
+  \caption{Split-half consistency of Dower Coppler on the fine-elevation
+    plane at $y=-0.44$~mm.  \textbf{Left}: median Dower Coppler map from
+    acquisitions 0--239.  \textbf{Middle}: median map from acquisitions
+    240--479.  Both Dower panels use one shared symmetric
+    97th-percentile color scale.  \textbf{Right}: sign agreement within
+    the top 10\% of finite nonzero pixels by maximum absolute Dower
+    magnitude across the two halves; gray pixels are outside this
+    high-magnitude subset.}
+  \label{fig:split_half_consistency}
+\end{figure*}
+
 \Cref{fig:stability} demonstrates the temporal stability of the Dower
 Coppler map by varying the number of acquisitions included in the
 median image.
@@ -639,8 +694,8 @@ median image.
   \includegraphics[width=\textwidth]{fig_temporal_stability.png}
   \caption{Dower Coppler maps computed from different numbers of
     acquisitions on the fine-elevation plane at $y=-0.44$~mm.  All
-    panels use one shared symmetric color scale.  The vessel pattern
-    and flow direction assignment remain stable from the full
+    panels use one shared symmetric 97th-percentile color scale.  The
+    vessel pattern and flow direction assignment remain stable from the full
     480-acquisition ultratrace down to 10 acquisitions.  Images are
     cropped to the lateral range $-1.5$ to $1.5$~cm.}
   \label{fig:stability}
@@ -652,20 +707,22 @@ with background noise increasing as fewer acquisitions are included.
 
 \Cref{fig:all_planes} shows the Dower Coppler map across elevation
 planes 2--7 from a finer elevational rebeamforming run spanning
-$y=-4$ to $4$~mm, providing a qualitative check that the directional
-vascular pattern is not confined to a single selected plane.
+$y=-4$ to $4$~mm.  This figure is the main 3D matrix-imaging result:
+the directional vascular pattern is recovered across adjacent
+elevation planes rather than appearing only in one selected 2D slice.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth,height=0.78\textheight,keepaspectratio]{fig_all_planes.png}
   \caption{Dower Coppler maps across elevation planes 2--7 from the
-    finer elevational rebeamforming run spanning $y=-4$ to $4$~mm with
-    10 elevation planes.  The panels use all 480 acquisitions and one
-    shared symmetric color scale computed from the 97th percentile of
-    absolute Dower Coppler values across the displayed planes.  Images
-    are cropped to the lateral range $-1.5$ to $1.5$~cm.  The directional vascular
-    pattern appears across the imaging volume, with similar vessel
-    segments visible in adjacent planes.}
+    finer 3D matrix-array rebeamforming run spanning $y=-4$ to
+    $4$~mm with 10 reconstructed elevation planes.  The panels use all
+    480 acquisitions and one shared symmetric color scale computed from
+    the 97th percentile of absolute Dower Coppler values across the
+    displayed planes.  Images are cropped to the lateral range $-1.5$
+    to $1.5$~cm.  The directional vascular pattern appears across the
+    imaging volume, with similar vessel segments visible in adjacent
+    planes.}
   \label{fig:all_planes}
 \end{figure*}
 
@@ -684,8 +741,9 @@ without editing the paper.
     middle plane from a 10-plane GPU/MACH beamformed H5 ultratrace
     using row\_index=$-1$, $y=-3.5$ to $3.5$~mm, fine lateral/axial
     coarseness 0.5/0.5, 20 acquisitions (0--19), median aggregation,
-    PRF 1476.3~Hz, $f_0=2.75$~MHz, $c=1600$~m/s, SVD cutoff 0.08,
-    and $K=5$.  The main September 21 dataset uses a separate Head
+    pulse PRF 1476.3~Hz (compounded-frame cadence 295.3~Hz),
+    $f_0=2.75$~MHz, $c=1600$~m/s, SVD cutoff 0.08, and $K=5$.
+    The main September 21 dataset uses a separate Head
     ultratrace, all 480 acquisitions for the CNR/fine-grid analysis,
     elevation planes 2--7 from the $y=-4$ to $4$~mm fine-elevation
     run for the volume montage, pulse PRF 1240.9~Hz
@@ -732,14 +790,18 @@ uses products of temporal autocorrelation magnitudes to improve
 ultrafast power Doppler SNR~\cite{shen2022tmas}; $G_R$ can be
 interpreted as a bounded geometric-mean version of this
 product-of-lag-magnitudes idea.
-Relative to these methods, the contribution here is the specific
-coherence-weighted signed index, and in particular the use of a
-per-pixel phase-linearity $R^2$ as a confidence gate.  This $R^2$ term
-differs from standard spectral-width or variance estimates: it measures
-how well the lag phases are explained by one linear slope, penalizing
-multi-component flow, turbulence, wrapping errors, and residual clutter.
-The claim is therefore not novelty for autocorrelation Doppler, SVD
-filtering, or multi-lag correlation processing broadly.
+Recent intact-skull adult tfUS work further shows that contrast-free
+power-Doppler fUS can measure cerebrovascular reactivity through the
+adult skull when acquisition and motion control are carefully optimized
+\cite{vienneau2026adultskull}.  Relative to these methods, the
+contribution here is the specific coherence-weighted signed index, and
+in particular the use of a per-pixel phase-linearity $R^2$ as a
+confidence gate.  This $R^2$ term differs from standard spectral-width
+or variance estimates: it measures how well the lag phases are
+explained by one linear slope, penalizing multi-component flow,
+turbulence, wrapping errors, and residual clutter.  The claim is
+therefore not novelty for intact-skull adult fUS, autocorrelation
+Doppler, SVD filtering, or multi-lag correlation processing broadly.
 
 \paragraph{Choice of parameters.}
 The maximum lag $K = 5$ was chosen empirically: higher lags provide
@@ -753,14 +815,15 @@ diagnostics but are not part of the default formula.
 
 \paragraph{Limitations.}
 This study uses data from a single volunteer with a single probe.  The
-transcranial imaging scenario---with low SNR, strong clutter, and
-skull-induced aberrations---is a challenging test case, but validation
-on a larger cohort and with flow phantoms providing ground-truth
-velocity fields is needed.  Dower Coppler is not itself a quantitative
-velocity image: $G_R$ depends on gain, depth attenuation, beamforming
-normalization, SVD scaling, and backscatter strength.  Quantitative
-velocity analysis should use $v_\phi$ directly, with appropriate
-attention to angle dependence and aliasing.  The conversion in
+transcranial 3D matrix-imaging scenario---with low SNR, strong
+clutter, skull-induced aberrations, and elevation-dependent focusing
+errors---is a challenging test case, but validation on a larger cohort
+and with flow phantoms providing ground-truth velocity fields is
+needed.  Dower Coppler is not itself a quantitative velocity image:
+$G_R$ depends on gain, depth attenuation, beamforming normalization,
+SVD scaling, and backscatter strength.  Quantitative velocity analysis
+should use $v_\phi$ directly, with appropriate attention to angle
+dependence and aliasing.  The conversion in
 \cref{eq:phase_velocity} estimates the beam-projected axial component;
 it does not correct for beam-flow angle.  Multi-lag fitting also does
 not remove the fundamental pulse-Doppler phase-wrap ambiguity: the lag
@@ -796,8 +859,9 @@ computational cost while attenuating weak or inconsistent pixels.
 Simulations show that
 multi-lag phase regression reduces frequency estimation error by
 2--3$\times$ relative to the single-lag Kasai estimator.
-Transcranial \textit{in~vivo} imaging demonstrates that the method
-resolves opposing flow directions in adjacent cortical vessels---information
+Intact-skull transcranial \textit{in~vivo} 3D matrix imaging
+demonstrates that the method resolves opposing flow directions in
+adjacent cortical vessels across a reconstructed elevation volume---information
 that is lost in conventional power Doppler.
 
 Code, reproducible analysis scripts, and the derived NPZ inputs used

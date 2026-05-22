@@ -157,7 +157,7 @@
       "vessel_sign_agreement": 0.988,
       "active_vessel_pixels_thresholded_by_bg95": 246,
       "active_vessel_sign_agreement": 0.9878048780487805,
-      "background_abs95_threshold": 4468084044.799998,
+      "background_abs95_threshold": 4468084224.0,
       "background_active_pixels": 79,
       "background_active_sign_agreement": 0.5949367088607594,
       "whole_plane_plane4": {
@@ -233,67 +233,7 @@
       "vessel_sign_agreement": 0.988,
       "active_vessel_pixels_thresholded_by_bg95": 1,
       "active_vessel_sign_agreement": 1.0,
-      "background_abs95_threshold": 0.03395983632653952,
-      "background_active_pixels": 80,
-      "background_active_sign_agreement": 0.625
-    },
-    "color_doppler": {
-      "per_roi": [
-        {
-          "roi": "V1",
-          "pixels": 5,
-          "finite_nonzero_pixels": 5,
-          "sign_agreement": 1.0,
-          "split_a_mean": 0.019276145845651627,
-          "split_b_mean": 0.01684017851948738
-        },
-        {
-          "roi": "V2",
-          "pixels": 13,
-          "finite_nonzero_pixels": 13,
-          "sign_agreement": 1.0,
-          "split_a_mean": 0.027902083471417427,
-          "split_b_mean": 0.02480069175362587
-        },
-        {
-          "roi": "V3",
-          "pixels": 5,
-          "finite_nonzero_pixels": 5,
-          "sign_agreement": 1.0,
-          "split_a_mean": 0.027401011437177658,
-          "split_b_mean": 0.026018504053354263
-        },
-        {
-          "roi": "V4",
-          "pixels": 45,
-          "finite_nonzero_pixels": 45,
-          "sign_agreement": 1.0,
-          "split_a_mean": -0.028192872181534767,
-          "split_b_mean": -0.02969883568584919
-        },
-        {
-          "roi": "V5",
-          "pixels": 177,
-          "finite_nonzero_pixels": 177,
-          "sign_agreement": 0.9830508474576272,
-          "split_a_mean": -0.027164949104189873,
-          "split_b_mean": -0.024685600772500038
-        },
-        {
-          "roi": "V6",
-          "pixels": 5,
-          "finite_nonzero_pixels": 5,
-          "sign_agreement": 1.0,
-          "split_a_mean": -0.01828932762145996,
-          "split_b_mean": -0.018281716853380203
-        }
-      ],
-      "all_vessel_pixels": 250,
-      "vessel_finite_nonzero_pixels": 250,
-      "vessel_sign_agreement": 0.988,
-      "active_vessel_pixels_thresholded_by_bg95": 1,
-      "active_vessel_sign_agreement": 1.0,
-      "background_abs95_threshold": 0.03395983632653952,
+      "background_abs95_threshold": 0.03395983576774597,
       "background_active_pixels": 80,
       "background_active_sign_agreement": 0.625
     }

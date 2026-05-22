@@ -142,6 +142,7 @@ def _acq_metrics(
         )
         sig = sig - sig.mean(dim=0, keepdim=True)
         filt = svd_filter_fast(sig, low_cutoff=LOW_CUTOFF, high_cutoff=1.0)
+        power = filt[5:].abs().square().sum(dim=0)
         dower = signed_tmas_wls_huber(filt, max_lag=MAX_LAG)
         slope, r2 = lag_phase_linear_fit(
             filt,
@@ -161,6 +162,7 @@ def _acq_metrics(
             x.detach().cpu().numpy().astype(np.float32)
             for x in (
                 dower,
+                power,
                 velocity,
                 velocity * r2,
                 r2,
@@ -304,6 +306,7 @@ def main() -> int:
 
     names = [
         "dower_coppler",
+        "power_doppler",
         "phase_velocity",
         "phase_velocity_r2",
         "phase_r2",
@@ -428,9 +431,6 @@ def main() -> int:
                     name: metric.astype(np.float32, copy=False)
                     for name, metric in zip(names, metrics)
                 }
-                per_acq_arrays["power_doppler"] = np.abs(
-                    per_acq_arrays["dower_coppler"]
-                ).astype(np.float32)
                 per_acq_tmp = per_acq_path.with_suffix(".partial.npz")
                 # Per-acq sidecars are intentionally uncompressed because zip
                 # compression is a CPU bottleneck during long beamforming runs.
@@ -498,7 +498,6 @@ def main() -> int:
     if sums is None or count == 0:
         raise RuntimeError("no acquisitions processed")
     mean_arrays = {name: (s / count).astype(np.float32) for name, s in zip(names, sums)}
-    mean_arrays["power_doppler"] = np.abs(mean_arrays["dower_coppler"]).astype(np.float32)
     arrays = dict(mean_arrays)
     saved_display_mode = (
         "mean_across_acqs_with_per_acq_sidecar"

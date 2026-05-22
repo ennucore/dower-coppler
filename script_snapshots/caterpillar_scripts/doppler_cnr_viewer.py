@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
+import os
 from pathlib import Path
 from typing import Dict
 
@@ -16,9 +17,13 @@ from PyQt5 import QtCore, QtWidgets
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "results" / "doppler_cnr_gui"
+PAPER_HEADER_DATA = Path("/Users/lev/dev/dower-coppler/data/head_2025-09-21_full2dtx_fast8_fine_xz_yidx14_15_acq000_479.npz")
 VELOCITY_ALPHA_METRIC = "Phase Velocity mm/s alpha R2xGeo"
 VELOCITY_ALPHA_R2_METRIC = "Phase Velocity mm/s alpha R2"
 BLAND_ALTMAN_METRIC = "Bland-Altman: phase velocity vs color"
+ROI_CIRCLE_MIN_OVERLAP = 0.80
+ROI_CIRCLE_MAX_RADIUS_PX = 16.0
+ROI_CIRCLE_RADIUS_STEP_PX = 0.25
 
 
 def _cnr_denominator(signal: np.ndarray, background: np.ndarray, noise_mode: str) -> float:
@@ -137,6 +142,58 @@ def ensure_planes(arr: np.ndarray) -> np.ndarray:
     return arr
 
 
+def largest_inscribed_circle(mask: np.ndarray) -> tuple[np.ndarray, float, float, float]:
+    mask = np.asarray(mask, dtype=bool)
+    circle = np.zeros_like(mask, dtype=bool)
+    if not mask.any():
+        return circle, np.nan, np.nan, np.nan
+    dist = ndimage.distance_transform_edt(mask)
+    row, col = np.unravel_index(int(np.argmax(dist)), dist.shape)
+    radius = float(dist[row, col])
+    yy, xx = np.ogrid[:mask.shape[0], :mask.shape[1]]
+    circle = (yy - float(row)) ** 2 + (xx - float(col)) ** 2 <= max(0.0, radius - 1e-6) ** 2
+    return circle & mask, float(row), float(col), radius
+
+
+def largest_tolerant_circle(
+    mask: np.ndarray,
+    min_overlap: float = ROI_CIRCLE_MIN_OVERLAP,
+    max_radius: float = ROI_CIRCLE_MAX_RADIUS_PX,
+    radius_step: float = ROI_CIRCLE_RADIUS_STEP_PX,
+) -> tuple[np.ndarray, float, float, float, float, int]:
+    """Largest circle centered inside a mask with at least min_overlap support."""
+    mask = np.asarray(mask, dtype=bool)
+    if not mask.any():
+        empty = np.zeros_like(mask, dtype=bool)
+        return empty, np.nan, np.nan, np.nan, np.nan, 0
+
+    yy, xx = np.ogrid[:mask.shape[0], :mask.shape[1]]
+    best = None
+    for row, col in np.argwhere(mask):
+        row_f = float(row)
+        col_f = float(col)
+        dist2 = (yy - row_f) ** 2 + (xx - col_f) ** 2
+        for radius in np.arange(1.0, max_radius + 0.5 * radius_step, radius_step):
+            circle = dist2 <= float(radius) ** 2
+            circle_pixels = int(circle.sum())
+            if circle_pixels == 0:
+                continue
+            inside_pixels = int((circle & mask).sum())
+            overlap = inside_pixels / float(circle_pixels)
+            if overlap < min_overlap:
+                continue
+            score = (circle_pixels, float(radius), overlap)
+            if best is None or score > best[0]:
+                best = (score, circle.copy(), row_f, col_f, float(radius), overlap, inside_pixels)
+
+    if best is None:
+        circle, row, col, radius = largest_inscribed_circle(mask)
+        return circle, row, col, radius, 1.0, int(circle.sum())
+
+    _, circle, row, col, radius, overlap, inside_pixels = best
+    return circle, row, col, radius, overlap, inside_pixels
+
+
 def robust_signed_normalize(arr: np.ndarray, percentile: float = 99.0) -> np.ndarray:
     arr = np.asarray(arr, dtype=np.float32)
     finite = arr[np.isfinite(arr)]
@@ -170,6 +227,8 @@ def signed_doppler_variant(metric: str) -> bool:
         "Dower-sign PVxR2",
         "Sign-agree Dower",
         "Agree Geomean",
+        "Pairwise SVD Velocity",
+        "Pairwise SVD Velocity x RankQ x Geo",
     }
 
 
@@ -206,6 +265,14 @@ def load_dataset(name: str, path: Path) -> Dataset:
             )
         if "phase_velocity" in z.files:
             arrays["Phase Velocity"] = ensure_planes(z["phase_velocity"])
+        if "pairwise_svd_velocity" in z.files:
+            arrays["Pairwise SVD Velocity"] = ensure_planes(z["pairwise_svd_velocity"])
+        if "pairwise_svd_weighted" in z.files:
+            arrays["Pairwise SVD Velocity x RankQ x Geo"] = ensure_planes(z["pairwise_svd_weighted"])
+        if "pairwise_svd_rank1_quality" in z.files:
+            arrays["Pairwise SVD Rank-1 Quality"] = ensure_planes(z["pairwise_svd_rank1_quality"])
+        if "pairwise_svd_geomean" in z.files:
+            arrays["Pairwise SVD Geomean |Cij|"] = ensure_planes(z["pairwise_svd_geomean"])
         if "phase_velocity_r2" in z.files:
             arrays["Phase Velocity x R2"] = ensure_planes(z["phase_velocity_r2"])
         if "phase_r2" in z.files:
@@ -239,7 +306,8 @@ def load_dataset(name: str, path: Path) -> Dataset:
                 ).astype(np.float32)
             if pv_geo_r2 is not None:
                 arrays["Phase Velocity x Geomean |Rk| x R2"] = pv_geo_r2
-                arrays["Dower Coppler"] = pv_geo_r2
+                if "Dower Coppler" not in arrays:
+                    arrays["Dower Coppler"] = pv_geo_r2
         if "signed_geomean_r" in z.files:
             arrays["Signed Geomean |Rk|"] = ensure_planes(z["signed_geomean_r"])
         if "signed_geomean_r_huber_quality" in z.files:
@@ -311,12 +379,14 @@ class CnrViewer(QtWidgets.QMainWindow):
         self.current_window_start = 0
         self.current_window_end = 0
         self.current_bin_acqs = max(1, self.current_dataset.selection_window_acqs)
-        self.current_metric = "Signed Scale x HuberQ"
+        self.current_metric = "Power Doppler"
         if self.current_metric not in self.current_dataset.arrays:
             self.current_metric = next(iter(self.current_dataset.arrays))
         self.current_plane = 0
         self.compare_enabled = False
-        self.compare_dataset = self.datasets[1] if len(self.datasets) > 1 else self.datasets[0]
+        self.compare_dataset = self.current_dataset
+        self.compare_metric = "Dower Coppler"
+        self._syncing_compare_range = False
         self.current_image = np.zeros((2, 2), dtype=np.float32)
         self.display_image = np.zeros((2, 2), dtype=np.float32)
         self.auto_items: list[pg.GraphicsObject] = []
@@ -366,12 +436,20 @@ class CnrViewer(QtWidgets.QMainWindow):
         self.compare_combo.addItems([d.name for d in self.datasets])
         self.compare_combo.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.compare_combo.setMinimumContentsLength(28)
-        if len(self.datasets) > 1:
-            self.compare_combo.setCurrentIndex(1)
+        self.compare_combo.setCurrentIndex(self.datasets.index(self.compare_dataset))
         self.compare_combo.setEnabled(False)
         self.compare_combo.currentIndexChanged.connect(self._compare_dataset_changed)
         controls.addWidget(QtWidgets.QLabel("Comparison dataset"))
         controls.addWidget(self.compare_combo)
+
+        self.compare_metric_combo = QtWidgets.QComboBox()
+        self._populate_compare_metric_combo()
+        self.compare_metric_combo.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.compare_metric_combo.setMinimumContentsLength(22)
+        self.compare_metric_combo.setEnabled(False)
+        self.compare_metric_combo.currentTextChanged.connect(self._compare_metric_changed)
+        controls.addWidget(QtWidgets.QLabel("Comparison metric"))
+        controls.addWidget(self.compare_metric_combo)
 
         self.bin_acqs_spin = QtWidgets.QSpinBox()
         self.bin_acqs_spin.setRange(1, 999999)
@@ -540,13 +618,12 @@ class CnrViewer(QtWidgets.QMainWindow):
         self.ba_items: list[pg.GraphicsObject] = []
 
         self.compare_plot = pg.PlotWidget()
-        self.compare_plot.setAspectLocked(True)
+        self.compare_plot.setAspectLocked(False)
         self.compare_plot.showGrid(x=True, y=True, alpha=0.18)
         self.compare_plot.setLabel("bottom", "x [cm]")
         self.compare_plot.setLabel("left", "z [cm]")
         self.compare_plot.setMinimumWidth(360)
-        self.compare_plot.setXLink(self.plot)
-        self.compare_plot.setYLink(self.plot)
+        self.compare_plot.setMouseEnabled(x=False, y=False)
         main_splitter.addWidget(self.compare_plot)
 
         self.compare_image_item = pg.ImageItem(axisOrder="col-major")
@@ -571,11 +648,88 @@ class CnrViewer(QtWidgets.QMainWindow):
         self.manual_text: pg.TextItem | None = None
 
         self.plot.scene().sigMouseClicked.connect(self._mouse_clicked)
+        self.plot.plotItem.vb.sigRangeChanged.connect(self._sync_compare_range_from_main)
         self.plot.viewport().installEventFilter(self)
+        self._apply_initial_selection_from_env()
         self._refresh_all()
+
+    def _apply_initial_selection_from_env(self) -> None:
+        dataset_query = os.environ.get("DOPPLER_VIEWER_DATASET", "").strip().lower()
+        if dataset_query:
+            for i, dataset in enumerate(self.datasets):
+                haystack = f"{dataset.name} {dataset.path}".lower()
+                if dataset_query in haystack:
+                    self.dataset_combo.setCurrentIndex(i)
+                    break
+
+        metric = os.environ.get("DOPPLER_VIEWER_METRIC", "").strip()
+        if metric and metric in self.current_dataset.arrays:
+            self.metric_combo.setCurrentText(metric)
+
+        compare_dataset_query = os.environ.get("DOPPLER_VIEWER_COMPARE_DATASET", "").strip().lower()
+        if compare_dataset_query:
+            for i, dataset in enumerate(self.datasets):
+                haystack = f"{dataset.name} {dataset.path}".lower()
+                if compare_dataset_query in haystack:
+                    self.compare_combo.setCurrentIndex(i)
+                    break
+        else:
+            idx = self.dataset_combo.currentIndex()
+            if 0 <= idx < len(self.datasets):
+                self.compare_combo.setCurrentIndex(idx)
+
+        compare_metric = os.environ.get("DOPPLER_VIEWER_COMPARE_METRIC", "").strip()
+        if compare_metric:
+            self.compare_metric_combo.setCurrentText(compare_metric)
+
+        compare_enabled = os.environ.get("DOPPLER_VIEWER_COMPARE", "").strip().lower()
+        if compare_enabled in {"1", "true", "yes", "on"}:
+            self.compare_check.setChecked(True)
+
+        plane = os.environ.get("DOPPLER_VIEWER_PLANE", "").strip()
+        if plane:
+            try:
+                self.current_plane = max(0, min(int(plane), self.current_dataset.n_planes - 1))
+            except ValueError:
+                pass
+
+    def _populate_compare_metric_combo(self) -> None:
+        if not hasattr(self, "compare_metric_combo"):
+            return
+        current = self.compare_metric
+        self.compare_metric_combo.blockSignals(True)
+        self.compare_metric_combo.clear()
+        self.compare_metric_combo.addItem("Same as main")
+        self.compare_metric_combo.addItems(list(self.compare_dataset.arrays.keys()))
+        if current in self.compare_dataset.arrays:
+            self.compare_metric_combo.setCurrentText(current)
+        elif "Dower Coppler" in self.compare_dataset.arrays:
+            self.compare_metric = "Dower Coppler"
+            self.compare_metric_combo.setCurrentText(self.compare_metric)
+        else:
+            self.compare_metric = "Same as main"
+            self.compare_metric_combo.setCurrentText("Same as main")
+        self.compare_metric_combo.blockSignals(False)
 
     def _load_available_datasets(self) -> list[Dataset]:
         specs = [
+            (
+                "PAPER HEADER Sep 21 all 480, real PD + independent CD + Dower",
+                PAPER_HEADER_DATA,
+            ),
+            (
+                "2026-05-20 BT24480388 H5 row -1, 19:27:16, valid acqs 32-367",
+                DATA_DIR / "bt24480388_2026-05-20_192716_h5_row-1_original_all368.npz",
+            ),
+            (
+                "2026-05-20 BT24480388 H5 row -1, 19:27:16, y -4 to +4 mm, 10 elev, z <= 4 cm, all 368 acqs",
+                DATA_DIR
+                / "bt24480388_2026-05-20_192716_h5_row-1_y-4to4mm_10elev_zmax40mm_all368.npz",
+            ),
+            (
+                "2026-05-20 BT24480388 H5 row -1, 21:36:31, all 22 acqs",
+                DATA_DIR / "bt24480388_2026-05-20_213631_h5_row-1_original_all22.npz",
+            ),
             (
                 "2026-05-18 BT24480388 tx_el -5 deg H5 row -1 fine x/z, y -6.5 to +0.5 mm, 10 elev, all 10 acqs",
                 DATA_DIR
@@ -590,6 +744,11 @@ class CnrViewer(QtWidgets.QMainWindow):
                 "2026-05-18 BT24480388 tx_el +5 deg H5 row -1 fine x/z, y -0.5 to +6.5 mm, 10 elev, all 9 acqs",
                 DATA_DIR
                 / "bt24480388_2026-05-18_152924_txel5_h5_row-1_fine_xz_y-0p5to6p5mm_10elev_all9.npz",
+            ),
+            (
+                "2026-05-18 BT24480388 recovered 20:29:57 H5 row -1 fine x/z, y -5 to +5 mm, 18 elev, acq 0",
+                DATA_DIR
+                / "bt24480388_2026-05-18_202957_recovered_h5_row-1_fine_xz_y-5to5mm_18elev_all1.npz",
             ),
             (
                 "2026-05-15 lev_may15_replication H5 row -1, all 47 acqs",
@@ -796,6 +955,18 @@ class CnrViewer(QtWidgets.QMainWindow):
                 DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_yidx14_15_acq200_209.npz",
             ),
             (
+                "2025-09-21 full 2D TX fast8 fine x/z, y idx 14-15, all 480 acqs",
+                DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_yidx14_15_acq000_479.npz",
+            ),
+            (
+                "2025-09-21 pairwise SVD Doppler test, y idx 14-15, acqs 200-249",
+                DATA_DIR / "head_2025-09-21_pairwise_svd_w4_yidx14_15_acq200_249.npz",
+            ),
+            (
+                "2025-09-21 pairwise SVD Doppler, y idx 14-15, all 480 acqs",
+                DATA_DIR / "head_2025-09-21_pairwise_svd_w4_yidx14_15_acq000_479.npz",
+            ),
+            (
                 "2025-09-21 full 2D TX fine x/z, y -5 to +5 mm, 10 elev, acqs 200-209",
                 DATA_DIR / "head_2025-09-21_full2dtx_fine_xz_y-5to5mm_10elev_acq200_209.npz",
             ),
@@ -806,6 +977,10 @@ class CnrViewer(QtWidgets.QMainWindow):
             (
                 "2025-09-21 full 2D TX fast8 fine x/z, y -4 to +4 mm, 10 elev, acqs 200-400 per-acq",
                 DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400.npz",
+            ),
+            (
+                "2025-09-21 full 2D TX fast8 fine x/z, y -4 to +4 mm, 10 elev, all 480 acqs",
+                DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479.npz",
             ),
             (
                 "2025-09-21 new H5 recomputed Dower + phase fit, first half acqs 200-299, middle 8 elev",
@@ -877,16 +1052,28 @@ class CnrViewer(QtWidgets.QMainWindow):
         self.metric_combo.setCurrentText(current_metric)
         self.metric_combo.blockSignals(False)
         self.current_metric = current_metric
+        if not self.compare_enabled:
+            self.compare_dataset = self.current_dataset
+            self.compare_combo.blockSignals(True)
+            self.compare_combo.setCurrentIndex(idx)
+            self.compare_combo.blockSignals(False)
+            self._populate_compare_metric_combo()
         self._refresh_all()
 
     def _compare_toggled(self, enabled: bool) -> None:
         self.compare_enabled = bool(enabled)
         self.compare_combo.setEnabled(self.compare_enabled)
+        self.compare_metric_combo.setEnabled(self.compare_enabled)
         self.compare_plot.setVisible(self.compare_enabled)
         self._refresh_all()
 
     def _compare_dataset_changed(self, idx: int) -> None:
         self.compare_dataset = self.datasets[idx]
+        self._populate_compare_metric_combo()
+        self._refresh_all()
+
+    def _compare_metric_changed(self, metric: str) -> None:
+        self.compare_metric = metric
         self._refresh_all()
 
     def _bin_acqs_changed(self, value: int) -> None:
@@ -1308,16 +1495,18 @@ class CnrViewer(QtWidgets.QMainWindow):
             self.plot.setAspectLocked(True)
             self.plot.setLabel("bottom", "x [cm]")
             self.plot.setLabel("left", "z [cm]")
-        self.plot.setTitle(
-            f"{self.current_dataset.name} | {self._window_label()} | {self.current_metric} | plane {self.current_plane}"
-        )
+        if self.compare_enabled:
+            title = f"{self.current_metric} | plane {self.current_plane}"
+        else:
+            title = f"{self.current_dataset.name} | {self._window_label()} | {self.current_metric} | plane {self.current_plane}"
+        self.plot.setTitle(title)
         self.results.setPlainText(
             f"Displayed image: {label}\n"
             f"Selected range: {self._window_label()}\n"
             "Measurements use fixed unclipped arrays: PD full-range dB, CD/DC raw signed.\n"
             f"CNR denominator: {self._cnr_noise_label()}.\n"
             "Auto: click a target. Signal is a circle; background is same-row pixels outside it.\n"
-            "CV segment: click signal first, then drag a background rectangle.\n"
+            "CV segment: click signal first; the signal ROI becomes the largest tolerant circle inside the segment, then drag a background rectangle.\n"
             "Circle: drag signal circle first, then drag a background rectangle.\n"
             "All measurements report PD, CD, and DC together.\n"
             "Manual: move/resize signal and background rectangles.\n"
@@ -1473,8 +1662,9 @@ class CnrViewer(QtWidgets.QMainWindow):
             return
 
         self.compare_plot.show()
-        metric = self.current_metric
-        if bland_altman_metric(metric):
+        main_metric = self.current_metric
+        metric = self.compare_metric if self.compare_metric != "Same as main" else main_metric
+        if bland_altman_metric(main_metric) or bland_altman_metric(metric):
             self.compare_image_item.hide()
             self.compare_trace_item.hide()
             self.compare_plot.setTitle("Bland-Altman comparison is shown in the main panel")
@@ -1487,7 +1677,7 @@ class CnrViewer(QtWidgets.QMainWindow):
             return
 
         plane = min(self.current_plane, dataset.n_planes - 1)
-        img, _, _, _ = self._image_for_dataset_metric(dataset, metric, plane)
+        img, compare_cmap, compare_levels, compare_label = self._image_for_dataset_metric(dataset, metric, plane)
         if raw_iq_trace_metric(metric):
             trace = img.reshape(-1)
             self.compare_image_item.hide()
@@ -1504,21 +1694,44 @@ class CnrViewer(QtWidgets.QMainWindow):
                 self.compare_image_item.setImage(np.transpose(img, (1, 0, 2)), autoLevels=False)
             else:
                 self.compare_image_item.setImage(img.T, autoLevels=False)
-                self.compare_image_item.setLevels(levels)
-                self.compare_image_item.setLookupTable(self._lookup_table(cmap))
+                self.compare_image_item.setLevels(compare_levels)
+                self.compare_image_item.setLookupTable(self._lookup_table(compare_cmap))
             self.compare_image_item.setRect(self._plot_rect_for(dataset, metric, img.shape[:2]))
             if metric == "Raw Pre-BF IQ Magnitude":
                 self.compare_plot.setAspectLocked(False)
                 self.compare_plot.setLabel("bottom", "element number")
                 self.compare_plot.setLabel("left", "fast time sample")
             else:
-                self.compare_plot.setAspectLocked(True)
+                self.compare_plot.setAspectLocked(False)
                 self.compare_plot.setLabel("bottom", "x [cm]")
                 self.compare_plot.setLabel("left", "z [cm]")
 
-        self.compare_plot.setTitle(
-            f"{dataset.name} | {self._window_label_for(dataset)} | {metric} | plane {plane}"
-        )
+        self.compare_plot.setTitle(f"{metric} | plane {plane}")
+        self._sync_compare_range_from_main()
+
+    def _sync_compare_range_from_main(self, *_) -> None:
+        if self._syncing_compare_range or not self.compare_enabled:
+            return
+        if not hasattr(self, "compare_plot") or not self.compare_plot.isVisible():
+            return
+        main_metric = self.current_metric
+        compare_metric = self.compare_metric if self.compare_metric != "Same as main" else main_metric
+        if (
+            raw_iq_trace_metric(main_metric)
+            or raw_iq_trace_metric(compare_metric)
+            or bland_altman_metric(main_metric)
+            or bland_altman_metric(compare_metric)
+        ):
+            return
+        (x0, x1), (y0, y1) = self.plot.plotItem.vb.viewRange()
+        self._syncing_compare_range = True
+        try:
+            vb = self.compare_plot.plotItem.vb
+            vb.setXRange(float(x0), float(x1), padding=0.0)
+            vb.setYRange(float(y0), float(y1), padding=0.0)
+            vb.disableAutoRange()
+        finally:
+            self._syncing_compare_range = False
 
     def _remove_latest_selection(self) -> None:
         current = self._current_plane_selections()
@@ -1806,24 +2019,39 @@ class CnrViewer(QtWidgets.QMainWindow):
             self.results.setPlainText("CV segmentation did not find a usable region.")
             return
 
+        circle_source = mask.copy()
         erosion = int(self.segment_erosion.value())
-        usable_mask = mask.copy()
         if erosion > 0:
             eroded = ndimage.binary_erosion(mask, iterations=erosion)
             if eroded.any():
-                usable_mask = eroded
+                circle_source = eroded
+
+        usable_mask, center_row, center_col, radius, overlap, inside_pixels = largest_tolerant_circle(circle_source)
+        if usable_mask is None or int(usable_mask.sum()) < 3:
+            self.results.setPlainText("CV segmentation did not contain a usable tolerant circular ROI.")
+            return
 
         ys, xs = np.where(mask)
         if self.pending_segment is None:
             self.pending_segment = {
+                "kind": "segmented_tolerant_circle",
                 "raw_mask": mask.copy(),
                 "usable_mask": usable_mask.copy(),
-                "centroid_row": float(np.mean(ys)),
-                "centroid_col": float(np.mean(xs)),
+                "centroid_row": float(center_row),
+                "centroid_col": float(center_col),
+                "signal_radius_px": float(radius),
+                "circle_min_overlap": ROI_CIRCLE_MIN_OVERLAP,
+                "circle_overlap_fraction": float(overlap),
+                "circle_inside_original_pixels": int(inside_pixels),
+                "circle_pixels": int(usable_mask.sum()),
             }
-            self._draw_pending_segment(mask)
+            self._draw_pending_segment(usable_mask)
             self.segment_button.setText("CV segment: drag bg rect")
-            self.results.setPlainText("Signal segmented. Drag a background rectangle to finish the measurement.")
+            self.results.setPlainText(
+                "Signal segmented and reduced to the largest tolerant circle "
+                f"({int(usable_mask.sum())} px, overlap {float(overlap):.2f}). "
+                "Drag a background rectangle to finish the measurement."
+            )
             return
 
     def _background_rect_from_points(self, start: tuple[int, int], end: tuple[int, int]) -> tuple[int, int, int, int]:
@@ -1867,7 +2095,13 @@ class CnrViewer(QtWidgets.QMainWindow):
         ys, xs = np.where(background_mask)
 
         mode_kind = str(self.pending_segment.get("kind", "segmented"))
-        mode_label = "Circle" if mode_kind == "circle" else "CV segment"
+        mode_label = (
+            "Circle"
+            if mode_kind == "circle"
+            else "CV tolerant circle"
+            if mode_kind == "segmented_tolerant_circle"
+            else "CV segment"
+        )
         geometry = {
             "signal_mask": signal_raw_mask,
             "background_rect": rect,
@@ -1876,9 +2110,13 @@ class CnrViewer(QtWidgets.QMainWindow):
             "background_centroid_row": float(np.mean(ys)),
             "background_centroid_col": float(np.mean(xs)),
         }
-        if mode_kind == "circle":
+        if mode_kind in {"circle", "segmented_tolerant_circle"}:
             geometry["signal_rect"] = self.pending_segment.get("signal_rect")
             geometry["signal_radius_px"] = self.pending_segment.get("signal_radius_px")
+            geometry["circle_min_overlap"] = self.pending_segment.get("circle_min_overlap")
+            geometry["circle_overlap_fraction"] = self.pending_segment.get("circle_overlap_fraction")
+            geometry["circle_inside_original_pixels"] = self.pending_segment.get("circle_inside_original_pixels")
+            geometry["circle_pixels"] = self.pending_segment.get("circle_pixels")
         selection = {
             "id": self.next_selection_id,
             "dataset_index": self.dataset_combo.currentIndex(),
@@ -2180,6 +2418,8 @@ class CnrViewer(QtWidgets.QMainWindow):
             "Raw Pre-BF IQ Magnitude": "IQ",
             "Color Doppler": "CD",
             "Dower Coppler": "DC",
+            "Pairwise SVD Velocity": "SVDv",
+            "Pairwise SVD Velocity x RankQ x Geo": "SVDw",
             "Phase Velocity": "PV",
             VELOCITY_ALPHA_METRIC: "PVmmAlpha",
             VELOCITY_ALPHA_R2_METRIC: "PVmmA-R2",

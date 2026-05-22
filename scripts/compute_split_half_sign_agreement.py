@@ -242,6 +242,8 @@ def main() -> None:
     }
     if split_data is not None:
         for metric in ("dower_coppler", "phase_velocity", "color_doppler"):
+            if f"{metric}_split_a" not in split_data or f"{metric}_split_b" not in split_data:
+                continue
             summary["metrics"][metric] = metric_summary_from_arrays(
                 np.asarray(split_data[f"{metric}_split_a"], dtype=np.float32),
                 np.asarray(split_data[f"{metric}_split_b"], dtype=np.float32),

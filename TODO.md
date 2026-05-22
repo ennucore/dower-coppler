@@ -22,14 +22,19 @@
 - [x] Crop Figures 2, 6, and 7 to the lateral range -1.5 to 1.5 cm and resize the Figure 2 colorbars to the image panels.
 - [x] Make Table 2 simulation results reproducible from the standalone repo with `scripts/phase_ls_research_sweep.py`, `outputs/research_sweep/phase_ls_research_sweep.summary.json`, and generated `outputs/paper_stats/simulation_results_table.tex`.
 - [x] Make the temporal-stability figure reproducible from a fresh clone by adding `data/head_2025-09-21_temporal_windows_plane4.npz` and making `scripts/generate_paper_figures.py` prefer that compact source over the large external sidecar.
+- [x] Correct the May 18 external-recording provenance. The source H5 is under `/mnt/pocampus/lev/may18_txel_sweep_minus5_0_plus5/`, not `/home/monster/caterpillar/data/`; its H5 PRF is a transmit pulse PRF with `num_angles=5`, so the corrected compounded cadence is PRF / 5 = 295.252 Hz.
+- [x] Correct legacy PRF/cadence metadata in the Sep 21 all-480 and May 18 NPZs, store `pulse_repetition_rate_hz` separately, and verify `dower_coppler = phase_velocity * geomean_r * phase_r2`.
+- [x] Update the literature context to cite recent intact-adult-skull transcranial fUS work and narrow the novelty claim to the signed, coherence-weighted matrix-array result.
+- [x] Regenerate paper figures/stats/PDF after the cadence fix and refresh `reproducibility/manifest.json` hashes.
+- [x] Update the Doppler CNR viewer so the paper header dataset opens first with real PD, independent CD, and DC, while preserving stored `dower_coppler` instead of overwriting it with a derived alias.
+- [x] Add the same segment-to-largest-tolerant-circle measurement path to the Doppler CNR viewer and launch it on the paper header dataset.
+- [x] Make figure-output reproducibility less brittle by removing Matplotlib-generated figure PDFs from strict manifest hashes while continuing to hash deterministic PNGs and `paper.pdf`.
+- [x] Fix `~/dev/caterpillar/caterpillar/acquire/acquisition.py` so realtime color Doppler uses compounded slow-time cadence (`pulse PRF / total_num_angles`) instead of pulse PRF for velocity/frequency estimators.
 
 ## Open
 
-- [ ] Correct the May 18 external-recording provenance. The source H5 is under `/mnt/pocampus/lev/may18_txel_sweep_minus5_0_plus5/`, not `/home/monster/caterpillar/data/`; also verify and correct the velocity cadence because that H5 has `num_angles=5` and the compounded cadence is PRF / 5.
-- [ ] Make figure-output reproducibility robust. Running `scripts/generate_paper_figures.py` rewrites PDF files with changed hashes even when content appears unchanged; either hash only deterministic artifacts or stop tracking regenerated PDFs for manifest checks.
 - [ ] Add real `\\author{}` list, affiliations, acknowledgments, funding, and conflicts of interest.
 - [ ] Add a data availability statement for the raw H5 ultratraces; if raw data cannot be public, state the controlled-access / IRB limitation clearly.
-- [ ] Check the realtime/acquisition-level color Doppler path in `caterpillar/acquire/acquisition.py`; it may still pass empirical pulse PRF into Doppler estimators for compounded slow-time data.
 - [ ] Decide whether to redo the quantitative ROI/CNR analysis with ROIs selected from power Doppler/anatomy or by blinded selection, instead of Dower-selected ROIs.
 - [ ] Add a cleaner repeatability table/figure if desired: split-half sign agreement, signed gCNR, and background false-positive rate.
 - [ ] Build a minimal arXiv source bundle containing only `paper.tex`, bibliography/bbl, and included figure files; exclude NPZs, logs, screenshots, audits, caches, and backup folders.
