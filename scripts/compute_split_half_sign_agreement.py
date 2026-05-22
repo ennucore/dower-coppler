@@ -19,7 +19,7 @@ import generate_paper_figures as gpf
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "outputs" / "paper_stats" / "split_half_sign_agreement.json"
-DEFAULT_SPLIT_SUMMARY = ROOT / "data" / "head_2025-09-21_split_half_plane4_all480.npz"
+DEFAULT_SPLIT_SUMMARY = ROOT / "data" / "head_2025-09-21_split_half_plane4_acq200_400.npz"
 
 
 def load_metric_window(per_acq_dir: Path, metric: str, plane: int, start: int, end: int) -> np.ndarray:

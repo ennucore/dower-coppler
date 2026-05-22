@@ -35,20 +35,22 @@ DEFAULT_ALL_PLANES_PATH = DATA_DIR / "head_2025-09-21_full2dtx_fast8_fine_xz_y-4
 DEFAULT_ALL_PLANES_START = 2
 DEFAULT_ALL_PLANES_END = 7
 DEFAULT_TEMPORAL_SUMMARY_PATH = DATA_DIR / "head_2025-09-21_temporal_windows_plane4.npz"
-DEFAULT_SPLIT_HALF_PATH = DATA_DIR / "head_2025-09-21_split_half_plane4_all480.npz"
+DEFAULT_SPLIT_HALF_PATH = DATA_DIR / "head_2025-09-21_split_half_plane4_acq200_400.npz"
 DEFAULT_TEMPORAL_PER_ACQ_DIR = Path(
     "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/"
-    "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479_per_acq"
+    "head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq"
 )
 DEFAULT_TEMPORAL_PLANE = 4
 TEMPORAL_WINDOWS = [
-    (0, 479, "480 acquisitions"),
-    (120, 479, "360 acquisitions"),
-    (240, 479, "240 acquisitions"),
-    (360, 479, "120 acquisitions"),
-    (430, 479, "50 acquisitions"),
-    (470, 479, "10 acquisitions"),
+    (200, 400, "201 acquisitions"),
+    (241, 400, "160 acquisitions"),
+    (281, 400, "120 acquisitions"),
+    (321, 400, "80 acquisitions"),
+    (361, 400, "40 acquisitions"),
+    (391, 400, "10 acquisitions"),
 ]
+DEFAULT_SPLIT_A = (200, 299)
+DEFAULT_SPLIT_B = (300, 400)
 DEFAULT_EXTERNAL_RECORDING_PATH = DATA_DIR / (
     "bt24480388_2026-05-18_152605_txel0_h5_row-1_fine_xz_y-3p5to3p5mm_10elev_all20.npz"
 )
@@ -631,6 +633,55 @@ def figure_temporal_stability_from_summary(summary_path: Path, output_dir: Path)
     plot_temporal_stability_images(images, meta, output_dir, plane, str(summary_path))
 
 
+def split_half_from_sidecar(
+    per_acq_dir: Path,
+    plane: int,
+    split_a: tuple[int, int],
+    split_b: tuple[int, int],
+) -> tuple[np.ndarray, np.ndarray, dict]:
+    """Load two median Dower maps from per-acquisition sidecars."""
+    meta = {}
+
+    def load_window(start: int, end: int) -> np.ndarray:
+        nonlocal meta
+        images = []
+        for acq in range(start, end + 1):
+            data = load_npz(per_acq_dir / f"acq_{acq}.npz")
+            images.append(np.asarray(data["dower_coppler"][plane], dtype=np.float32))
+            if not meta:
+                meta = {k: data[k] for k in ("x_mm", "y_mm", "z_mm") if k in data}
+        return np.median(np.stack(images, axis=0), axis=0).astype(np.float32)
+
+    return load_window(*split_a), load_window(*split_b), meta
+
+
+def save_split_half_summary_from_sidecar(
+    per_acq_dir: Path,
+    path: Path,
+    plane: int,
+    split_a: tuple[int, int],
+    split_b: tuple[int, int],
+) -> None:
+    """Save compact split-half maps using the current Dower formula."""
+    split_a_img, split_b_img, meta = split_half_from_sidecar(per_acq_dir, plane, split_a, split_b)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "plane": np.asarray(plane, dtype=np.int32),
+        "source_per_acq_dir": np.asarray(str(per_acq_dir)),
+        "dower_coppler_split_a": split_a_img,
+        "dower_coppler_split_b": split_b_img,
+        "split_a_acqs": np.asarray(split_a, dtype=np.int32),
+        "split_b_acqs": np.asarray(split_b, dtype=np.int32),
+        "generated_by": np.asarray("scripts/generate_paper_figures.py --refresh-split-half-summary"),
+        "note": np.asarray("Median Dower Coppler split-half maps regenerated from phase_velocity * geomean_r * phase_r2."),
+    }
+    for key in ("x_mm", "y_mm", "z_mm"):
+        if key in meta:
+            payload[key] = np.asarray(meta[key])
+    np.savez_compressed(path, **payload)
+    print(f"  Saved compact split-half summary to {path}")
+
+
 def figure_split_half_consistency(split_path: Path, output_dir: Path) -> None:
     """Compare Dower Coppler maps from the first and second acquisition halves."""
     with np.load(split_path) as z:
@@ -1059,8 +1110,8 @@ def figure_velocity_vs_color(data: dict, output_dir: Path, plane: int = 0):
     loa_low = bias - 1.96 * sd
     loa_high = bias + 1.96 * sd
 
-    fig = plt.figure(figsize=(10.5, 7.0), constrained_layout=True)
-    gs = gridspec.GridSpec(2, 2, figure=fig, width_ratios=[1.0, 1.35])
+    fig = plt.figure(figsize=(10.2, 5.1), constrained_layout=True)
+    gs = gridspec.GridSpec(2, 2, figure=fig, width_ratios=[1.05, 1.10])
     ax_color = fig.add_subplot(gs[0, 0])
     ax_phase = fig.add_subplot(gs[1, 0])
     ax_ba = fig.add_subplot(gs[:, 1])
@@ -1249,10 +1300,17 @@ def main():
     parser.add_argument("--split-half-data", type=Path, default=DEFAULT_SPLIT_HALF_PATH)
     parser.add_argument("--temporal-per-acq-dir", type=Path, default=DEFAULT_TEMPORAL_PER_ACQ_DIR)
     parser.add_argument("--temporal-plane", type=int, default=DEFAULT_TEMPORAL_PLANE)
+    parser.add_argument("--split-a", nargs=2, type=int, default=DEFAULT_SPLIT_A, metavar=("START", "END"))
+    parser.add_argument("--split-b", nargs=2, type=int, default=DEFAULT_SPLIT_B, metavar=("START", "END"))
     parser.add_argument(
         "--refresh-temporal-summary",
         action="store_true",
         help="Recompute the compact temporal-stability NPZ from --temporal-per-acq-dir.",
+    )
+    parser.add_argument(
+        "--refresh-split-half-summary",
+        action="store_true",
+        help="Recompute the compact split-half NPZ from --temporal-per-acq-dir.",
     )
     parser.add_argument("--external-recording-data", type=Path, default=DEFAULT_EXTERNAL_RECORDING_PATH)
     parser.add_argument(
@@ -1303,7 +1361,18 @@ def main():
     else:
         print("  Skipping temporal stability montage: no per-acq sidecar and viewer dataset is already averaged")
 
-    if args.split_half_data.exists():
+    if args.refresh_split_half_summary:
+        if not args.temporal_per_acq_dir.exists():
+            raise FileNotFoundError(f"Temporal sidecar not found: {args.temporal_per_acq_dir}")
+        save_split_half_summary_from_sidecar(
+            args.temporal_per_acq_dir,
+            args.split_half_data,
+            args.temporal_plane,
+            tuple(args.split_a),
+            tuple(args.split_b),
+        )
+        figure_split_half_consistency(args.split_half_data, args.output_dir)
+    elif args.split_half_data.exists():
         figure_split_half_consistency(args.split_half_data, args.output_dir)
     else:
         print(f"  Skipping split-half consistency figure: {args.split_half_data} not found")

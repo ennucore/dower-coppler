@@ -1,15 +1,15 @@
 {
-  "source_per_acq_dir": "/home/monster/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq000_479_per_acq",
+  "source_per_acq_dir": "/Users/lev/dev/caterpillar/results/doppler_cnr_gui/head_2025-09-21_full2dtx_fast8_fine_xz_y-4to4mm_10elev_acq200_400_per_acq",
   "split_a_acqs": [
-    0,
-    239
+    200,
+    299
   ],
   "split_b_acqs": [
-    240,
-    479
+    300,
+    400
   ],
-  "split_a_count": 240,
-  "split_b_count": 240,
+  "split_a_count": 100,
+  "split_b_count": 101,
   "roi_y_mm_reference": -0.4444444477558136,
   "fine_elev_plane": 4,
   "fine_elev_plane_y_mm": -0.4444444477558136,
@@ -108,134 +108,74 @@
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 10165368651776.0,
-          "split_b_mean": 3853888520192.0
+          "split_a_mean": 1.4444142580032349,
+          "split_b_mean": 1.3113181591033936
         },
         {
           "roi": "V2",
           "pixels": 13,
           "finite_nonzero_pixels": 13,
           "sign_agreement": 1.0,
-          "split_a_mean": 9077512994816.0,
-          "split_b_mean": 14282470195200.0
+          "split_a_mean": 2.591614007949829,
+          "split_b_mean": 2.5618250370025635
         },
         {
           "roi": "V3",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": 233433563136.0,
-          "split_b_mean": 270504656896.0
+          "split_a_mean": 1.1955347061157227,
+          "split_b_mean": 1.1739599704742432
         },
         {
           "roi": "V4",
           "pixels": 45,
           "finite_nonzero_pixels": 45,
           "sign_agreement": 1.0,
-          "split_a_mean": -921976438784.0,
-          "split_b_mean": -2609018306560.0
+          "split_a_mean": -1.636277437210083,
+          "split_b_mean": -1.905253291130066
         },
         {
           "roi": "V5",
           "pixels": 177,
-          "finite_nonzero_pixels": 177,
-          "sign_agreement": 0.9830508474576272,
-          "split_a_mean": -36906438656.0,
-          "split_b_mean": -87249223680.0
+          "finite_nonzero_pixels": 175,
+          "sign_agreement": 0.9714285714285714,
+          "split_a_mean": -0.765018105506897,
+          "split_b_mean": -0.7760922908782959
         },
         {
           "roi": "V6",
           "pixels": 5,
           "finite_nonzero_pixels": 5,
           "sign_agreement": 1.0,
-          "split_a_mean": -522998066970624.0,
-          "split_b_mean": -5142859338481664.0
+          "split_a_mean": -6.628314971923828,
+          "split_b_mean": -7.909750461578369
         }
       ],
       "all_vessel_pixels": 250,
-      "vessel_finite_nonzero_pixels": 250,
-      "vessel_sign_agreement": 0.988,
-      "active_vessel_pixels_thresholded_by_bg95": 246,
-      "active_vessel_sign_agreement": 0.9878048780487805,
-      "background_abs95_threshold": 4468084224.0,
-      "background_active_pixels": 79,
-      "background_active_sign_agreement": 0.5949367088607594,
+      "vessel_finite_nonzero_pixels": 248,
+      "vessel_sign_agreement": 0.9798387096774194,
+      "active_vessel_pixels_thresholded_by_bg95": 248,
+      "active_vessel_sign_agreement": 0.9798387096774194,
+      "background_abs95_threshold": 0.0,
+      "background_active_pixels": 1,
+      "background_active_sign_agreement": 1.0,
       "whole_plane_plane4": {
-        "all_finite_nonzero_pixels": 31810,
-        "all_finite_nonzero_sign_agreement": 0.7237346746306194,
-        "top_50pct_abs_pixels": 15905,
-        "top_50pct_abs_sign_agreement": 0.7465576862621817,
-        "top_25pct_abs_pixels": 7953,
-        "top_25pct_abs_sign_agreement": 0.8350308059851629,
-        "top_10pct_abs_pixels": 3181,
-        "top_10pct_abs_sign_agreement": 0.9220370952530651,
-        "top_5pct_abs_pixels": 1591,
-        "top_5pct_abs_sign_agreement": 0.9453174104336896,
-        "top_3pct_abs_pixels": 955,
-        "top_3pct_abs_sign_agreement": 0.9528795811518325,
-        "top_1pct_abs_pixels": 319,
-        "top_1pct_abs_sign_agreement": 0.9811912225705329
+        "all_finite_nonzero_pixels": 13237,
+        "all_finite_nonzero_sign_agreement": 0.7741935483870968,
+        "top_50pct_abs_pixels": 6619,
+        "top_50pct_abs_sign_agreement": 0.8996827315304426,
+        "top_25pct_abs_pixels": 3310,
+        "top_25pct_abs_sign_agreement": 0.9574018126888217,
+        "top_10pct_abs_pixels": 1324,
+        "top_10pct_abs_sign_agreement": 0.9773413897280967,
+        "top_5pct_abs_pixels": 662,
+        "top_5pct_abs_sign_agreement": 0.9848942598187311,
+        "top_3pct_abs_pixels": 398,
+        "top_3pct_abs_sign_agreement": 0.9899497487437185,
+        "top_1pct_abs_pixels": 133,
+        "top_1pct_abs_sign_agreement": 1.0
       }
-    },
-    "phase_velocity": {
-      "per_roi": [
-        {
-          "roi": "V1",
-          "pixels": 5,
-          "finite_nonzero_pixels": 5,
-          "sign_agreement": 1.0,
-          "split_a_mean": 0.019276145845651627,
-          "split_b_mean": 0.01684017851948738
-        },
-        {
-          "roi": "V2",
-          "pixels": 13,
-          "finite_nonzero_pixels": 13,
-          "sign_agreement": 1.0,
-          "split_a_mean": 0.027902083471417427,
-          "split_b_mean": 0.02480069175362587
-        },
-        {
-          "roi": "V3",
-          "pixels": 5,
-          "finite_nonzero_pixels": 5,
-          "sign_agreement": 1.0,
-          "split_a_mean": 0.027401011437177658,
-          "split_b_mean": 0.026018504053354263
-        },
-        {
-          "roi": "V4",
-          "pixels": 45,
-          "finite_nonzero_pixels": 45,
-          "sign_agreement": 1.0,
-          "split_a_mean": -0.028192872181534767,
-          "split_b_mean": -0.02969883568584919
-        },
-        {
-          "roi": "V5",
-          "pixels": 177,
-          "finite_nonzero_pixels": 177,
-          "sign_agreement": 0.9830508474576272,
-          "split_a_mean": -0.027164949104189873,
-          "split_b_mean": -0.024685600772500038
-        },
-        {
-          "roi": "V6",
-          "pixels": 5,
-          "finite_nonzero_pixels": 5,
-          "sign_agreement": 1.0,
-          "split_a_mean": -0.01828932762145996,
-          "split_b_mean": -0.018281716853380203
-        }
-      ],
-      "all_vessel_pixels": 250,
-      "vessel_finite_nonzero_pixels": 250,
-      "vessel_sign_agreement": 0.988,
-      "active_vessel_pixels_thresholded_by_bg95": 1,
-      "active_vessel_sign_agreement": 1.0,
-      "background_abs95_threshold": 0.03395983576774597,
-      "background_active_pixels": 80,
-      "background_active_sign_agreement": 0.625
     }
   }
 }

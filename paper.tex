@@ -178,6 +178,24 @@ clutter leakage, and mixed-flow scenarios; and (2)~\textit{in~vivo}
 transcranial 3D functional ultrasound imaging of human cortex.
 \Cref{fig:invivo_comparison} previews the key result.
 
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig_three_panel_comparison.png}
+  \caption{Intact-skull transcranial cortex imaging from a 3D
+    matrix-array acquisition (median of 480 Doppler buffers,
+    plane-wave compounding), shown on a central reconstructed elevation
+    plane.  \textbf{Left}: power Doppler, displayed with a robust
+    positive-pixel dB window, shows vessel structure but no directional information.
+    \textbf{Center}: Kasai color Doppler ($\angle R_1$) reveals
+    direction but is dominated by noise.  \textbf{Right}: Dower
+    Coppler ($v_\phi\,G_R\,R^2$, $K=5$) combines multi-lag coherence
+    weighting with directional information from the phase slope and fit
+    quality.
+    Opposing flow directions in adjacent cortical vessels are clearly
+    resolved.}
+  \label{fig:invivo_comparison}
+\end{figure*}
+
 
 % ========================================================================
 \section{Methods}
@@ -319,6 +337,28 @@ signed Doppler evidence index rather than a quantitative velocity map;
 $v_\phi$ is retained separately when velocity is the quantity of
 interest.
 
+\Cref{fig:dower_ablation} isolates the contribution of the main
+terms in this composite index.  The phase velocity $v_\phi$ alone
+contains the directional pattern but also substantial background
+phase noise.  Multiplication by the multi-lag coherence strength
+$G_R$ suppresses decorrelated background and emphasizes vessel-like
+structures.  The $R^2$ panel shows the phase-linearity quality map,
+and multiplication by $R^2$ preserves the signed velocity
+interpretation while down-weighting pixels whose lag phases are poorly
+explained by a single slope.  The $G_R$ and $R^2$ panels are unsigned;
+direction enters through $v_\phi$.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig_dower_ablation.png}
+  \caption{Ablation of the Dower Coppler components on the same
+    transcranial image plane.  Direction enters through $v_\phi$;
+    $G_R$ and $R^2$ provide unsigned coherence and phase-linearity
+    weights.  The final panel uses $v_\phi G_R R^2$.  Images are
+    cropped to $-1.5$ to $1.5$~cm laterally.}
+  \label{fig:dower_ablation}
+\end{figure*}
+
 The per-pixel computational cost is small: the autocorrelations
 $R_k$ are computed for $K$~lags, followed by closed-form weighted
 least squares and a weighted $R^2$ calculation.
@@ -456,7 +496,6 @@ included in the median.
 Parameter & Value \\
 \midrule
 Target / window & Temporal lobe / temporal acoustic window \\
-Probe & Butterfly iQ+ matrix-array probe with custom firmware \\
 Acquisitions in ultratrace & 480 \\
 Frames per acquisition & 700 compounded slow-time frames \\
 Transmit angles & 5 azimuthal angles over $\pm 6^\circ$ \\
@@ -527,24 +566,6 @@ two-component flow.
 
 \subsection{In Vivo Results}
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{fig_three_panel_comparison.png}
-  \caption{Intact-skull transcranial cortex imaging from a 3D
-    matrix-array acquisition (median of 480 Doppler buffers,
-    plane-wave compounding), shown on a central reconstructed elevation
-    plane.  \textbf{Left}: power Doppler, displayed with a robust
-    positive-pixel dB window, shows vessel structure but no directional information.
-    \textbf{Center}: Kasai color Doppler ($\angle R_1$) reveals
-    direction but is dominated by noise.  \textbf{Right}: Dower
-    Coppler ($v_\phi\,G_R\,R^2$, $K=5$) combines multi-lag coherence
-    weighting with directional information from the phase slope and fit
-    quality.
-    Opposing flow directions in adjacent cortical vessels are clearly
-    resolved.}
-  \label{fig:invivo_comparison}
-\end{figure*}
-
 As shown in \cref{fig:invivo_comparison}, power Doppler delineates the
 cortical vasculature with high sensitivity but provides no directional
 information.  Kasai color Doppler (center) reveals flow direction but
@@ -554,28 +575,6 @@ the multi-lag magnitude and fit-quality terms while recovering flow
 direction from the multi-lag phase slope.  Adjacent cortical vessels with opposing flow
 directions---invisible in power Doppler---are clearly separated in the
 Dower Coppler image.
-
-\Cref{fig:dower_ablation} isolates the contribution of the main
-terms in the composite index.  The phase velocity $v_\phi$ alone
-contains the directional pattern but also substantial background
-phase noise.  Multiplication by the multi-lag coherence strength
-$G_R$ suppresses decorrelated background and emphasizes vessel-like
-structures.  The $R^2$ panel shows the phase-linearity quality map,
-and multiplication by $R^2$ preserves the signed velocity
-interpretation while down-weighting pixels whose lag phases are poorly
-explained by a single slope.  The $G_R$ and $R^2$ panels are unsigned;
-direction enters through $v_\phi$.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{fig_dower_ablation.png}
-  \caption{Ablation of the Dower Coppler components on the same
-    transcranial image plane.  Direction enters through $v_\phi$;
-    $G_R$ and $R^2$ provide unsigned coherence and phase-linearity
-    weights.  The final panel uses $v_\phi G_R R^2$.  Images are
-    cropped to $-1.5$ to $1.5$~cm laterally.}
-  \label{fig:dower_ablation}
-\end{figure*}
 
 \Cref{fig:velocity_vs_color} separates the signed velocity estimate
 from the Dower Coppler amplitude weighting.  The multi-lag phase
@@ -652,81 +651,17 @@ comparison uses the signed maps
 directly and therefore compares only Kasai color Doppler and Dower
 Coppler.
 
-As a repeatability check, we split the available September 21
-per-acquisition sidecar into two non-overlapping windows
-(acquisitions 200--299 and 300--400), recomputed median Dower Coppler
-maps, and compared signs on the closest available elevation plane
-($y=-0.44$~mm).  Across the full plane, including low-amplitude
-background, the Dower Coppler sign agreed for 77.4\% of 13,237 finite
-nonzero pixels.  Restricting the comparison to the highest-magnitude
-pixels gave substantially higher agreement: 97.7\% for the top 10\%
-of pixels and 98.5\% for the top 5\%.  In the tolerant circular
-vessel ROIs used for the CNR analysis, the sign agreed between halves
-for 98.0\% of finite nonzero pixels (248 finite nonzero ROI pixels).
+We also checked temporal stability by recomputing Dower Coppler maps
+from nested acquisition windows in the available per-acquisition
+sidecar.  Within that window, the vessel pattern and flow-direction
+assignments remained visually stable from 201 acquisitions down to as
+few as 10 acquisitions, with increased background noise in the shorter
+windows.  The temporal-stability montage is shown in
+Appendix~\ref{app:elevation_temporal}.
 
-\Cref{fig:split_half_consistency} shows the corresponding split-half
-Dower Coppler images.  The same vessel structures and dominant flow
-directions are recovered independently from the first and second halves
-of the ultratrace; disagreement is concentrated mainly in low-amplitude
-background and vessel-edge pixels.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{fig_split_half_consistency.png}
-  \caption{Split-half consistency of Dower Coppler on the fine-elevation
-    plane at $y=-0.44$~mm.  Left and middle panels show acquisitions
-    200--299 and 300--400 with a shared symmetric 97th-percentile
-    scale.  Right panel shows sign agreement within the top 10\%
-    of finite nonzero pixels by maximum absolute Dower magnitude.}
-  \label{fig:split_half_consistency}
-\end{figure*}
-
-\Cref{fig:stability} demonstrates the temporal stability of the Dower
-Coppler map by varying the number of acquisitions included in the
-median image.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{fig_temporal_stability.png}
-  \caption{Dower Coppler maps computed from different numbers of
-    acquisitions on the fine-elevation plane at $y=-0.44$~mm.  All
-    panels use one shared symmetric 97th-percentile color scale and are
-    cropped to $-1.5$ to $1.5$~cm laterally.}
-  \label{fig:stability}
-\end{figure*}
-
-Within the available sidecar window, the vessel pattern and flow
-direction assignments are stable from 201 acquisitions down to as few
-as 10 acquisitions, with background noise increasing as fewer
-acquisitions are included.
-
-\Cref{fig:all_planes} shows the Dower Coppler map across elevation
-planes 2--7 from a finer elevational rebeamforming run spanning
-$y=-4$ to $4$~mm.  This figure is the main 3D matrix-imaging result:
-the directional vascular pattern is recovered across adjacent
-elevation planes rather than appearing only in one selected 2D slice.
-The same panel also includes a separate-recording check, which can be
-replaced through the figure-generation script without editing the
-manuscript.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.88\textwidth]{fig_all_planes.png}
-  \vspace{0.5em}
-
-  \includegraphics[width=0.36\textwidth]{fig_external_recording_may18.png}
-  \caption{\textbf{Top}: Dower Coppler maps across elevation planes 2--7 from the
-    finer 3D matrix-array rebeamforming run spanning $y=-4$ to
-    $4$~mm.  Panels use all 480 acquisitions and one shared symmetric
-    97th-percentile color scale.  Images are cropped to $-1.5$ to
-    $1.5$~cm laterally.  \textbf{Bottom}: qualitative check from a
-    different May 18, 2026 recording using 20 acquisitions,
-    compounded-frame cadence 295.3~Hz, $f_0=2.75$~MHz,
-    $c=1600$~m/s, SVD cutoff 0.08, and $K=5$.}
-  \label{fig:all_planes}
-\end{figure*}
-
-\clearpage
+Additional split-half and elevational-volume checks, including the
+temporal-stability montage, are provided in
+Appendices~\ref{app:split_half} and~\ref{app:elevation_temporal}.
 
 % ========================================================================
 \section{Discussion}
@@ -843,6 +778,96 @@ Code, reproducible analysis scripts, and the derived NPZ inputs used
 for the manuscript figures are available in the standalone paper
 repository:
 \href{https://github.com/ennucore/dower-coppler}{github.com/ennucore/dower-coppler}.
+
+\clearpage
+\appendix
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+% ========================================================================
+\section{Split-Half Consistency}
+\label{app:split_half}
+% ========================================================================
+
+As a repeatability check, we split the available September 21
+per-acquisition sidecar into two non-overlapping windows
+(acquisitions 200--299 and 300--400), recomputed median Dower Coppler
+maps, and compared signs on the closest available elevation plane
+($y=-0.44$~mm).  Across the full plane, including low-amplitude
+background, the Dower Coppler sign agreed for 77.4\% of 13,237 finite
+nonzero pixels.  Restricting the comparison to the highest-magnitude
+pixels gave substantially higher agreement: 97.7\% for the top 10\%
+of pixels and 98.5\% for the top 5\%.  In the tolerant circular
+vessel ROIs used for the CNR analysis, the sign agreed between halves
+for 98.0\% of finite nonzero pixels (248 finite nonzero ROI pixels).
+
+\Cref{fig:split_half_consistency} shows the corresponding split-half
+Dower Coppler images.  The same vessel structures and dominant flow
+directions are recovered independently from the first and second halves
+of the ultratrace; disagreement is concentrated mainly in low-amplitude
+background and vessel-edge pixels.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig_split_half_consistency.png}
+  \caption{Split-half consistency of Dower Coppler on the fine-elevation
+    plane at $y=-0.44$~mm.  Left and middle panels show acquisitions
+    200--299 and 300--400 with a shared symmetric 97th-percentile
+    scale.  Right panel shows sign agreement within the top 10\%
+    of finite nonzero pixels by maximum absolute Dower magnitude.}
+  \label{fig:split_half_consistency}
+\end{figure*}
+
+
+% ========================================================================
+\section{Elevation Checks}
+\label{app:elevation_temporal}
+% ========================================================================
+
+\Cref{fig:stability} demonstrates the temporal stability of the Dower
+Coppler map by varying the number of acquisitions included in the
+median image.  Within the available sidecar window, the vessel pattern
+and flow direction assignments are stable from 201 acquisitions down
+to as few as 10 acquisitions, with background noise increasing as fewer
+acquisitions are included.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig_temporal_stability.png}
+  \caption{Dower Coppler maps computed from different numbers of
+    acquisitions on the fine-elevation plane at $y=-0.44$~mm.  All
+    panels use one shared symmetric 97th-percentile color scale and are
+    cropped to $-1.5$ to $1.5$~cm laterally.}
+  \label{fig:stability}
+\end{figure*}
+
+\Cref{fig:all_planes} shows the Dower Coppler map across elevation
+planes 2--7 from a finer elevational rebeamforming run spanning
+$y=-4$ to $4$~mm.  The directional vascular pattern is recovered
+across adjacent elevation planes rather than appearing only in one
+selected 2D slice.  A separate-recording qualitative check is shown in
+\cref{fig:external_recording}; it can be replaced through the
+figure-generation script without editing the manuscript.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.88\textwidth]{fig_all_planes.png}
+  \caption{Dower Coppler maps across elevation planes 2--7 from the
+    finer 3D matrix-array rebeamforming run spanning $y=-4$ to
+    $4$~mm.  Panels use all 480 acquisitions and one shared symmetric
+    97th-percentile color scale.  Images are cropped to $-1.5$ to
+    $1.5$~cm laterally.}
+  \label{fig:all_planes}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.45\textwidth]{fig_external_recording_may18.png}
+  \caption{Qualitative check from a different May 18, 2026 recording
+    using 20 acquisitions, compounded-frame cadence 295.3~Hz,
+    $f_0=2.75$~MHz, $c=1600$~m/s, SVD cutoff 0.08, and $K=5$.}
+  \label{fig:external_recording}
+\end{figure*}
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}

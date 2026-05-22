@@ -13,8 +13,8 @@
 - [x] Add the derived NPZ inputs used by the paper figures to the standalone paper repository.
 - [x] Regenerate the September 21 paper figures from the full 480-acquisition ultratrace outputs.
 - [x] Address the V6/one-pixel CNR issue by replacing strict inscribed circles with tolerant circular ROIs and reporting medians.
-- [x] Compute split-half sign agreement for acquisitions 0-239 vs 240-479 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
-- [x] Replace the stale temporal-stability figure with the fine-elevation per-acquisition sidecar montage, labeled by acquisition counts.
+- [x] Compute split-half sign agreement for acquisitions 200-299 vs 300-400 in the vessel ROIs and save the summary in `outputs/paper_stats/split_half_sign_agreement.json`.
+- [x] Replace the stale temporal-stability figure with the fine-elevation per-acquisition sidecar montage for acquisitions 200-400, labeled by acquisition counts.
 - [x] Add the temporal-stability sidecar path and default figure-generation parameters to the reproducibility manifest.
 - [x] Confirm the paper figures use the manuscript formula `v_phi * G_R * R2`, not an older Huber/product TMAS variant.
 - [x] Replace strict fully-inscribed CNR circles with tolerant circular ROIs requiring at least 80% overlap with the exported vessel mask, eliminating one-pixel signal ROIs.

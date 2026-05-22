@@ -1054,8 +1054,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "73d9d51527039dff36e39773302a01f3f3e86e7647edfbeef87cfc390286eb3d",
-      "bytes": 39895
+      "sha256": "7b97a164a26564e0c3eac600f80294b3aae76d5a196681601bb19285c218b997",
+      "bytes": 40950
     },
     {
       "file": "references.bib",
@@ -1064,8 +1064,8 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "ee572a4649107c50bc3330357256f4f3377e264a912e4ae8e5b173b3b21ded5d",
-      "bytes": 4373088
+      "sha256": "ae289827d6c300420479ebd5195e3ca56c41339e758029ef24dbc7915fc6f28e",
+      "bytes": 3137979
     },
     {
       "file": "README.md",
@@ -1089,8 +1089,8 @@
     },
     {
       "file": "scripts/generate_paper_figures.py",
-      "sha256": "3242cb762597c040cec7bba4f5bf0c4467aa10c6ac1af4ed6ae3646b5b6c0d6d",
-      "bytes": 61256
+      "sha256": "839bbf198d470f0a76a952bf7facde22603d39379f44be052e1d499babfee0d1",
+      "bytes": 61257
     },
     {
       "file": "scripts/compute_split_half_sign_agreement.py",
@@ -1164,8 +1164,8 @@
     },
     {
       "file": "outputs/paper_figures/fig_velocity_vs_color_bland_altman.png",
-      "sha256": "cec4f3a9cbd33bd8514614c4173466ac8e601376d1c41067a959e273ee5a2c3f",
-      "bytes": 1704594
+      "sha256": "7d325d5083d615b40a085e5c2bf909b5e63b96c72aa4bf0d5ec64bb306dbeca3",
+      "bytes": 783946
     },
     {
       "file": "outputs/paper_stats/split_half_sign_agreement.json",
