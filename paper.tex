@@ -67,11 +67,18 @@ weighted $R^2$ of the phase fit, yielding
 $v_\phi\,\mathrm{gmean}_k(|R_k|)\,R^2$.  In Monte~Carlo simulations
 across five noise and interference scenarios, the multi-lag phase
 estimator reduces median absolute frequency error by 2--3$\times$
-relative to the Kasai estimator.  We demonstrate the method
-\textit{in~vivo} on intact-skull transcranial human 3D fUS data,
-acquired without a cranial window.  Across the reconstructed elevation
-volume, Dower Coppler reveals opposing flow directions in adjacent
-cortical vessels that are not visible in conventional power Doppler.
+relative to the Kasai estimator.  In a PyMUST-compatible parabolic-flow
+phantom with known velocity, the same multi-lag phase estimator reduces
+center-core velocity RMSE from \SI{5.50}{\milli\meter\per\second} to
+\SI{0.52}{\milli\meter\per\second} relative to lag-1 Kasai.  On the
+PALA InSilicoFlow dataset, it reduces aliased axial phase-velocity
+RMSE from \SI{8.40}{\milli\meter\per\second} to
+\SI{7.28}{\milli\meter\per\second} after coordinate-sign alignment.
+We demonstrate the method \textit{in~vivo} on intact-skull
+transcranial human 3D fUS data, acquired without a cranial window.
+Across the reconstructed elevation volume, Dower Coppler reveals
+opposing flow directions in adjacent cortical vessels that are not
+visible in conventional power Doppler.
 \end{abstract}
 
 \vspace{0.5em}
@@ -175,10 +182,13 @@ conservative composite index that uses multi-lag evidence and explicit
 phase-fit quality rather than a single-lag color Doppler estimate
 alone.
 
-We evaluate the index and its phase-velocity component in two settings: (1)~Monte Carlo simulations
-under additive white Gaussian noise, decorrelation, lag outliers,
-clutter leakage, and mixed-flow scenarios; and (2)~\textit{in~vivo}
-transcranial 3D functional ultrasound imaging of human cortex.
+We evaluate the index and its phase-velocity component in four
+settings: (1)~Monte Carlo simulations under additive white Gaussian
+noise, decorrelation, lag outliers, clutter leakage, and mixed-flow
+scenarios; (2)~a PyMUST-compatible synthetic slow-time flow phantom
+with a known velocity field; (3)~the PALA InSilicoFlow dataset with
+trajectory-derived velocities; and (4)~\textit{in~vivo} transcranial
+3D functional ultrasound imaging of human cortex.
 \Cref{fig:invivo_comparison} previews the key result.
 
 \begin{figure*}[t]
@@ -436,6 +446,53 @@ For each estimator, we report:
     $\text{sgn}(\hat\omega) \neq \text{sgn}(\omega)$.
 \end{itemize}
 
+\subsection{PyMUST-Compatible Flow Phantom}
+
+As an additional spatially structured velocity check, we generated a
+PyMUST-compatible synthetic complex slow-time IQ phantom using the
+PyMUST L11-5v probe metadata and velocity scaling~\cite{bernardino2024pymust}.
+The phantom contained a single oblique parabolic flow target embedded
+in static tissue and weak incoherent background motion.  We used
+$T=96$ frames, a transmit center frequency of
+\SI{7.6}{\mega\hertz}, an assumed sound speed of
+\SI{1540}{\meter\per\second}, a pulse-repetition frequency of
+\SI{6000}{\hertz}, and a peak axial velocity of
+\SI{115}{\milli\meter\per\second}.  The lag-1 baseline was computed
+with PyMUST's \texttt{iq2doppler} implementation using a $3\times3$
+Hamming neighborhood.  The multi-lag estimate used the same filtered
+ensemble and a weighted phase fit over lags $1$--$5$.
+
+Because the synthetic velocity field is known, this phantom was
+evaluated by signed velocity error rather than by vessel/background
+CNR.  We report error in two flow masks: the full target envelope,
+which includes parabolic low-velocity edge pixels, and a center-core
+ROI that excludes those edges.  The center-core ROI is the cleaner
+test of quantitative velocity estimation; the full-envelope ROI is a
+stricter test of edge sensitivity.
+
+\subsection{PALA InSilicoFlow Velocity Check}
+
+We also evaluated lag-1 and multi-lag phase-velocity estimation on the
+PALA InSilicoFlow IQ001 block from Zenodo record 4343435
+\cite{chavignon2020opulmpala}.  The block contains a complex IQ
+ensemble on an $84\times143$ grid with $T=1000$ slow-time frames,
+frame rate \SI{500}{\hertz}, transmit frequency
+\SI{15.625}{\mega\hertz}, sound speed
+\SI{1540}{\meter\per\second}, and wavelength
+\SI{0.09856}{\milli\meter}.  We used the same SVD-filtered ensemble
+for lag-1 Kasai and $K=5$ multi-lag phase-velocity estimation.
+
+Ground-truth axial velocities were computed from the accompanying
+\texttt{Tracks\_dt} trajectories by frame-to-frame displacement in the
+$z$ coordinate over the post-filter frame window used for Doppler
+estimation.  The resulting physical velocities can exceed the
+\SI{12.32}{\milli\meter\per\second} pulse-Doppler Nyquist velocity for
+this acquisition, so the primary comparison uses the aliased axial
+phase velocity expected by an autocorrelation Doppler estimator rather
+than the unwrapped physical velocity.  Estimator signs were multiplied
+by $-1$ to align the PALA increasing-$z$ coordinate convention with
+the Doppler phase convention before computing signed error metrics.
+
 
 % ========================================================================
 \section{In Vivo Experiment}
@@ -586,6 +643,42 @@ circular-sign-WLS gives the lowest RMSE and sign error in the displayed
 summary.  The circular-sign-WLS hybrid consistently achieves the
 lowest sign error rate, particularly under clutter leakage and
 two-component flow.
+
+\input{outputs/paper_stats/pymust_velocity_accuracy_table.tex}
+
+The PyMUST-compatible phantom provides a complementary check with a
+known spatial velocity field.  In the center-core ROI, the multi-lag
+phase estimator reduces signed velocity RMSE from
+\SI{5.50}{\milli\meter\per\second} for the lag-1 Kasai estimate to
+\SI{0.52}{\milli\meter\per\second}, with near-zero bias
+(\SI{0.10}{\milli\meter\per\second}).  In the full-envelope ROI,
+which includes parabolic low-velocity edge pixels, multi-lag phase
+estimation still improves RMSE from
+\SI{10.40}{\milli\meter\per\second} to
+\SI{8.27}{\milli\meter\per\second} and reduces mean absolute error
+from \SI{9.17}{\milli\meter\per\second} to
+\SI{5.50}{\milli\meter\per\second}.  Thus the multi-lag gain is most
+pronounced where the ROI reflects coherent flow, while edge-inclusive
+vessel masks remain a stricter test of velocity heterogeneity and
+phase-noise sensitivity.
+
+\input{outputs/paper_stats/zenodo_velocity_accuracy_table.tex}
+
+The PALA InSilicoFlow comparison is a stricter aliasing-limited test.
+In the dilated target-nearest ROI, multi-lag phase estimation reduces
+RMSE from \SI{8.40}{\milli\meter\per\second} to
+\SI{7.28}{\milli\meter\per\second} and slightly reduces mean absolute
+error from \SI{4.94}{\milli\meter\per\second} to
+\SI{4.89}{\milli\meter\per\second}.  On raw trajectory pixels with at
+least five contributing samples, it reduces RMSE from
+\SI{7.56}{\milli\meter\per\second} to
+\SI{6.80}{\milli\meter\per\second}, although MAE increases from
+\SI{4.14}{\milli\meter\per\second} to
+\SI{4.64}{\milli\meter\per\second}.  Thus the multi-lag estimate
+reduces larger phase errors in this dataset, but the benefit is modest
+relative to the PyMUST phantom because the PALA comparison is limited
+by aliasing, sparse trajectory projection, and sign-convention
+alignment.
 
 \subsection{In Vivo Results}
 
@@ -753,8 +846,8 @@ This study uses data from a single volunteer with a single probe.  The
 transcranial 3D matrix-imaging scenario---with low SNR, strong
 clutter, skull-induced aberrations, and elevation-dependent focusing
 errors---is a challenging test case, but validation on a larger cohort
-and with flow phantoms providing ground-truth velocity fields is
-needed.  Dower Coppler is not itself a quantitative velocity image:
+and with physical flow phantoms providing ground-truth velocity fields
+is needed.  Dower Coppler is not itself a quantitative velocity image:
 $G_R$ depends on gain, depth attenuation, beamforming normalization,
 SVD scaling, and backscatter strength.  Quantitative velocity analysis
 should use $v_\phi$ directly, with appropriate attention to angle
@@ -793,16 +886,20 @@ and weights it by lag-correlation strength and phase-fit quality.  It
 adds signed directional contrast at minimal computational cost while
 attenuating weak or inconsistent pixels.  Simulations show that
 multi-lag phase regression reduces frequency estimation error by
-2--3$\times$ relative to the single-lag Kasai estimator.
+2--3$\times$ relative to the single-lag Kasai estimator.  In
+structured velocity checks, the multi-lag phase estimate reduces RMSE
+strongly in a PyMUST-compatible parabolic-flow phantom and modestly on
+the aliasing-limited PALA InSilicoFlow dataset relative to lag-1
+Kasai.
 The \textit{in~vivo} demonstration shows signed directional contrast
 from human cortex through the intact adult skull and across a
 reconstructed 3D matrix-array elevation volume.  In this setting, the
 method resolves opposing flow directions in adjacent cortical
 vessels---information that is lost in conventional power Doppler.
 
-Code, reproducible analysis scripts, and the derived NPZ inputs used
-for the manuscript figures are available in the standalone paper
-repository:
+Code, reproducible analysis scripts, and the derived NPZ/CSV inputs
+used for the manuscript figures and external velocity tables are
+available in the standalone paper repository:
 \href{https://github.com/ennucore/dower-coppler}{github.com/ennucore/dower-coppler}.
 
 \clearpage

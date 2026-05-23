@@ -1,0 +1,9 @@
+dataset,roi,estimator,truth,paper_roi,paper_estimator,n_pixels,estimator_sign_multiplier,bias_mm_s,mae_mm_s,rmse_mm_s,pearson_r
+pymust,envelope,Kasai CD,known_velocity,Envelope,Kasai,2791,1,-9.15080054142022,9.170440289548736,10.398871960244481,0.9943803341525146
+pymust,envelope,multi-lag CD,known_velocity,Envelope,Multi-lag,2791,1,-5.257330022824481,5.500643763923136,8.265173469376094,0.9940535810920845
+pymust,center_core,Kasai CD,known_velocity,Core,Kasai,1279,1,-5.1938893915714,5.1938893915714,5.504177144412272,0.9990770228327615
+pymust,center_core,multi-lag CD,known_velocity,Core,Multi-lag,1279,1,0.09587297596159719,0.40511672761498063,0.517107046106241,0.9995345347427204
+zenodo_4343435,raw_positions_count_ge_5,Kasai CD,aliased_phase_velocity,Raw $n\ge5$,Kasai,1171,-1.0,-0.661988800110048,4.1375705611440985,7.5569507038730155,0.4505435595471745
+zenodo_4343435,raw_positions_count_ge_5,multi-lag CD,aliased_phase_velocity,Raw $n\ge5$,Multi-lag,1171,-1.0,-0.37559838144180285,4.639808773466948,6.7975155528865345,0.31026868762918086
+zenodo_4343435,target_nearest,Kasai CD,aliased_phase_velocity,Target-nearest,Kasai,4393,-1.0,0.723094882627123,4.937077837311085,8.404434168129544,0.25707702932019
+zenodo_4343435,target_nearest,multi-lag CD,aliased_phase_velocity,Target-nearest,Multi-lag,4393,-1.0,0.5795361828196757,4.892105698842252,7.27825216804847,0.16295327519711997

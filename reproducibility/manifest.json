@@ -9,8 +9,12 @@
   "simulation_generator": "scripts/phase_ls_research_sweep.py",
   "simulation_outputs": [
     "outputs/paper_stats/simulation_results_table.tex",
+    "outputs/paper_stats/zenodo_velocity_accuracy_table.tex",
+    "outputs/paper_stats/pymust_velocity_accuracy_table.tex",
     "outputs/research_sweep/phase_ls_research_sweep.summary.json",
-    "outputs/research_sweep/phase_ls_research_sweep.csv"
+    "outputs/research_sweep/phase_ls_research_sweep.csv",
+    "outputs/paper_stats/external_velocity_accuracy_selected.csv",
+    "outputs/paper_stats/external_velocity_accuracy_summary.json"
   ],
   "split_half_sign_agreement_generator": "scripts/compute_split_half_sign_agreement.py",
   "figure_generator_defaults": {
@@ -1054,18 +1058,18 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "50ec3a29ba9f3a82728b813981bfc47752cc3df20f2951f49d22cc99b4f1f0f6",
-      "bytes": 43424
+      "sha256": "bdaabb0ab8fd5e2373b55c622bb0af11a9ad72b9ba7bd2ad2eff7f6dcf75a24a",
+      "bytes": 48657
     },
     {
       "file": "references.bib",
-      "sha256": "a40017100cddb5a684b4482005f01e91ec2afc5f29ac21cfbe47f33141945cd0",
-      "bytes": 7271
+      "sha256": "0b31a1625b8950b0c4c90bc369df37160686cbfc9ce988a798cc1233f499df4a",
+      "bytes": 7963
     },
     {
       "file": "paper.pdf",
-      "sha256": "b9565efa4f2a96b8af901726c09b6d0ebe31f4b15d575360008140ed94dbbf3a",
-      "bytes": 3294959
+      "sha256": "3f5025562f0b5670b32ddfc69430b80077b17b61f2f778e7841dd855c6970d68",
+      "bytes": 3334573
     },
     {
       "file": "README.md",
@@ -1096,6 +1100,11 @@
       "file": "scripts/compute_split_half_sign_agreement.py",
       "sha256": "e0512218fc6a214b7867be9643a29ab4f8b3a778d881777d37242f2525b78916",
       "bytes": 12011
+    },
+    {
+      "file": "scripts/generate_external_velocity_accuracy_tables.py",
+      "sha256": "408b83ae7bbcd564b782b074e0ee6ebd008e391dff9dfa394f3625eb60b1c147",
+      "bytes": 9471
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -1233,6 +1242,36 @@
       "bytes": 1822
     },
     {
+      "file": "outputs/paper_stats/pymust_velocity_accuracy_table.tex",
+      "sha256": "9744cc57629bdd023457c6a1d86954156965c3d14e5da1577bd3da67aa52afb0",
+      "bytes": 806
+    },
+    {
+      "file": "outputs/paper_stats/zenodo_velocity_accuracy_table.tex",
+      "sha256": "64689af7739576a54c6bb5b3247222d2933c8ec3d4749424db936772aced0dd4",
+      "bytes": 945
+    },
+    {
+      "file": "outputs/external_dataset_checks/pymust/pymust_velocity_accuracy.csv",
+      "sha256": "79280e53037e71e763129e3b238ba7b207a61a6e6f7a52dec641664de8a36565",
+      "bytes": 2195
+    },
+    {
+      "file": "outputs/external_dataset_checks/zenodo_4343435/zenodo_velocity_estimators_with_svd.csv",
+      "sha256": "42470c54e8ed2cc2891a4b228d15866e992474cd0bece7d5d8f8c231923bf7e6",
+      "bytes": 12680
+    },
+    {
+      "file": "outputs/paper_stats/external_velocity_accuracy_selected.csv",
+      "sha256": "d1a03566d4fa0d20471809ad39d0d4f4028c023d95e293121c25a46104e5c618",
+      "bytes": 1386
+    },
+    {
+      "file": "outputs/paper_stats/external_velocity_accuracy_summary.json",
+      "sha256": "3ad586d6a831b757d883205a05bba7057bff56d96c56b1df8a7efcc02d252dde",
+      "bytes": 8099
+    },
+    {
       "file": "outputs/research_sweep/phase_ls_research_sweep.summary.json",
       "sha256": "02dc5b6779e8cacfa12753cb8f8b62902bf54f0164fcbf90cd243a2a2ff0bfd3",
       "bytes": 10207
@@ -1340,5 +1379,17 @@
       "outputs/paper_figures/fig_three_panel_with_rois.pdf",
       "outputs/paper_figures/fig_velocity_vs_color_bland_altman.pdf"
     ]
-  }
+  },
+  "external_velocity_accuracy_generator": "scripts/generate_external_velocity_accuracy_tables.py",
+  "external_velocity_accuracy_inputs": {
+    "pymust": "outputs/external_dataset_checks/pymust/pymust_velocity_accuracy.csv",
+    "zenodo": "outputs/external_dataset_checks/zenodo_4343435/zenodo_velocity_estimators_with_svd.csv"
+  },
+  "external_velocity_accuracy_outputs": {
+    "pymust_table": "outputs/paper_stats/pymust_velocity_accuracy_table.tex",
+    "zenodo_table": "outputs/paper_stats/zenodo_velocity_accuracy_table.tex",
+    "selected_csv": "outputs/paper_stats/external_velocity_accuracy_selected.csv",
+    "summary_json": "outputs/paper_stats/external_velocity_accuracy_summary.json"
+  },
+  "external_velocity_accuracy_note": "Run python3 scripts/generate_external_velocity_accuracy_tables.py to regenerate the paper tables from the committed source CSV snapshots. The Zenodo table compares to trajectory-derived aliased axial phase velocity because the physical trajectories exceed Nyquist. The full external raw-data reductions remain under outputs/external_dataset_checks and are intentionally not all hash-tracked."
 }
