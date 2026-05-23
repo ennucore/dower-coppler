@@ -1054,18 +1054,18 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "7b97a164a26564e0c3eac600f80294b3aae76d5a196681601bb19285c218b997",
-      "bytes": 40950
+      "sha256": "50ec3a29ba9f3a82728b813981bfc47752cc3df20f2951f49d22cc99b4f1f0f6",
+      "bytes": 43424
     },
     {
       "file": "references.bib",
-      "sha256": "76bdb67f5cb86158f452b14e8072119ba625f8386899bb460215ce99d8a2513b",
-      "bytes": 7013
+      "sha256": "a40017100cddb5a684b4482005f01e91ec2afc5f29ac21cfbe47f33141945cd0",
+      "bytes": 7271
     },
     {
       "file": "paper.pdf",
-      "sha256": "ae289827d6c300420479ebd5195e3ca56c41339e758029ef24dbc7915fc6f28e",
-      "bytes": 3137979
+      "sha256": "b9565efa4f2a96b8af901726c09b6d0ebe31f4b15d575360008140ed94dbbf3a",
+      "bytes": 3294959
     },
     {
       "file": "README.md",
@@ -1141,6 +1141,16 @@
       "file": "outputs/paper_figures/fig_dower_ablation.png",
       "sha256": "35004af2b60af23f28777eecfcc34724641151155b38f3db5bcd77e99d26fe4c",
       "bytes": 446641
+    },
+    {
+      "file": "outputs/paper_figures/fig_3d_volume_view_a.png",
+      "sha256": "915e3007694c923889d9262bf5c53da8507fff00c2c9fb0c12a27350f16ed870",
+      "bytes": 85857
+    },
+    {
+      "file": "outputs/paper_figures/fig_3d_volume_view_b.png",
+      "sha256": "33c219ac0edb5dfb2c99dd3e49d2f89747454116a2d1bfc7a64d96b312df44f3",
+      "bytes": 80085
     },
     {
       "file": "outputs/paper_figures/fig_external_recording_may18.png",
