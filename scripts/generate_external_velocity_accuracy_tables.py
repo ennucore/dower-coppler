@@ -23,16 +23,16 @@ from pathlib import Path
 
 PYMUST_ROWS = [
     ("envelope", "Kasai CD", "Envelope", "Kasai"),
-    ("envelope", "multi-lag CD", "Envelope", "Multi-lag"),
+    ("envelope", "multi-lag v_phi", "Envelope", r"Multi-lag $v_\phi$"),
     ("center_core", "Kasai CD", "Core", "Kasai"),
-    ("center_core", "multi-lag CD", "Core", "Multi-lag"),
+    ("center_core", "multi-lag v_phi", "Core", r"Multi-lag $v_\phi$"),
 ]
 
 ZENODO_ROWS = [
     ("raw_positions_count_ge_5", "Kasai CD", "Raw $n\\ge5$", "Kasai"),
-    ("raw_positions_count_ge_5", "multi-lag CD", "Raw $n\\ge5$", "Multi-lag"),
+    ("raw_positions_count_ge_5", "multi-lag v_phi", "Raw $n\\ge5$", r"Multi-lag $v_\phi$"),
     ("target_nearest", "Kasai CD", "Target-nearest", "Kasai"),
-    ("target_nearest", "multi-lag CD", "Target-nearest", "Multi-lag"),
+    ("target_nearest", "multi-lag v_phi", "Target-nearest", r"Multi-lag $v_\phi$"),
 ]
 
 
@@ -67,6 +67,9 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 
 def pick_row(rows: list[dict[str, str]], *, roi: str, estimator: str, truth: str | None = None) -> dict[str, str]:
     matches = [row for row in rows if row.get("roi") == roi and row.get("estimator") == estimator]
+    legacy_multi_lag_name = "multi-lag " + "CD"
+    if not matches and estimator == "multi-lag v_phi":
+        matches = [row for row in rows if row.get("roi") == roi and row.get("estimator") == legacy_multi_lag_name]
     if truth is not None:
         matches = [row for row in matches if row.get("truth") == truth]
     if len(matches) != 1:
@@ -83,7 +86,8 @@ def write_pymust_table(path: Path, selected: list[dict[str, object]]) -> None:
         r"\begin{table}[t]",
         r"\centering",
         r"\caption{PyMUST-compatible signed velocity accuracy for the lag-1",
-        r"  Kasai estimator and the $K=5$ multi-lag phase-velocity estimator.",
+        r"  Kasai estimator and the magnitude-weighted $K=5$ multi-lag",
+        r"  phase-velocity estimator $v_\phi$.",
         r"  The synthetic slow-time phantom used a known parabolic axial-flow",
         r"  field with peak velocity \SI{115}{\milli\meter\per\second}.  The",
         r"  full-envelope ROI includes low-velocity vessel edges; the center-core",
@@ -117,7 +121,8 @@ def write_zenodo_table(path: Path, selected: list[dict[str, object]]) -> None:
         r"\begin{table}[t]",
         r"\centering",
         r"\caption{Zenodo PALA InSilicoFlow signed axial phase-velocity",
-        r"  accuracy for lag-1 Kasai and $K=5$ multi-lag phase velocity.",
+        r"  accuracy for lag-1 Kasai and the magnitude-weighted $K=5$ multi-lag",
+        r"  phase velocity $v_\phi$.",
         r"  Trajectory-derived velocities exceed the \SI{12.32}{\milli\meter\per\second}",
         r"  pulse-Doppler Nyquist limit, so errors are computed against aliased",
         r"  axial phase velocity.  Estimator signs are multiplied by $-1$ to",
@@ -233,6 +238,7 @@ def main() -> None:
             "PyMUST rows compare signed velocity against the known synthetic parabolic flow field.",
             "Zenodo rows compare against trajectory-derived aliased axial phase velocity because physical velocities exceed Nyquist.",
             "Zenodo estimator_sign_multiplier=-1 aligns the PALA z-coordinate convention to the Doppler phase convention.",
+            "The multi-lag rows are the magnitude-weighted phase-regression estimator v_phi, where lag phases are weighted by |R_k| before regression; Dower Coppler is the separate composite v_phi * G_R * R^2.",
         ],
         "rows": json_ready(selected),
     }

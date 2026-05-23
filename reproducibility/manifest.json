@@ -1058,8 +1058,8 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "bdaabb0ab8fd5e2373b55c622bb0af11a9ad72b9ba7bd2ad2eff7f6dcf75a24a",
-      "bytes": 48657
+      "sha256": "0d654bee0082cff3a648edde33986342cbaf7559552037ae1ac8e83288d26309",
+      "bytes": 48621
     },
     {
       "file": "references.bib",
@@ -1068,8 +1068,8 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "3f5025562f0b5670b32ddfc69430b80077b17b61f2f778e7841dd855c6970d68",
-      "bytes": 3334573
+      "sha256": "11168a0fc176087e94e1cee8599687df3893c447ebde4bb052966911beb2cd42",
+      "bytes": 3351062
     },
     {
       "file": "README.md",
@@ -1078,8 +1078,8 @@
     },
     {
       "file": "TODO.md",
-      "sha256": "a20dd04f29c6fb721388254e9f81be354288aadbfbb8a8211627119d9eb645db",
-      "bytes": 5661
+      "sha256": "2666b24c4113fe2ab61b7343db4d8843e8340ac31f097d399325b30ce7458c66",
+      "bytes": 5812
     },
     {
       "file": "Makefile",
@@ -1088,8 +1088,8 @@
     },
     {
       "file": ".gitignore",
-      "sha256": "9e57506fd90593a508e5f84a85ee507e2ad4376e7a4783b678bf2790412a6714",
-      "bytes": 80
+      "sha256": "fcb843dd87faea8c27ac909260edc8bf366862731d390f9132f5527ea91e0da9",
+      "bytes": 142
     },
     {
       "file": "scripts/generate_paper_figures.py",
@@ -1103,8 +1103,8 @@
     },
     {
       "file": "scripts/generate_external_velocity_accuracy_tables.py",
-      "sha256": "408b83ae7bbcd564b782b074e0ee6ebd008e391dff9dfa394f3625eb60b1c147",
-      "bytes": 9471
+      "sha256": "d0d0b9b4462f8161bc66596d50c168f67d03a79f02b99b976642145e414f42ab",
+      "bytes": 10041
     },
     {
       "file": "data/cnr_measurement_20260515_191622.regions.json",
@@ -1243,13 +1243,13 @@
     },
     {
       "file": "outputs/paper_stats/pymust_velocity_accuracy_table.tex",
-      "sha256": "9744cc57629bdd023457c6a1d86954156965c3d14e5da1577bd3da67aa52afb0",
-      "bytes": 806
+      "sha256": "b254a2c59710a513dc8bab403a46a2c134d3eeee8096645dcf9d7044cf130e80",
+      "bytes": 854
     },
     {
       "file": "outputs/paper_stats/zenodo_velocity_accuracy_table.tex",
-      "sha256": "64689af7739576a54c6bb5b3247222d2933c8ec3d4749424db936772aced0dd4",
-      "bytes": 945
+      "sha256": "54f67fc0e1277e102f030d9a970153b6363cbacb1b4aa7952f17a0aeb1304c4d",
+      "bytes": 997
     },
     {
       "file": "outputs/external_dataset_checks/pymust/pymust_velocity_accuracy.csv",
@@ -1258,18 +1258,18 @@
     },
     {
       "file": "outputs/external_dataset_checks/zenodo_4343435/zenodo_velocity_estimators_with_svd.csv",
-      "sha256": "42470c54e8ed2cc2891a4b228d15866e992474cd0bece7d5d8f8c231923bf7e6",
-      "bytes": 12680
+      "sha256": "8750083fd0844343eb1de793a69d75fd4d5b45d63c06e5cfb5d4882547826792",
+      "bytes": 12698
     },
     {
       "file": "outputs/paper_stats/external_velocity_accuracy_selected.csv",
-      "sha256": "d1a03566d4fa0d20471809ad39d0d4f4028c023d95e293121c25a46104e5c618",
-      "bytes": 1386
+      "sha256": "398c69ad7b2a6d5a762bb1a5e6f27a6a214420ef86dcf9e8eedc7c8a82ec8f8a",
+      "bytes": 1428
     },
     {
       "file": "outputs/paper_stats/external_velocity_accuracy_summary.json",
-      "sha256": "3ad586d6a831b757d883205a05bba7057bff56d96c56b1df8a7efcc02d252dde",
-      "bytes": 8099
+      "sha256": "b92cb5fd8daca6f39691091220ec9d21e898c59684ddbf20113328876901d1d3",
+      "bytes": 8349
     },
     {
       "file": "outputs/research_sweep/phase_ls_research_sweep.summary.json",

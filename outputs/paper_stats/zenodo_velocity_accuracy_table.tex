@@ -1,7 +1,8 @@
 \begin{table}[t]
 \centering
 \caption{Zenodo PALA InSilicoFlow signed axial phase-velocity
-  accuracy for lag-1 Kasai and $K=5$ multi-lag phase velocity.
+  accuracy for lag-1 Kasai and the magnitude-weighted $K=5$ multi-lag
+  phase velocity $v_\phi$.
   Trajectory-derived velocities exceed the \SI{12.32}{\milli\meter\per\second}
   pulse-Doppler Nyquist limit, so errors are computed against aliased
   axial phase velocity.  Estimator signs are multiplied by $-1$ to
@@ -16,9 +17,9 @@ ROI & Estimator & Bias & MAE & RMSE & $r$ \\
  & & \multicolumn{3}{c}{(\si{\milli\meter\per\second})} & \\
 \midrule
 Raw $n\ge5$ & Kasai & -0.66 & 4.14 & 7.56 & 0.451 \\
-Raw $n\ge5$ & Multi-lag & -0.38 & 4.64 & 6.80 & 0.310 \\
+Raw $n\ge5$ & Multi-lag $v_\phi$ & -0.38 & 4.64 & 6.80 & 0.310 \\
 Target-nearest & Kasai & 0.72 & 4.94 & 8.40 & 0.257 \\
-Target-nearest & Multi-lag & 0.58 & 4.89 & 7.28 & 0.163 \\
+Target-nearest & Multi-lag $v_\phi$ & 0.58 & 4.89 & 7.28 & 0.163 \\
 \bottomrule
 \end{tabular}
 \end{table}

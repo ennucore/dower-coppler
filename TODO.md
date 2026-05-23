@@ -30,6 +30,8 @@
 - [x] Add the same segment-to-largest-tolerant-circle measurement path to the Doppler CNR viewer and launch it on the paper header dataset.
 - [x] Make figure-output reproducibility less brittle by removing Matplotlib-generated figure PDFs from strict manifest hashes while continuing to hash deterministic PNGs and `paper.pdf`.
 - [x] Fix `~/dev/caterpillar/caterpillar/acquire/acquisition.py` so realtime color Doppler uses compounded slow-time cadence (`pulse PRF / total_num_angles`) instead of pulse PRF for velocity/frequency estimators.
+- [x] Build a minimal arXiv source bundle at `dist/dower-coppler-arxiv-source.tar.gz` containing `paper.tex`, `paper.bbl`, `references.bib`, included PNG figures, and included generated table `.tex` files, excluding NPZs, logs, screenshots, audits, caches, and backup folders.
+- [x] Refresh publication cleanup state: regenerate external velocity tables, rebuild `paper.pdf`, ignore generated `dist/` and external diagnostics output, and update `reproducibility/manifest.json` hashes.
 
 ## Open
 
@@ -37,8 +39,6 @@
 - [ ] Add a data availability statement for the raw H5 ultratraces; if raw data cannot be public, state the controlled-access / IRB limitation clearly.
 - [ ] Decide whether to redo the quantitative ROI/CNR analysis with ROIs selected from power Doppler/anatomy or by blinded selection, instead of Dower-selected ROIs.
 - [ ] Add a cleaner repeatability table/figure if desired: split-half sign agreement, signed gCNR, and background false-positive rate.
-- [ ] Build a minimal arXiv source bundle containing only `paper.tex`, bibliography/bbl, and included figure files; exclude NPZs, logs, screenshots, audits, caches, and backup folders.
-- [ ] Clean repo state before publishing: remove or intentionally commit untracked exploratory outputs, simulation outputs, and generated artifacts.
 
 ## Stronger-paper items beyond a basic arXiv preprint
 

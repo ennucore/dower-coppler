@@ -1,7 +1,8 @@
 \begin{table}[t]
 \centering
 \caption{PyMUST-compatible signed velocity accuracy for the lag-1
-  Kasai estimator and the $K=5$ multi-lag phase-velocity estimator.
+  Kasai estimator and the magnitude-weighted $K=5$ multi-lag
+  phase-velocity estimator $v_\phi$.
   The synthetic slow-time phantom used a known parabolic axial-flow
   field with peak velocity \SI{115}{\milli\meter\per\second}.  The
   full-envelope ROI includes low-velocity vessel edges; the center-core
@@ -14,9 +15,9 @@ ROI & Estimator & Bias & MAE & RMSE \\
  & & \multicolumn{3}{c}{(\si{\milli\meter\per\second})} \\
 \midrule
 Envelope & Kasai & -9.15 & 9.17 & 10.40 \\
-Envelope & Multi-lag & -5.26 & 5.50 & 8.27 \\
+Envelope & Multi-lag $v_\phi$ & -5.26 & 5.50 & 8.27 \\
 Core & Kasai & -5.19 & 5.19 & 5.50 \\
-Core & Multi-lag & 0.10 & 0.41 & 0.52 \\
+Core & Multi-lag $v_\phi$ & 0.10 & 0.41 & 0.52 \\
 \bottomrule
 \end{tabular}
 \end{table}
