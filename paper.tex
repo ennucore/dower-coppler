@@ -42,6 +42,24 @@ Transcranial 3D Human fUS}
 \twocolumn[{%
 \maketitle
 
+\begin{center}
+  \includegraphics[width=\textwidth]{fig_three_panel_comparison.png}
+  \captionof{figure}{Intact-skull transcranial human cortex imaging from
+    a 3D matrix-array acquisition (median of 480 Doppler buffers,
+    plane-wave compounding).  This panel shows a central reconstructed
+    elevation plane from the lateral-elevation-depth Doppler volume.
+    \textbf{Left}: power Doppler, displayed with a robust
+    positive-pixel dB window, shows vessel structure but no directional
+    information.  \textbf{Center}: Kasai color Doppler ($\angle R_1$)
+    reveals direction but is dominated by noise.  \textbf{Right}: Dower
+    Coppler ($v_\phi\,G_R\,R^2$, $K=5$) combines multi-lag coherence
+    weighting with directional information from the phase slope and fit
+    quality.  Opposing flow directions in adjacent cortical vessels are
+    resolved in this intact-skull human transcranial acquisition.}
+  \label{fig:invivo_comparison}
+\end{center}
+\vspace{0.5em}
+
 \begin{abstract}
 Ultrafast power Doppler imaging is sensitive to weak flow but discards
 flow direction, while classic autocorrelation color Doppler estimates
@@ -180,26 +198,7 @@ noise, decorrelation, lag outliers, clutter leakage, and mixed-flow
 scenarios; (2)~a PyMUST-compatible synthetic slow-time flow phantom
 with a known velocity field; and (3)~\textit{in~vivo} transcranial 3D
 functional ultrasound imaging of human cortex.
-\Cref{fig:invivo_comparison} previews the key result.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{fig_three_panel_comparison.png}
-  \caption{Intact-skull transcranial human cortex imaging from a 3D
-    matrix-array acquisition (median of 480 Doppler buffers,
-    plane-wave compounding).  This panel shows a central reconstructed
-    elevation plane from the lateral-elevation-depth Doppler volume.
-    \textbf{Left}: power Doppler, displayed with a robust
-    positive-pixel dB window, shows vessel structure but no directional information.
-    \textbf{Center}: Kasai color Doppler ($\angle R_1$) reveals
-    direction but is dominated by noise.  \textbf{Right}: Dower
-    Coppler ($v_\phi\,G_R\,R^2$, $K=5$) combines multi-lag coherence
-    weighting with directional information from the phase slope and fit
-    quality.
-    Opposing flow directions in adjacent cortical vessels are resolved
-    in this intact-skull human transcranial acquisition.}
-  \label{fig:invivo_comparison}
-\end{figure*}
+\Cref{fig:invivo_comparison} (top of page) previews the key result.
 
 
 % ========================================================================
