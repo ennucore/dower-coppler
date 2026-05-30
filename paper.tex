@@ -135,10 +135,13 @@ to combine signed phase information with a power-like confidence image
 for low-SNR transcranial ultrafast data.
 
 Shen and Guo~\cite{shen2022tmas} introduced temporal
-multiply-and-sum (TMAS), the direct product-of-lag-magnitudes precursor
-to our coherence term, showing that multiplicative combinations of
-slow-time autocorrelations can improve power Doppler signal-to-noise
-ratio.
+multiply-and-sum (TMAS) power Doppler, in which the slow-time
+correlation terms at a fixed lag are combined by a phase-preserving,
+power-raised multiply-and-sum, improving power Doppler
+signal-to-noise ratio.  Their finding---that multiplicatively
+combining slow-time autocorrelation evidence suppresses incoherent
+background---motivates our coherence term, although we use a
+different, magnitude-only, multi-lag construction described below.
 Motivated by that idea, we use multi-lag autocorrelations to separate
 coherent flow from incoherent background.  Rather than multiplying all
 lag magnitudes directly, we use their geometric mean as a bounded
@@ -154,10 +157,11 @@ $\omega$, the lag-$k$ autocorrelation satisfies $\angle R_k \approx
 \omega k$: the phase is linear in lag.  Fitting a line to
 $\{\angle R_k\}_{k=1}^{K}$ yields a multi-lag frequency estimate that
 uses all available lags rather than just lag~1.  The idea of
-estimating frequency from the slope of autocorrelation phase is
-classical---Tretter~\cite{tretter1985phaseregression} analyzed its
-statistical properties, and Fitz~\cite{fitz1994frequency} developed
-fast approximations.  Dower Coppler should therefore be viewed as a
+estimating frequency from the slope of an unwrapped phase by linear
+regression is classical---Tretter~\cite{tretter1985phaseregression}
+analyzed the statistical properties of signal-phase regression, and
+Fitz~\cite{fitz1994frequency} developed fast approximations in the
+autocorrelation-phase (lag) domain.  Dower Coppler should therefore be viewed as a
 composite Doppler index, not a new physical Doppler estimator from first
 principles.
 
@@ -238,18 +242,21 @@ $R_k \approx |A|^2 e^{j \omega k}$, so that
 \label{sec:tmas_background}
 
 Standard power Doppler uses the zero-lag power $|R_0| =
-\frac{1}{T}\sum_t |s_t|^2$.  A TMAS-style product of
+\frac{1}{T}\sum_t |s_t|^2$.  A multi-lag product of
 autocorrelation magnitudes across lags $k = 1, \ldots, K$ is
 \begin{equation}
-  M_{\text{TMAS}} = \prod_{k=1}^{K} |R_k|.
+  M = \prod_{k=1}^{K} |R_k|.
   \label{eq:tmas}
 \end{equation}
-This construction is motivated by the TMAS product of autocorrelation
-magnitudes~\cite{shen2022tmas}: because $|R_k|$ decays with lag for
-uncorrelated noise but remains roughly constant for coherent flow, the
-product suppresses background more strongly than $|R_0|$ alone.  As
-motivated above, Dower Coppler instead uses the geometric mean of the
-same lag magnitudes,
+This magnitude-only, multi-lag product is our own adaptation,
+inspired by the TMAS construction~\cite{shen2022tmas}; the published
+TMAS instead combines the slow-time ensemble at a single fixed lag
+with a phase-preserving, power-raised multiply-and-sum.  Both exploit
+the same intuition: because $|R_k|$ decays with lag for
+uncorrelated noise but remains roughly constant for coherent flow, a
+multiplicative combination suppresses background more strongly than
+$|R_0|$ alone.  Dower Coppler uses the geometric mean of the
+lag magnitudes,
 \begin{equation}
   G_R =
   \exp\!\left(\frac{1}{K}\sum_{k=1}^{K}\log\left(\max(|R_k|,\epsilon)\right)\right),
@@ -257,7 +264,7 @@ same lag magnitudes,
 \end{equation}
 with $\epsilon=10^{-30}$ for numerical stability, which preserves the
 multi-lag coherence weighting at a scale comparable to a single
-autocorrelation magnitude.  Like the raw TMAS product, $G_R$ is
+autocorrelation magnitude.  Like the raw product $M$, $G_R$ is
 non-negative and carries no directional information.
 
 \subsection{Multi-Lag Phase Regression}
@@ -813,8 +820,8 @@ filtering~\cite{demene2015svd}, Kasai autocorrelation
 velocity~\cite{kasai1985autocorrelation}, multi-lag color-flow
 autocorrelation~\cite{torp1994autocorrelation}, phase-regression
 frequency estimation~\cite{tretter1985phaseregression,fitz1994frequency},
-power Doppler~\cite{rubin1994powerdoppler}, and the TMAS
-product-of-lag-magnitudes that motivates
+power Doppler~\cite{rubin1994powerdoppler}, and the multiplicative
+slow-time coherence idea of TMAS that motivates
 $G_R$~\cite{shen2022tmas}.  Two close relatives are worth
 distinguishing: the Loupas two-dimensional autocorrelator uses temporal
 and depth lags jointly, but for axial frequency correction rather than
