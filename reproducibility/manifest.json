@@ -1058,18 +1058,18 @@
   "file_hashes": [
     {
       "file": "paper.tex",
-      "sha256": "0d654bee0082cff3a648edde33986342cbaf7559552037ae1ac8e83288d26309",
-      "bytes": 48621
+      "sha256": "3dc7f253ffe8888c8cafbb7703dca73885260bf4c59b187ba5e5ec67755a87e3",
+      "bytes": 46799
     },
     {
       "file": "references.bib",
-      "sha256": "0b31a1625b8950b0c4c90bc369df37160686cbfc9ce988a798cc1233f499df4a",
-      "bytes": 7963
+      "sha256": "f4bbad8cb46f08df84a51ac28bfed75cd358a706cf3f78424b209dba6cb1e5b2",
+      "bytes": 8756
     },
     {
       "file": "paper.pdf",
-      "sha256": "11168a0fc176087e94e1cee8599687df3893c447ebde4bb052966911beb2cd42",
-      "bytes": 3351062
+      "sha256": "71818969d727228c8d08bb811730408b634c4407cb80e3f4c3d7d7587290985a",
+      "bytes": 3303390
     },
     {
       "file": "README.md",

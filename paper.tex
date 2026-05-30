@@ -70,10 +70,7 @@ estimator reduces median absolute frequency error by 2--3$\times$
 relative to the Kasai estimator.  In a PyMUST-compatible parabolic-flow
 phantom with known velocity, the same multi-lag phase estimator reduces
 center-core velocity RMSE from \SI{5.50}{\milli\meter\per\second} to
-\SI{0.52}{\milli\meter\per\second} relative to lag-1 Kasai.  On the
-PALA InSilicoFlow dataset, it reduces aliased axial phase-velocity
-RMSE from \SI{8.40}{\milli\meter\per\second} to
-\SI{7.28}{\milli\meter\per\second} after coordinate-sign alignment.
+\SI{0.52}{\milli\meter\per\second} relative to lag-1 Kasai.
 We demonstrate the method \textit{in~vivo} on intact-skull
 transcranial human 3D fUS data, acquired without a cranial window.
 Across the reconstructed elevation volume, Dower Coppler reveals
@@ -182,13 +179,12 @@ conservative composite index that uses multi-lag evidence and explicit
 phase-fit quality rather than a single-lag color Doppler estimate
 alone.
 
-We evaluate the index and its phase-velocity component in four
+We evaluate the index and its phase-velocity component in three
 settings: (1)~Monte Carlo simulations under additive white Gaussian
 noise, decorrelation, lag outliers, clutter leakage, and mixed-flow
 scenarios; (2)~a PyMUST-compatible synthetic slow-time flow phantom
-with a known velocity field; (3)~the PALA InSilicoFlow dataset with
-trajectory-derived velocities; and (4)~\textit{in~vivo} transcranial
-3D functional ultrasound imaging of human cortex.
+with a known velocity field; and (3)~\textit{in~vivo} transcranial 3D
+functional ultrasound imaging of human cortex.
 \Cref{fig:invivo_comparison} previews the key result.
 
 \begin{figure*}[t]
@@ -470,57 +466,58 @@ ROI that excludes those edges.  The center-core ROI is the cleaner
 test of quantitative velocity estimation; the full-envelope ROI is a
 stricter test of edge sensitivity.
 
-\subsection{PALA InSilicoFlow Velocity Check}
-
-We also evaluated lag-1 and multi-lag phase-velocity estimation on the
-PALA InSilicoFlow IQ001 block from Zenodo record 4343435
-\cite{chavignon2020opulmpala}.  The block contains a complex IQ
-ensemble on an $84\times143$ grid with $T=1000$ slow-time frames,
-frame rate \SI{500}{\hertz}, transmit frequency
-\SI{15.625}{\mega\hertz}, sound speed
-\SI{1540}{\meter\per\second}, and wavelength
-\SI{0.09856}{\milli\meter}.  We used the same SVD-filtered ensemble
-for lag-1 Kasai and $K=5$ multi-lag phase-velocity estimation.
-
-Ground-truth axial velocities were computed from the accompanying
-\texttt{Tracks\_dt} trajectories by frame-to-frame displacement in the
-$z$ coordinate over the post-filter frame window used for Doppler
-estimation.  The resulting physical velocities can exceed the
-\SI{12.32}{\milli\meter\per\second} pulse-Doppler Nyquist velocity for
-this acquisition, so the primary comparison uses the aliased axial
-phase velocity expected by an autocorrelation Doppler estimator rather
-than the unwrapped physical velocity.  Estimator signs were multiplied
-by $-1$ to align the PALA increasing-$z$ coordinate convention with
-the Doppler phase convention before computing signed error metrics.
-
-
 % ========================================================================
 \section{In Vivo Experiment}
 \label{sec:invivo}
 % ========================================================================
 
-\subsection{Ethics Approval}
+\subsection{Ethics and Acoustic Safety}
 
 Human imaging was performed under WCG IRB Protocol \#20254791.  The
 volunteer provided informed consent prior to data acquisition.
-Ultrasound acquisition was performed within the approved IRB safety
-limits.  Acoustic output was checked from hydrophone measurements of
-the plane-wave transmit pressure, which upper-bounded the peak pressure
-by \SI{400}{\kilo\pascal}.  Using the standard mechanical-index and
-intensity definitions summarized in the tFUS safety
-calculator~\cite{hotter2026tfussafety}, this pressure gives
-$\mathrm{MI} \le 0.4/\sqrt{2.75} = 0.24$.  Taking
-$Z=\SI{1.5}{\mega\pascal\second\per\meter}$, the corresponding pulse-average intensity
-upper bound is
-$I_{\mathrm{SPPA}} = p^2/(2Z) \le \SI{5.4}{\watt\per\centi\meter\squared}$.
-With three cycles at \SI{2.75}{\mega\hertz} and a measured transmit
-pulse PRF of \SI{1240.9}{\hertz}, the duty factor is
+Ultrasound exposure was managed under the ALARA principle, using the
+lowest transmit level that produced usable Doppler data and avoiding
+unnecessary stationary insonation~\cite{aium2020alara,fda2023diagnosticultrasound}.
+
+Acoustic output was checked before the human acquisition using
+water-tank hydrophone measurements of the plane-wave transmit pressure.
+The largest measured peak pressure was bounded by
+\SI{400}{\kilo\pascal}.  Expressed in the acoustic-output quantities
+used for diagnostic-ultrasound reporting, and using the measured
+pressure as a conservative upper bound on derated rarefactional
+pressure, this gives
+\begin{equation}
+  \mathrm{MI} = \frac{p_{\mathrm{r},0.3}}{\sqrt{f_0}}
+  \le \frac{0.4}{\sqrt{2.75}} = 0.24 ,
+\end{equation}
+where pressure is in MPa and $f_0$ is in MHz.  Taking
+$Z=\SI{1.5}{\mega\pascal\second\per\meter}$, the corresponding
+pulse-average intensity upper bound is
+\begin{equation}
+  I_{\mathrm{SPPA}} = \frac{p^2}{2Z}
+  \le \SI{5.4}{\watt\per\centi\meter\squared}.
+\end{equation}
+With three transmit cycles at \SI{2.75}{\mega\hertz} and a measured
+transmit pulse PRF of \SI{1240.9}{\hertz}, the duty factor is
 $3\,\mathrm{PRF}/f_0 = 0.00136$, yielding
-$I_{\mathrm{SPTA}} \le \SI{7.3}{\milli\watt\per\centi\meter\squared}$.
-These values are below the common diagnostic-ultrasound exposure
-limits of $\mathrm{MI}=1.9$,
-$I_{\mathrm{SPPA}}=\SI{190}{\watt\per\centi\meter\squared}$, and
-$I_{\mathrm{SPTA}}=\SI{720}{\milli\watt\per\centi\meter\squared}$.
+$I_{\mathrm{SPTA}} \le
+\SI{7.3}{\milli\watt\per\centi\meter\squared}$.  These values are
+well below the FDA Track~3 global maximum acoustic-output levels for
+diagnostic ultrasound: derated
+$I_{\mathrm{SPTA}}\le\SI{720}{\milli\watt\per\centi\meter\squared}$
+and either $\mathrm{MI}\le1.9$ or derated
+$I_{\mathrm{SPPA}}\le\SI{190}{\watt\per\centi\meter\squared}$
+\cite{fda2023diagnosticultrasound}.  The measured-pressure estimates
+here satisfy both the MI and $I_{\mathrm{SPPA}}$ comparisons.
+
+These calculations are conservative with respect to free-field
+pressure because no skull-transmission loss or diagnostic derating was
+credited.  They are not, however, a substitute for a full IEC~62359
+output-display characterization or a subject-specific thermal model of
+the skull~\cite{iec62359,aium2022ti}.  Because transcranial imaging
+places bone near the acoustic path, thermal risk was controlled
+operationally by the low duty factor, short acquisition windows, and
+ALARA-based dwell-time minimization.
 
 \subsection{Data Acquisition}
 
@@ -644,41 +641,14 @@ summary.  The circular-sign-WLS hybrid consistently achieves the
 lowest sign error rate, particularly under clutter leakage and
 two-component flow.
 
-\input{outputs/paper_stats/pymust_velocity_accuracy_table.tex}
-
-The PyMUST-compatible phantom provides a complementary check with a
-known spatial velocity field.  In the center-core ROI, the multi-lag
-phase estimator reduces signed velocity RMSE from
-\SI{5.50}{\milli\meter\per\second} for the lag-1 Kasai estimate to
+As an additional spatial velocity check, the PyMUST-compatible parabolic
+flow phantom showed the same trend: in the coherent center-core ROI,
+the multi-lag phase estimator reduced signed velocity RMSE from
+\SI{5.50}{\milli\meter\per\second} for lag-1 Kasai to
 \SI{0.52}{\milli\meter\per\second}, with near-zero bias
-(\SI{0.10}{\milli\meter\per\second}).  In the full-envelope ROI,
-which includes parabolic low-velocity edge pixels, multi-lag phase
-estimation still improves RMSE from
-\SI{10.40}{\milli\meter\per\second} to
-\SI{8.27}{\milli\meter\per\second} and reduces mean absolute error
-from \SI{9.17}{\milli\meter\per\second} to
-\SI{5.50}{\milli\meter\per\second}.  Thus the multi-lag gain is most
-pronounced where the ROI reflects coherent flow, while edge-inclusive
-vessel masks remain a stricter test of velocity heterogeneity and
-phase-noise sensitivity.
-
-\input{outputs/paper_stats/zenodo_velocity_accuracy_table.tex}
-
-The PALA InSilicoFlow comparison is a stricter aliasing-limited test.
-In the dilated target-nearest ROI, multi-lag phase estimation reduces
-RMSE from \SI{8.40}{\milli\meter\per\second} to
-\SI{7.28}{\milli\meter\per\second} and slightly reduces mean absolute
-error from \SI{4.94}{\milli\meter\per\second} to
-\SI{4.89}{\milli\meter\per\second}.  On raw trajectory pixels with at
-least five contributing samples, it reduces RMSE from
-\SI{7.56}{\milli\meter\per\second} to
-\SI{6.80}{\milli\meter\per\second}, although MAE increases from
-\SI{4.14}{\milli\meter\per\second} to
-\SI{4.64}{\milli\meter\per\second}.  Thus the multi-lag estimate
-reduces larger phase errors in this dataset, but the benefit is modest
-relative to the PyMUST phantom because the PALA comparison is limited
-by aliasing, sparse trajectory projection, and sign-convention
-alignment.
+(\SI{0.10}{\milli\meter\per\second}).  This supports the use of the
+multi-lag slope as the signed velocity component of the composite
+index.
 
 \subsection{In Vivo Results}
 
@@ -886,11 +856,10 @@ and weights it by lag-correlation strength and phase-fit quality.  It
 adds signed directional contrast at minimal computational cost while
 attenuating weak or inconsistent pixels.  Simulations show that
 multi-lag phase regression reduces frequency estimation error by
-2--3$\times$ relative to the single-lag Kasai estimator.  In
-structured velocity checks, the multi-lag phase estimate reduces RMSE
-strongly in a PyMUST-compatible parabolic-flow phantom and modestly on
-the aliasing-limited PALA InSilicoFlow dataset relative to lag-1
-Kasai.
+2--3$\times$ relative to the single-lag Kasai estimator.  In a
+structured velocity check, the multi-lag phase estimate reduces RMSE
+strongly in a PyMUST-compatible parabolic-flow phantom relative to
+lag-1 Kasai.
 The \textit{in~vivo} demonstration shows signed directional contrast
 from human cortex through the intact adult skull and across a
 reconstructed 3D matrix-array elevation volume.  In this setting, the
@@ -898,7 +867,7 @@ method resolves opposing flow directions in adjacent cortical
 vessels---information that is lost in conventional power Doppler.
 
 Code, reproducible analysis scripts, and the derived NPZ/CSV inputs
-used for the manuscript figures and external velocity tables are
+used for the manuscript figures and PyMUST velocity check are
 available in the standalone paper repository:
 \url{https://github.com/ennucore/dower-coppler}.
 
