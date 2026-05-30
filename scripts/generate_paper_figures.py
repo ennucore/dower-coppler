@@ -431,12 +431,18 @@ def figure_three_panel(data: dict, output_dir: Path, acq_start: int = 0, acq_end
     cd_raw = metric_plane(data, "color_doppler", plane, acq_start, acq_end)
     dc_raw = metric_plane(data, "dower_coppler", plane, acq_start, acq_end)
 
-    extent = axis_extent_cm(data, pd_raw.shape)
-
     pd_img, pd_vmin, pd_vmax = pd_image(pd_raw)
     cd_img, cd_vmin, cd_vmax = signed_image(cd_raw, CD_ABS_PERCENTILE)
 
     dc_img, dc_vmin, dc_vmax = signed_image(dc_raw, DC_ABS_PERCENTILE)
+
+    # Hero figure is cropped to the active lateral region.  Color scales are
+    # computed from the full plane above, so the visible region renders
+    # identically and only the lateral extent is trimmed.
+    hero_x_range = (-1.3, 1.3)
+    pd_img, extent = crop_lateral_cm(pd_img, data, hero_x_range)
+    cd_img, _ = crop_lateral_cm(cd_img, data, hero_x_range)
+    dc_img, _ = crop_lateral_cm(dc_img, data, hero_x_range)
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4), constrained_layout=True)
 

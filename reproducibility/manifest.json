@@ -1068,7 +1068,7 @@
     },
     {
       "file": "paper.pdf",
-      "sha256": "71818969d727228c8d08bb811730408b634c4407cb80e3f4c3d7d7587290985a",
+      "sha256": "d64abc9fa1f283384c6ccb5d8e02696bf481da45120d428c924db799263064d8",
       "bytes": 3303390
     },
     {
@@ -1173,7 +1173,7 @@
     },
     {
       "file": "outputs/paper_figures/fig_three_panel_comparison.png",
-      "sha256": "91708b3b53edb90237c82b80ea160f0a4aedde13514277cf4c837c5a0872c4e9",
+      "sha256": "55ad49bdec446e683c1f76f18a9015f5c610026a2c607bc447d89511285ca233",
       "bytes": 247890
     },
     {
