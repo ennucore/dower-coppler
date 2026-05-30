@@ -11,3 +11,4 @@ __pycache__/
 outputs/.mplconfig/
 outputs/external_dataset_checks/
 dist/
+citations/

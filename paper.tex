@@ -427,7 +427,7 @@ Five scenarios are tested:
   \item \textbf{WLS}: weighted least-squares phase slope
     (\cref{eq:wls}).
   \item \textbf{Huber-WLS}: robust comparison estimator using Huber
-    residual weights ($\delta = 0.7$, 5~iterations).
+    residual weights~\cite{huber1964robust} ($\delta = 0.7$, 5~iterations).
   \item \textbf{Circular-sign-WLS}: direction from a circular
     objective $\arg\max_\omega \sum_k |R_k| \cos(\phi_k - \omega k)$,
     magnitude from WLS.
@@ -827,7 +827,10 @@ product-of-lag-magnitudes that motivates
 $G_R$~\cite{shen2022tmas}.  Two close relatives are worth
 distinguishing: the Loupas two-dimensional autocorrelator uses temporal
 and depth lags jointly, but for axial frequency correction rather than
-multi-lag phase-slope fitting~\cite{loupas1995axial}; and multi-lag
+multi-lag phase-slope fitting~\cite{loupas1995axial}; least-squares
+multi-angle Doppler estimators fit a velocity across plane-wave transmit
+angles rather than across slow-time
+lags~\cite{yiu2016multiangle}; and multi-lag
 estimators in weather radar fit correlation models across lags rather
 than a Doppler phase line~\cite{lei2012multilag,warde2023gmle}.
 Relative to all of these, the contribution is the specific
@@ -911,7 +914,9 @@ This research was funded by Alegria Neurotech.
 
 \section*{Conflicts of Interest}
 
-The authors report no conflict of interest.
+The authors are employed by Alegria Neurotech, which funded this
+research and develops ultrasound neurotechnology related to the methods
+described here.
 
 \clearpage
 \appendix
