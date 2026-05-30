@@ -246,20 +246,20 @@ autocorrelation magnitudes across lags $k = 1, \ldots, K$ is
   \label{eq:tmas}
 \end{equation}
 This construction is motivated by the TMAS product of autocorrelation
-magnitudes~\cite{shen2022tmas}.
-Because $|R_k|$ decays with lag for uncorrelated noise but remains
-roughly constant for coherent flow, the product suppresses background
-more strongly than $|R_0|$ alone.  In the current Dower Coppler
-implementation, we use the geometric mean of the same lag magnitudes,
+magnitudes~\cite{shen2022tmas}: because $|R_k|$ decays with lag for
+uncorrelated noise but remains roughly constant for coherent flow, the
+product suppresses background more strongly than $|R_0|$ alone.  As
+motivated above, Dower Coppler instead uses the geometric mean of the
+same lag magnitudes,
 \begin{equation}
   G_R =
   \exp\!\left(\frac{1}{K}\sum_{k=1}^{K}\log\left(\max(|R_k|,\epsilon)\right)\right),
   \label{eq:geomean_r}
 \end{equation}
-with $\epsilon=10^{-30}$ for numerical stability.  This preserves the
-multi-lag coherence weighting while keeping the scale comparable to a
-single autocorrelation magnitude.  Like the raw TMAS product, $G_R$ is
-non-negative and therefore carries no directional information.
+with $\epsilon=10^{-30}$ for numerical stability, which preserves the
+multi-lag coherence weighting at a scale comparable to a single
+autocorrelation magnitude.  Like the raw TMAS product, $G_R$ is
+non-negative and carries no directional information.
 
 \subsection{Multi-Lag Phase Regression}
 \label{sec:phase_regression}
@@ -381,6 +381,15 @@ not require spatial information.
 The final $R^2$ quality term attenuates isolated unwrapping failures:
 a miswrapped lag produces a large residual from the linear phase model,
 lowering the weighted fit quality for that pixel.
+
+\subsection{Use of AI Coding Assistants}
+\label{sec:ai_disclosure}
+
+AI coding assistants were used extensively across all tasks in this
+work, including the development of the processing and analysis code,
+the reproducibility scripts, and the drafting and editing of this
+manuscript.  All methods, results, and claims were reviewed and
+verified by the authors, who take full responsibility for the content.
 
 
 % ========================================================================
@@ -688,17 +697,15 @@ alongside the favorable phantom result is the more complete summary.
 
 \subsection{In Vivo Results}
 
-As shown in \cref{fig:invivo_comparison}, the method was tested on an
-intact-skull transcranial human matrix-array acquisition reconstructed
-as a 3D Doppler volume.  On the displayed central elevation plane,
-power Doppler delineates the cortical vasculature with high sensitivity
-but provides no directional information.  Kasai color Doppler (center)
-reveals flow direction but is dominated by noise, with vessel structure
-largely obscured.  The proposed Dower Coppler (right) attenuates
-incoherent pixels using the multi-lag magnitude and fit-quality terms
-while recovering flow direction from the multi-lag phase slope.
-Adjacent cortical vessels with opposing flow directions---invisible in
-power Doppler---are clearly separated in the Dower Coppler image.
+On the displayed central elevation plane
+(\cref{fig:invivo_comparison}), power Doppler delineates the cortical
+vasculature with high sensitivity but no direction, while Kasai color
+Doppler reveals direction but is dominated by noise.  The proposed
+Dower Coppler attenuates incoherent pixels using the multi-lag
+magnitude and fit-quality terms while recovering flow direction from
+the multi-lag phase slope, so that adjacent cortical vessels with
+opposing flow directions---invisible in power Doppler---are clearly
+separated.
 
 \Cref{fig:velocity_vs_color} separates the signed velocity estimate
 from the Dower Coppler amplitude weighting.  The multi-lag phase
@@ -790,11 +797,8 @@ from nested acquisition windows in the available per-acquisition
 sidecar.  Within that window, the vessel pattern and flow-direction
 assignments remained visually stable from 201 acquisitions down to as
 few as 10 acquisitions, with increased background noise in the shorter
-windows.  The temporal-stability montage is shown in
-Appendix~\ref{app:elevation_temporal}.
-
-Additional split-half and elevational-volume checks, including the
-temporal-stability montage, are provided in
+windows.  Split-half repeatability and elevational-volume checks,
+together with this temporal-stability montage, are provided in
 Appendices~\ref{app:split_half} and~\ref{app:elevation_temporal}.
 
 % ========================================================================
@@ -814,38 +818,28 @@ power Doppler, and confidence-gated by the quality of a single
 multi-lag phase-slope model.
 
 \paragraph{Relationship to prior work.}
-SVD filtering before ultrafast Doppler is standard in fUS and related
-microvascular imaging~\cite{demene2015svd}.  Autocorrelation phase
-velocity estimation traces directly to Kasai color Doppler
-\cite{kasai1985autocorrelation}, and arbitrary temporal/spatial lags
-were analyzed in classic color-flow autocorrelation work
-\cite{torp1994autocorrelation}.  The Loupas two-dimensional
-autocorrelator also uses temporal and depth lags jointly, but for axial
-frequency correction rather than multi-lag phase-slope fitting
-\cite{loupas1995axial}.  Multi-lag autocorrelation has deep roots in
-weather radar, where related estimators fit correlation models across
-multiple lags rather than fitting a Doppler phase line
-\cite{lei2012multilag,warde2023gmle}.  Frequency estimation from phase
-regression is also classical~\cite{tretter1985phaseregression,fitz1994frequency}.
-Power Doppler is a close conceptual neighbor because it encodes flow
-strength rather than pure velocity~\cite{rubin1994powerdoppler}.  The
-TMAS work of Shen and Guo is especially relevant because it directly
-uses products of temporal autocorrelation magnitudes to improve
-ultrafast power Doppler SNR~\cite{shen2022tmas}; $G_R$ can be
-interpreted as a bounded geometric-mean version of this
-product-of-lag-magnitudes idea.
-Recent intact-skull adult tfUS work further shows that contrast-free
-power-Doppler fUS can measure cerebrovascular reactivity through the
-adult skull when acquisition and motion control are carefully optimized
-\cite{vienneau2026adultskull}.  Relative to these methods, the
-contribution here is the specific coherence-weighted signed index, and
-in particular the use of a per-pixel phase-linearity $R^2$ as a
-confidence gate.  This $R^2$ term differs from standard spectral-width
-or variance estimates: it measures how well the lag phases are
-explained by one linear slope, penalizing multi-component flow,
-turbulence, wrapping errors, and residual clutter.  The claim is
-therefore not novelty for intact-skull adult fUS, autocorrelation
-Doppler, SVD filtering, or multi-lag correlation processing broadly.
+The individual ingredients are all established: SVD clutter
+filtering~\cite{demene2015svd}, Kasai autocorrelation
+velocity~\cite{kasai1985autocorrelation}, multi-lag color-flow
+autocorrelation~\cite{torp1994autocorrelation}, phase-regression
+frequency estimation~\cite{tretter1985phaseregression,fitz1994frequency},
+power Doppler~\cite{rubin1994powerdoppler}, and the TMAS
+product-of-lag-magnitudes that motivates
+$G_R$~\cite{shen2022tmas}.  Two close relatives are worth
+distinguishing: the Loupas two-dimensional autocorrelator uses temporal
+and depth lags jointly, but for axial frequency correction rather than
+multi-lag phase-slope fitting~\cite{loupas1995axial}; and multi-lag
+estimators in weather radar fit correlation models across lags rather
+than a Doppler phase line~\cite{lei2012multilag,warde2023gmle}.
+Relative to all of these, the contribution is the specific
+coherence-weighted signed index, and in particular the per-pixel
+phase-linearity $R^2$ used as a confidence gate: unlike standard
+spectral-width or variance estimates, it measures how well the lag
+phases are explained by one linear slope, penalizing multi-component
+flow, turbulence, wrapping errors, and residual clutter.  The claim is
+therefore not novelty for intact-skull adult
+fUS~\cite{vienneau2026adultskull}, autocorrelation Doppler, SVD
+filtering, or multi-lag correlation processing broadly.
 
 \paragraph{Choice of parameters.}
 The maximum lag $K = 5$ was chosen empirically: higher lags provide
@@ -878,15 +872,10 @@ term attenuates pixels whose phase sequence is poorly described by a
 single velocity.
 
 \paragraph{Extensions.}
-The fit quality metric $Q$ is already used as a multiplicative
-confidence term, but it can also be displayed as a standalone quality
-map.  Robust alternatives, such as Huber-weighted slopes or
-circular-sign hybrids, remain useful variants for applications where
-isolated lag outliers or sign accuracy dominate the design objective.
-Future ablations should explicitly compare power Doppler, Kasai color
-Doppler, directional power variants, first-lag magnitude, multi-lag
-phase velocity alone, velocity times $G_R$, velocity times $R^2$, and
-the full $v_\phi G_R R^2$ index.
+The fit-quality metric $Q$ can also be displayed as a standalone
+quality map, and robust alternatives such as Huber-weighted slopes or
+circular-sign hybrids remain useful variants where isolated lag
+outliers or sign accuracy dominate the design objective.
 
 
 % ========================================================================
